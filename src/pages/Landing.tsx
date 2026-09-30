@@ -15,8 +15,11 @@ import CardRenderer from '../components/CardRenderer';
 const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
+/** Designs left out of the landing page only. They still exist in the app and on existing cards. */
+const HIDE_ON_LANDING = new Set<string>(['terminal', 'inbox']);
+
 /** The hero phone cycles through these showpiece designs until someone rolls the dice. */
-const SHOWCASE = ['neonsign', 'terminal', 'velvet', 'turntable', 'passport', 'polish', 'synthwave', 'signature', 'lotus', 'nowserving'];
+const SHOWCASE = ['neonsign', 'velvet', 'turntable', 'passport', 'polish', 'synthwave', 'signature', 'lotus', 'nowserving'];
 
 function Ticker({ items, tone }: { items: string[]; tone: 'pink' | 'cyan' | 'orange' }) {
   const line = items.join('  ✶  ');
@@ -166,7 +169,7 @@ export default function Landing() {
       <section className="mx-layouts" id="layouts">
         <h2 className="mx-h2">Swipe the <span className="pink">wall</span> of designs.</h2>
         <div className="mx-strip">
-          {[...TEMPLATES].sort((a, b) => Number(Boolean(b.niche)) - Number(Boolean(a.niche))).map((t) => {
+          {[...TEMPLATES].filter((t) => !HIDE_ON_LANDING.has(t.id)).sort((a, b) => Number(Boolean(b.niche)) - Number(Boolean(a.niche))).map((t) => {
             const hit = ALL_DESIGNS.find((x) => x.design.template === t.id);
             return (
               <figure key={t.id}>
