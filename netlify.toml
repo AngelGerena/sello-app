@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Cache headers live in public/_headers (works for drag-and-drop and Git deploys).
+# Payments run on Supabase Edge Functions, not Netlify functions.

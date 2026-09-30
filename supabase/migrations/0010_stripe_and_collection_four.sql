@@ -1,0 +1,12 @@
+alter table public.fc_profiles add column if not exists founding boolean not null default false;
+alter table public.fc_profiles add column if not exists plan_interval text;
+
+alter table public.fc_cards drop constraint if exists fc_cards_template;
+alter table public.fc_cards add constraint fc_cards_template check (template in (
+  'cover','arch','header','bizcard','app','rail','radial','swiss','bento','journey','realestate','photo','foodtruck','apparel','mechanic','handyman','esthetics','creator','retail','tech','barber','church','fitness','advisor','bistro','stage','quantum','terminal','cyber','aurora','radar','circuit','blueprint','velvet','fade','oldschool','blush','vanity','silk','gloss','marquee','passport','estate','garden','scoreboard','signature','hologram','mission','poster','liquid','starfield','cmdk','synthwave','pole','goldleaf','lash','rosegold','swatch','nowserving','perfume','vinyl','boarding','recipe','toolbelt','stained','trading','turntable','waveform','confetti','invitation','monogram','inbox','planner','razor','chalkboard','neonsign','clipper','polish','shimmer','tips','blowout','stations','magazine','stones','lotus','bamboo','casefile','contactsheet','flash','orderticket','hangtag','bag','postcard','floorplan','ledger','hymnboard','cluster','stopwatch','diner','yardsign'));
+
+alter table public.fc_looks drop constraint if exists fc_looks_template;
+alter table public.fc_looks add constraint fc_looks_template check (template in (
+  'cover','arch','header','bizcard','app','rail','radial','swiss','bento','journey','realestate','photo','foodtruck','apparel','mechanic','handyman','esthetics','creator','retail','tech','barber','church','fitness','advisor','bistro','stage','quantum','terminal','cyber','aurora','radar','circuit','blueprint','velvet','fade','oldschool','blush','vanity','silk','gloss','marquee','passport','estate','garden','scoreboard','signature','hologram','mission','poster','liquid','starfield','cmdk','synthwave','pole','goldleaf','lash','rosegold','swatch','nowserving','perfume','vinyl','boarding','recipe','toolbelt','stained','trading','turntable','waveform','confetti','invitation','monogram','inbox','planner','razor','chalkboard','neonsign','clipper','polish','shimmer','tips','blowout','stations','magazine','stones','lotus','bamboo','casefile','contactsheet','flash','orderticket','hangtag','bag','postcard','floorplan','ledger','hymnboard','cluster','stopwatch','diner','yardsign'));
+
+notify pgrst, 'reload schema';

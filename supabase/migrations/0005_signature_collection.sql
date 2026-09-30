@@ -1,0 +1,9 @@
+alter table public.fc_cards drop constraint if exists fc_cards_template;
+alter table public.fc_cards add constraint fc_cards_template check (template in (
+  'cover','arch','header','bizcard','app','rail','radial','swiss','bento','journey','realestate','photo','foodtruck','apparel','mechanic','handyman','esthetics','creator','retail','tech','barber','church','fitness','advisor','bistro','stage','quantum','terminal','cyber','aurora','radar','circuit','blueprint','velvet','fade','oldschool','blush','vanity','silk','gloss','marquee','passport','estate','garden','scoreboard','signature'));
+
+alter table public.fc_looks drop constraint if exists fc_looks_template;
+alter table public.fc_looks add constraint fc_looks_template check (template in (
+  'cover','arch','header','bizcard','app','rail','radial','swiss','bento','journey','realestate','photo','foodtruck','apparel','mechanic','handyman','esthetics','creator','retail','tech','barber','church','fitness','advisor','bistro','stage','quantum','terminal','cyber','aurora','radar','circuit','blueprint','velvet','fade','oldschool','blush','vanity','silk','gloss','marquee','passport','estate','garden','scoreboard','signature'));
+
+notify pgrst, 'reload schema';
