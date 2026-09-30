@@ -34,11 +34,40 @@ export async function currentUser(req: Request) {
 export type Plan = 'pro' | 'team';
 export type Interval = 'month' | 'year';
 
-/** Price IDs live in secrets so prices can change in Stripe without redeploying. */
-export function priceFor(plan: Plan, interval: Interval, founding: boolean): string {
-  if (plan === 'pro' && interval === 'month' && founding && Deno.env.get('SELLO_PRICE_PRO_FOUNDING')) return env('SELLO_PRICE_PRO_FOUNDING');
-  const key = `SELLO_PRICE_${plan === 'pro' ? 'PRO' : 'TEAM'}_${interval === 'month' ? 'MONTH' : 'YEAR'}`;
-  return env(key);
+/* Prices are set right here, so nothing has to be created in the Stripe dashboard.
+   Amounts are in cents (USD). Keep them in step with the pricing shown on the site (src/lib/plans.ts). */
+const CENTS: Record<Plan, Record<Interval, number>> = { pro: { month: 800, year: 7200 }, team: { month: 600, year: 6000 } };   // Business is per card
+const FOUNDING_CENTS = 500;
+const NAMES: Record<Plan, string> = { pro: 'Sello Pro', team: 'Sello Business (per card)' };
+
+/** Business is priced per card. The customer picks how many; these are the limits. */
+export const TEAM_MIN = 3;
+export const TEAM_MAX = 100;
+export const TEAM_DEFAULT = 5;
+export function clampSeats(n: unknown): number {
+  const v = Math.round(Number(n));
+  if (!Number.isFinite(v)) return TEAM_DEFAULT;
+  return Math.min(TEAM_MAX, Math.max(TEAM_MIN, v));
+}
+
+/** The line item for Checkout. Stripe creates the product and price on the fly.
+    Optional: if you ever create fixed prices in Stripe, add them as secrets named like
+    SELLO_PRICE_PRO_MONTH, SELLO_PRICE_PRO_YEAR, SELLO_PRICE_TEAM_MONTH, SELLO_PRICE_TEAM_YEAR
+    (and SELLO_PRICE_PRO_FOUNDING) and they take priority over the built-in amounts. The Business prices are PER CARD. */
+export function lineItemFor(plan: Plan, interval: Interval, founding: boolean, seats = 1): Stripe.Checkout.SessionCreateParams.LineItem {
+  const quantity = plan === 'team' ? clampSeats(seats) : 1;
+  const secretName = founding ? 'SELLO_PRICE_PRO_FOUNDING' : `SELLO_PRICE_${plan === 'pro' ? 'PRO' : 'TEAM'}_${interval === 'month' ? 'MONTH' : 'YEAR'}`;
+  const fixed = Deno.env.get(secretName);
+  if (fixed) return { price: fixed, quantity };
+  return {
+    quantity,
+    price_data: {
+      currency: 'usd',
+      unit_amount: founding ? FOUNDING_CENTS : CENTS[plan][interval],
+      recurring: { interval },
+      product_data: { name: founding ? 'Sello Pro (founding member)' : NAMES[plan] },
+    },
+  };
 }
 
 /** Which Sello plan a Stripe price belongs to (fallback when metadata is missing). */
@@ -49,4 +78,4 @@ export function planForPrice(priceId: string | undefined): Plan | null {
   return null;
 }
 
-export const siteUrl = () => (Deno.env.get('SELLO_SITE_URL') ?? 'https://sello-app.netlify.app').replace(/\/$/, '');
+export const siteUrl = () => (Deno.env.get('SELLO_SITE_URL') ?? 'https://selloapp.netlify.app').replace(/\/$/, '');

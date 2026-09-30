@@ -1,7 +1,8 @@
-// POST { plan: 'pro' | 'team', interval: 'month' | 'year' }  ->  { url }
+// POST { plan: 'pro' | 'team', interval: 'month' | 'year', seats?: number }  ->  { url }
+// For Business, seats = how many cards (3 to 100); it is billed per card.
 // Starts Stripe Checkout for the signed-in user. If they already have a subscription,
-// returns a Billing Portal link instead so they can switch plans there.
-import { admin, cors, currentUser, json, priceFor, siteUrl, stripe, type Interval, type Plan } from '../_shared/sello.ts';
+// returns a Billing Portal link instead (update card, cancel, invoices), never a second subscription.
+import { admin, clampSeats, cors, currentUser, json, lineItemFor, siteUrl, stripe, type Interval, type Plan } from '../_shared/sello.ts';
 
 const FOUNDING_SPOTS = 100;
 
@@ -15,6 +16,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const plan: Plan = body.plan === 'team' ? 'team' : 'pro';
     const interval: Interval = body.interval === 'year' ? 'year' : 'month';
+    const seats = plan === 'team' ? clampSeats(body.seats) : 1;
 
     const db = admin();
     const s = stripe();
@@ -35,9 +37,9 @@ Deno.serve(async (req) => {
       return json({ url: portal.url, portal: true });
     }
 
-    // Founding pricing: Pro monthly, while spots remain.
+    // Founding pricing: Pro monthly, first 100 members. Set the secret SELLO_FOUNDING to off to switch it off.
     let founding = false;
-    if (plan === 'pro' && interval === 'month' && Deno.env.get('SELLO_PRICE_PRO_FOUNDING')) {
+    if (plan === 'pro' && interval === 'month' && Deno.env.get('SELLO_FOUNDING') !== 'off') {
       const { count } = await db.from('fc_profiles').select('id', { count: 'exact', head: true }).eq('founding', true);
       founding = (count ?? 0) < FOUNDING_SPOTS;
     }
@@ -46,9 +48,9 @@ Deno.serve(async (req) => {
       mode: 'subscription',
       customer,
       client_reference_id: user.id,
-      line_items: [{ price: priceFor(plan, interval, founding), quantity: 1 }],
+      line_items: [lineItemFor(plan, interval, founding, seats)],
       allow_promotion_codes: true,
-      subscription_data: { metadata: { sello_user_id: user.id, sello_plan: plan, sello_interval: interval, sello_founding: founding ? '1' : '0' } },
+      subscription_data: { metadata: { sello_user_id: user.id, sello_plan: plan, sello_interval: interval, sello_seats: String(seats), sello_founding: founding ? '1' : '0' } },
       metadata: { sello_user_id: user.id, sello_plan: plan },
       success_url: `${siteUrl()}/app?upgraded=${plan}`,
       cancel_url: `${siteUrl()}/app?checkout=canceled`,

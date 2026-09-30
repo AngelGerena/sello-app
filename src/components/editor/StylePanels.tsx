@@ -87,7 +87,7 @@ export function TemplatePanel(p: PanelProps) {
         <Section title="" hint="">
           {choosing ? (
             <>
-              <p className="lay-q">Which niche should we show designs for?</p>
+              <p className="lay-q">Which niche do you want to see designs for?</p>
               <NichePicker value={nicheId} onPick={(n) => { setNicheId(n.id); setChoosing(false); sfx('tap'); if (!p.card.data.niche) p.set((c) => ({ ...c, data: { ...c.data, niche: n.id } })); }} autoFocus />
             </>
           ) : (

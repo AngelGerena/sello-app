@@ -594,3 +594,24 @@ a { color: var(--ink); }
 .auth__notice { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: #FFF4E0; border: 1px solid #F5C77A; color: #5A3B00; font-size: 14px; line-height: 1.5; }
 .auth__notice p { margin: 0; }
 .auth__notice .auth__link { color: #8A4B00; min-height: 32px; }
+
+/* ---------- Business card-count dialog */
+.td { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgba(11, 14, 42, .55); backdrop-filter: blur(3px); }
+.td__box { width: min(460px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: 22px; border-radius: 22px; background: var(--paper-2); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .6); display: flex; flex-direction: column; gap: 16px; }
+.td__box header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.td__box h2 { margin: 0; font-family: var(--f-disp); font-size: 24px; }
+.td__lead { margin: 0; font-size: 14.5px; }
+.td__field { display: flex; flex-direction: column; gap: 8px; }
+.td__field > span { font-size: 13px; font-weight: 800; }
+.td__ctl { display: inline-flex; align-items: center; gap: 8px; }
+.td__ctl button { width: 48px; height: 48px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--white); cursor: pointer; display: grid; place-items: center; color: var(--ink); }
+.td__ctl button:hover:not(:disabled) { border-color: var(--ink); }
+.td__ctl button:disabled { opacity: .35; cursor: not-allowed; }
+.td__ctl input { width: 84px; height: 48px; text-align: center; font: inherit; font-weight: 800; font-size: 22px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--white); -moz-appearance: textfield; appearance: textfield; }
+.td__ctl input::-webkit-outer-spin-button, .td__ctl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.td__ctl input:focus { outline: none; border-color: var(--ink); }
+.td__total { margin: 0; padding: 14px 16px; border-radius: 14px; background: var(--white); border: 1px solid var(--line-2); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.td__total b { font-family: var(--f-disp); font-size: 34px; line-height: 1; }
+.td__total span { font-size: 14px; color: var(--muted); }
+.td__box footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 520px) { .td { align-items: end; padding: 0; } .td__box { width: 100%; border-radius: 22px 22px 0 0; } }

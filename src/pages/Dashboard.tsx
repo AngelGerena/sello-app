@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Pencil, ExternalLink, Trash2, LogOut, Loader2, Crown, X, Search, ArrowLeft } from 'lucide-react';
+import { Plus, Pencil, ExternalLink, Trash2, LogOut, Loader2, Crown, X, Search, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { NICHES, NICHE_GROUPS, applyDesign, liteDesigns, nicheOf, untriedDesigns, type Design, type Niche } from '../lib/niches';
 import { NicheBadge } from '../components/editor/NichePicker';
 import { TEMPLATES } from '../templates';
@@ -9,13 +9,15 @@ import { DesignTile } from '../components/editor/StylePanels';
 import { sampleCard } from '../lib/seed';
 import { HIcon } from '../templates/blocks';
 import { takeWelcome } from '../lib/authLanding';
-import { INTERVAL_KEY, openBillingPortal, startCheckout, type Interval } from '../lib/billing';
+import { CARDS_KEY, INTERVAL_KEY, openBillingPortal, startCheckout, type Interval } from '../lib/billing';
+import TeamDialog from '../components/TeamDialog';
 import { refreshPlan } from '../lib/usePlan';
 import { INTENT_KEY } from './Login';
-import { PLANS, isLocked, FREE_FALLBACK } from '../lib/plans';
+import { PLANS, TEAM, isLocked, FREE_FALLBACK, BUSINESS_CONTACT, MORE_CARDS_CONTACT, cardLimit, clampCards, teamTotal } from '../lib/plans';
 import { usePlan, setDemoPlan } from '../lib/usePlan';
 import type { Card } from '../lib/types';
 import { store } from '../lib/store';
+import { useIsAdmin } from '../lib/useAdmin';
 import { supabase } from '../lib/supabase';
 import { cardUrl } from '../lib/links';
 import Brand from '../components/Brand';
@@ -26,7 +28,9 @@ export default function Dashboard() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const nav = useNavigate();
-  const { plan } = usePlan();
+  const { plan, seats } = usePlan();
+  const [teamOpen, setTeamOpen] = useState(false);
+  const { isAdmin } = useIsAdmin();
   const [intent, setIntent] = useState<string | null>(() => { try { return localStorage.getItem(INTENT_KEY); } catch { return null; } });
   const [paying, setPaying] = useState(false);
 
@@ -36,10 +40,11 @@ export default function Dashboard() {
   const dropIntent = () => { try { localStorage.removeItem(INTENT_KEY); } catch { /* ignore */ } setIntent(null); };
   const [welcome, setWelcome] = useState<boolean>(() => takeWelcome());   // arrived from the confirmation email
   const [interval] = useState<Interval>(() => { try { return localStorage.getItem(INTERVAL_KEY) === 'year' ? 'year' : 'month'; } catch { return 'month'; } });
-  const upgrade = async (to: 'pro' | 'team') => {
-    if (store.demo) { setDemoPlan(to); return; } // demo: switch plans instantly so the gating can be tried
+  const [intentCards] = useState(() => { try { return clampCards(parseInt(localStorage.getItem(CARDS_KEY) ?? '', 10)); } catch { return TEAM.initial; } });
+  const upgrade = async (to: 'pro' | 'team', howMany?: number, billed: Interval = interval) => {
+    if (store.demo) { setDemoPlan(to, howMany ?? TEAM.initial); setTeamOpen(false); return; } // demo: switch plans instantly so the gating can be tried
     setPaying(true);
-    try { await startCheckout(to, interval); } catch (e) { setErr(e instanceof Error ? e.message : 'Checkout failed.'); setPaying(false); }
+    try { await startCheckout(to, billed, howMany); } catch (e) { setErr(e instanceof Error ? e.message : 'Checkout failed.'); setPaying(false); setTeamOpen(false); }
   };
   const manage = async () => {
     if (store.demo) { setErr('Billing opens Stripe in the live app.'); return; }
@@ -53,7 +58,7 @@ export default function Dashboard() {
   const canceled = params.get('checkout') === 'canceled';
   useEffect(() => {
     if (!upgradedTo) return;
-    try { localStorage.removeItem(INTENT_KEY); localStorage.removeItem(INTERVAL_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(INTENT_KEY); localStorage.removeItem(INTERVAL_KEY); localStorage.removeItem(CARDS_KEY); } catch { /* ignore */ }
     let n = 0;
     const t = window.setInterval(() => { refreshPlan(); if (++n >= 6) window.clearInterval(t); }, 2500);
     refreshPlan();
@@ -80,7 +85,7 @@ export default function Dashboard() {
     }
     catch (e) {
       const m = e instanceof Error ? e.message : '';
-      setErr(/row-level security/i.test(m) ? 'You have reached the card limit for your plan. Upgrade to add more cards.' : m || 'Could not create a card.');
+      setErr(/row-level security/i.test(m) ? (plan === 'team' ? 'Every card in your Business plan is in use. Tap Change number of cards to add more.' : 'You have reached the card limit for your plan. Upgrade to add more cards.') : m || 'Could not create a card.');
       setBusy(false);
     }
   };
@@ -95,11 +100,14 @@ export default function Dashboard() {
     <div className="dash">
       <header className="dash__top">
         <Brand />
+        <span className="dash__acts">
+        {isAdmin && <Link to="/app/admin" className="btn btn--ink btn--sm"><ShieldCheck size={15} /> Admin</Link>}
         {store.demo ? <span className="demo-tag">Demo. Changes stay on this device.
           <select className="demo-plan" value={plan} onChange={(e) => setDemoPlan(e.target.value as 'free' | 'pro' | 'team')} aria-label="Demo plan">
             <option value="free">Lite</option><option value="pro">Pro</option><option value="team">Business</option>
           </select></span>
           : <button type="button" className="btn btn--ghost btn--sm" onClick={() => supabase.auth.signOut()}><LogOut size={15} /> Sign out</button>}
+        </span>
       </header>
       <main className="dash__main">
         <div className="dash__head">
@@ -126,18 +134,20 @@ export default function Dashboard() {
         )}
         {intentPlan && plan === 'free' ? (
           <div className="plan-bar plan-bar--intent">
-            <span><b>Finish upgrading to {intentPlan.name}</b><small>Your account is ready on the free plan. {intentPlan.name} is {interval === 'year' ? `$${intentPlan.yearly}/year` : `$${intentPlan.price}/month`}, cancel any time.</small></span>
+            <span><b>Finish upgrading to {intentPlan.name}</b><small>Your account is ready on the free plan. {intentPlan.name} is {intentPlan.perCard ? (interval === 'year' ? `$${teamTotal(intentCards, true)}/year for ${intentCards} cards` : `$${teamTotal(intentCards, false)}/month for ${intentCards} cards`) : (interval === 'year' ? `$${intentPlan.yearly}/year` : `$${intentPlan.price}/month`)}, cancel any time.</small></span>
             <span className="row-ed">
-              <button type="button" className="btn btn--gold" onClick={() => upgrade(intentPlan.id as 'pro' | 'team')} disabled={paying}>{paying ? <Loader2 className="spin" size={16} /> : <Crown size={16} />} Continue to payment</button>
+              <button type="button" className="btn btn--gold" onClick={() => upgrade(intentPlan.id as 'pro' | 'team', intentPlan.perCard ? intentCards : undefined)} disabled={paying}>{paying ? <Loader2 className="spin" size={16} /> : <Crown size={16} />} Continue to payment</button>
               <button type="button" className="btn btn--onink btn--sm" onClick={dropIntent}>Stay on free</button>
             </span>
           </div>
         ) : (
           <div className="plan-bar">
-            <span><b>{planInfo.name} plan<span className="plan-pill">{plan === 'free' ? 'Free' : 'Active'}</span></b><small>{plan === 'free' ? 'One card, 3 Lite designs and a small Sello badge. Upgrade to publish all 107 designs, every new Drop, and lose the badge.' : planInfo.pitch}</small></span>
+            <span><b>{planInfo.name} plan<span className="plan-pill">{plan === 'free' ? 'Free' : 'Active'}</span></b><small>{plan === 'free' ? 'One card, 3 Lite designs and a small Sello badge. Upgrade to publish all 107 designs, every new Drop, and lose the badge.' : `${planInfo.pitch} ${cards ? `${cards.length} of ${cardLimit(plan, seats)} cards in use.` : ''}`}</small></span>
+            {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => setTeamOpen(true)} disabled={paying}>Business, for teams</button>}
             {plan === 'free' && <button type="button" className="btn btn--gold btn--sm" onClick={() => upgrade('pro')} disabled={paying}><Crown size={15} /> Upgrade to Pro</button>}
+            {plan === 'team' && <a className="btn btn--ghost btn--sm" href={MORE_CARDS_CONTACT(cardLimit(plan, seats))} target="_blank" rel="noopener">Change number of cards</a>}
             {plan !== 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={manage} disabled={paying}>Manage billing</button>}
-            {plan === 'pro' && <button type="button" className="btn btn--ghost btn--sm" onClick={manage} disabled={paying}>Move to Business</button>}
+            {plan === 'pro' && <a className="btn btn--ghost btn--sm" href={BUSINESS_CONTACT} target="_blank" rel="noopener">Move to Business</a>}
           </div>
         )}
         {err && <p className="err" role="alert">{err}</p>}
@@ -246,6 +256,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+      {teamOpen && <TeamDialog initialCards={intentCards} initialInterval={interval} busy={paying} onClose={() => setTeamOpen(false)} onContinue={(n, billed) => upgrade('team', n, billed)} />}
     </div>
   );
 }

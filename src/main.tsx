@@ -14,6 +14,7 @@ import './styles/sig4.css';
 import './styles/worship-engine.css';
 import './styles/worship-sello.css';
 import './styles/miami.css';
+import './styles/admin.css';
 
 const root = createRoot(document.getElementById('root')!);
 root.render(configError

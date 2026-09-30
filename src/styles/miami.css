@@ -222,3 +222,16 @@
   .mx-dice { display: none; }             /* "Roll a random look" is right above on phones */
   .mx-sticker.s3 { bottom: 16%; }
 }
+
+/* Business: how many cards */
+.mx-seats { margin: 2px 0 14px; padding: 12px 14px; border: 2px solid var(--n); border-radius: 14px; background: #F4F5FB; display: flex; flex-direction: column; gap: 8px; }
+.mx-seats > span { font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.mx-seats__ctl { display: inline-flex; align-items: center; gap: 8px; }
+.mx-seats__ctl button { width: 46px; height: 46px; border-radius: 12px; border: 2px solid var(--n); background: var(--w); color: var(--n); cursor: pointer; display: grid; place-items: center; transition: transform .1s; }
+.mx-seats__ctl button:hover:not(:disabled) { transform: translateY(-1px); }
+.mx-seats__ctl button:disabled { opacity: .35; cursor: not-allowed; }
+.mx-seats__ctl input { width: 76px; height: 46px; text-align: center; font: inherit; font-weight: 900; font-size: 20px; border: 2px solid var(--n); border-radius: 12px; background: var(--w); color: var(--n); -moz-appearance: textfield; appearance: textfield; }
+.mx-seats__ctl input::-webkit-outer-spin-button, .mx-seats__ctl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.mx-seats__ctl button:focus-visible, .mx-seats__ctl input:focus-visible { outline: 3px solid var(--o); outline-offset: 2px; }
+.mx-seats__total { margin: 0; font-size: 14px; font-weight: 700; }
+.mx-seats__total b { font-size: 22px; font-family: 'Anton', Impact, sans-serif; font-weight: 400; letter-spacing: .02em; }

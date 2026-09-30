@@ -7,12 +7,21 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Editor from './pages/Editor';
 import PublicCard from './pages/PublicCard';
+import Admin from './pages/Admin';
+import { useIsAdmin } from './lib/useAdmin';
 
 function Private({ children }: { children: ReactNode }) {
   const { session, loading, demo } = useAuth();
   if (demo) return <>{children}</>;
   if (loading) return <div className="center-msg">Loading</div>;
   return session ? <>{children}</> : <Navigate to="/login" replace />;
+}
+
+/** Only platform admins get in. Everyone else is sent back to their own cards. */
+function AdminOnly({ children }: { children: ReactNode }) {
+  const { isAdmin, ready } = useIsAdmin();
+  if (!ready) return <div className="center-msg">Loading</div>;
+  return isAdmin ? <>{children}</> : <Navigate to="/app" replace />;
 }
 
 export default function App() {
@@ -27,6 +36,7 @@ export default function App() {
           <Route path="/login" element={<Login mode="signin" />} />
           <Route path="/reset" element={<ResetPassword />} />
           <Route path="/app" element={<Private><Dashboard /></Private>} />
+          <Route path="/app/admin" element={<Private><AdminOnly><Admin /></AdminOnly></Private>} />
           <Route path="/app/cards/:id" element={<Private><Editor /></Private>} />
           {/* Specific routes first; the card slug catches everything else. */}
           <Route path="/:slug" element={<PublicCard />} />

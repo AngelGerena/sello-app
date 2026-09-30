@@ -298,7 +298,7 @@ function NicheSection(p: PanelProps) {
   return (
     <Section
       title="Your niche"
-      hint="Tell us what you do. We'll show designs, sample services and links made for your line of work."
+      hint="Pick what you do to see designs, sample services and links made for your line of work."
       action={current && !open ? <button type="button" className="btn btn--ghost btn--sm" onClick={() => setOpen(true)}>Change</button> : undefined}
     >
       {current && !open && (

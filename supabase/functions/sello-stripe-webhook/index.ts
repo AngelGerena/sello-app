@@ -18,8 +18,10 @@ async function applySubscription(sub: Stripe.Subscription, userIdHint?: string |
   const priceId = sub.items?.data?.[0]?.price?.id;
   const plan = (sub.metadata?.sello_plan as 'pro' | 'team' | undefined) ?? planForPrice(priceId) ?? 'pro';
   const paid = PAID.includes(sub.status);
+  const quantity = sub.items?.data?.[0]?.quantity ?? null;   // Business: number of cards
   const update: Record<string, unknown> = {
     plan: paid ? plan : 'free',
+    seats: paid && plan === 'team' ? Math.max(1, quantity ?? 5) : null,
     plan_status: sub.status,
     stripe_customer_id: customer,
     stripe_subscription_id: sub.id,

@@ -48,17 +48,28 @@ const fromRow = (r: Row): Card => withDefaults({ id: r.id, template: r.template,
 
 /** Demo only: lets you try the app as Lite, Pro or Business without paying. */
 export const DEMO_PLAN_KEY = 'fc.demo.plan';
+export const DEMO_SEATS_KEY = 'fc.demo.seats';
 
 export const store = {
   demo: IS_DEMO,
 
   /** The signed-in user's plan. Written only by the Stripe webhook. */
-  async myPlan(): Promise<'free' | 'pro' | 'team'> {
-    if (IS_DEMO) { try { const v = localStorage.getItem(DEMO_PLAN_KEY); return v === 'pro' || v === 'team' ? v : 'free'; } catch { return 'free'; } }
+  async myPlanDetail(): Promise<{ plan: 'free' | 'pro' | 'team'; seats: number | null }> {
+    if (IS_DEMO) {
+      try {
+        const v = localStorage.getItem(DEMO_PLAN_KEY);
+        const plan = v === 'pro' || v === 'team' ? v : 'free';
+        return { plan, seats: plan === 'team' ? Number(localStorage.getItem(DEMO_SEATS_KEY)) || 5 : null };
+      } catch { return { plan: 'free', seats: null }; }
+    }
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user) return 'free';
-    const { data } = await supabase.from(T.profiles).select('plan').eq('id', u.user.id).maybeSingle();
-    return (data?.plan as 'free' | 'pro' | 'team') ?? 'free';
+    if (!u.user) return { plan: 'free', seats: null };
+    const { data } = await supabase.from(T.profiles).select('plan,seats').eq('id', u.user.id).maybeSingle();
+    return { plan: (data?.plan as 'free' | 'pro' | 'team') ?? 'free', seats: (data?.seats as number | null) ?? null };
+  },
+
+  async myPlan(): Promise<'free' | 'pro' | 'team'> {
+    return (await this.myPlanDetail()).plan;
   },
 
   async myCards(): Promise<Card[]> {

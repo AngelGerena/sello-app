@@ -4,7 +4,8 @@ import { Mail, Loader2, Check, Crown, Eye, EyeOff, KeyRound, ArrowLeft } from 'l
 import { supabase } from '../lib/supabase';
 import { useAuth, useProviders } from '../lib/auth';
 import Brand from '../components/Brand';
-import { PLANS } from '../lib/plans';
+import { PLANS, clampCards, teamTotal } from '../lib/plans';
+import { CARDS_KEY } from '../lib/billing';
 import { takeAuthError } from '../lib/authLanding';
 
 /* Sign in and sign up on one screen, three ways in:
@@ -20,7 +21,7 @@ type Screen = 'form' | 'confirm' | 'link' | 'forgot' | 'reset-sent';
 const friendly = (m: string) => {
   const s = m.toLowerCase();
   if (s.includes('invalid login')) return "That email and password don't match. Try again, or reset your password below.";
-  if (s.includes('email not confirmed')) return 'Please confirm your email first. We can send the confirmation again.';
+  if (s.includes('email not confirmed')) return 'Please confirm your email first. Tap Resend confirmation for a new link.';
   if (s.includes('already registered') || s.includes('already been registered')) return 'That email already has an account. Sign in instead.';
   if (s.includes('rate limit') || s.includes('too many')) return 'Too many tries for now. Wait a few minutes and try again.';
   if (s.includes('password') && s.includes('characters')) return 'Use at least 8 characters for your password.';
@@ -66,7 +67,9 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
   const planId = params.get('plan');
   const plan = PLANS.find((p) => p.id === planId && p.price > 0);
   const billing = params.get('billing') === 'year' ? 'year' : 'month';
-  if (plan) { try { localStorage.setItem(INTENT_KEY, plan.id); localStorage.setItem('fc.plan-interval', billing); } catch { /* storage blocked */ } }
+  const cards = clampCards(parseInt(params.get('cards') ?? '', 10));   // Business: how many cards
+  const cardsQs = plan?.perCard ? `&cards=${cards}` : '';
+  if (plan) { try { localStorage.setItem(INTENT_KEY, plan.id); localStorage.setItem('fc.plan-interval', billing); if (plan.perCard) localStorage.setItem(CARDS_KEY, String(cards)); } catch { /* storage blocked */ } }
 
   if (session) return <Navigate to="/app" replace />;
   const isJoin = mode === 'signup';
@@ -152,15 +155,15 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
     <div className="auth">
       <Brand />
       <div className="auth__box">
-        {screen === 'confirm' && <Sent title="Confirm your email" body={<>We sent a confirmation link to <b>{email}</b>. Tap it and you're in. After that, you'll sign in with your email and password.</>} />}
-        {screen === 'link' && <Sent title="Check your email" body={<>We sent a sign-in link to <b>{email}</b>. Open it on this device. It works once and expires in an hour.</>} />}
+        {screen === 'confirm' && <Sent title="Confirm your email" body={<>A confirmation link is on its way to <b>{email}</b>. Tap it and you're in. After that, you'll sign in with your email and password.</>} />}
+        {screen === 'link' && <Sent title="Check your email" body={<>A sign-in link is on its way to <b>{email}</b>. Open it on this device. It works once and expires in an hour.</>} />}
         {screen === 'reset-sent' && <Sent title="Reset link sent" body={<>If <b>{email}</b> has an account, a link to set a new password is on its way. It expires in an hour.</>} />}
 
         {screen === 'forgot' && (
           <>
             <span className="auth__icon"><KeyRound size={26} /></span>
             <h1>Reset your password</h1>
-            <p className="auth__body">Enter your email and we'll send a link to set a new password. This also works if you first signed up with an email link and never made a password.</p>
+            <p className="auth__body">Enter your email to get a link for setting a new password. This also works if you first signed up with an email link and never made a password.</p>
             <form onSubmit={sendReset}>
               <div className="fld">
                 <label htmlFor="remail">Email</label>
@@ -176,8 +179,8 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
         {screen === 'form' && (
           <>
             <div className="auth__tabs" role="tablist" aria-label="Account">
-              <Link role="tab" aria-selected={!isJoin} className={!isJoin ? 'on' : ''} to={plan ? `/login?plan=${plan.id}&billing=${billing}` : '/login'} onClick={() => setErr('')}>Sign in</Link>
-              <Link role="tab" aria-selected={isJoin} className={isJoin ? 'on' : ''} to={plan ? `/signup?plan=${plan.id}&billing=${billing}` : '/signup'} onClick={() => setErr('')}>Create account</Link>
+              <Link role="tab" aria-selected={!isJoin} className={!isJoin ? 'on' : ''} to={plan ? `/login?plan=${plan.id}&billing=${billing}${cardsQs}` : '/login'} onClick={() => setErr('')}>Sign in</Link>
+              <Link role="tab" aria-selected={isJoin} className={isJoin ? 'on' : ''} to={plan ? `/signup?plan=${plan.id}&billing=${billing}${cardsQs}` : '/signup'} onClick={() => setErr('')}>Create account</Link>
             </div>
 
             {linkNotice && (
@@ -199,7 +202,7 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
             {plan && (
               <div className="auth__plan">
                 <Crown size={20} />
-                <span><b>You picked {plan.name}, {billing === 'year' ? `$${plan.yearly}/year` : `$${plan.price}/month`}</b>{isJoin ? 'Create your account first. You\u2019ll finish the upgrade on the next screen, or keep the free Lite plan.' : 'Sign in and you\u2019ll finish the upgrade on the next screen.'}</span>
+                <span><b>You picked {plan.name}, {plan.perCard ? (billing === 'year' ? `${cards} cards, $${teamTotal(cards, true)}/year` : `${cards} cards, $${teamTotal(cards, false)}/month`) : (billing === 'year' ? `$${plan.yearly}/year` : `$${plan.price}/month`)}</b>{isJoin ? 'Create your account first. You\u2019ll finish the upgrade on the next screen, or keep the free Lite plan.' : 'Sign in and you\u2019ll finish the upgrade on the next screen.'}</span>
               </div>
             )}
 

@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight } from 'lucide-react';
+import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight, Minus, Plus } from 'lucide-react';
 import type { Card } from '../lib/types';
 import { sampleCard } from '../lib/seed';
 import { deriveTokens, randomButton, randomSeeds, FONT_PAIRS } from '../lib/theme';
 import { TEMPLATES } from '../templates';
 import { ALL_DESIGNS, NICHES, NICHE_GROUPS, applyDesign, sampleFor } from '../lib/niches';
 import Brand from '../components/Brand';
-import { APP_NAME, FOUNDING, PLANS, STUDIO, STUDIO_CONTACT } from '../lib/plans';
+import { APP_NAME, FOUNDING, PLANS, STUDIO, STUDIO_CONTACT, TEAM, clampCards, teamTotal } from '../lib/plans';
 import { sfx } from '../lib/sfx';
 import CardRenderer from '../components/CardRenderer';
 
@@ -37,6 +37,8 @@ export default function Landing() {
   const [rolled, setRolled] = useState<Card | null>(null);
   const [rolls, setRolls] = useState(0);
   const [yearly, setYearly] = useState(false);
+  const [cardsRaw, setCardsRaw] = useState(String(TEAM.initial));   // Business: how many cards (typed text, clamped on use)
+  const cards = clampCards(parseInt(cardsRaw, 10));
 
   useEffect(() => {
     if (rolled || reduced()) return;
@@ -192,21 +194,37 @@ export default function Landing() {
         <h2 className="mx-h2 mx-h2--dark">Start free. <span className="pinkdeep">Go loud</span> for $8.</h2>
         <div className="mx-bill" role="radiogroup" aria-label="Billing">
           <button type="button" role="radio" aria-checked={!yearly} className={!yearly ? 'on' : ''} onClick={() => setYearly(false)}>Monthly</button>
-          <button type="button" role="radio" aria-checked={yearly} className={yearly ? 'on' : ''} onClick={() => setYearly(true)}>Yearly <span>2 months free</span></button>
+          <button type="button" role="radio" aria-checked={yearly} className={yearly ? 'on' : ''} onClick={() => setYearly(true)}>Yearly <span>Save up to 25%</span></button>
         </div>
         <div className="mx-plans">
           {PLANS.map((p) => {
-            const featured = 'featured' in p && p.featured;
+            const featured = !!p.featured;
+            const perCard = !!p.perCard;
             const shown = p.price === 0 ? 0 : yearly ? Math.round((p.yearly / 12) * 100) / 100 : p.price;
+            const total = teamTotal(cards, yearly);
             return (
               <article key={p.id} className={`mx-plan ${featured ? 'is-featured' : ''}`}>
                 {featured && <span className="mx-sticker mx-sticker--orange s4">Most popular</span>}
                 <h3>{p.name}</h3>
-                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? 'forever' : 'month'}</span></p>
-                <p className="mx-billnote">{p.price === 0 ? 'No card needed' : yearly ? `Billed $${p.yearly} a year` : 'Billed monthly, cancel anytime'}</p>
+                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? 'forever' : perCard ? 'card a month' : 'month'}</span></p>
+                <p className="mx-billnote">{p.price === 0 ? 'No card needed' : yearly ? (perCard ? `Billed $${p.yearly} per card a year` : `Billed $${p.yearly} a year`) : 'Billed monthly, cancel anytime'}</p>
                 <p className="mx-pitch">{p.pitch}</p>
+                {perCard && (
+                  <div className="mx-seats">
+                    <span id="seats-l">How many cards?</span>
+                    <div className="mx-seats__ctl" role="group" aria-labelledby="seats-l">
+                      <button type="button" aria-label="Fewer cards" disabled={cards <= TEAM.min} onClick={() => setCardsRaw(String(clampCards(cards - 1)))}><Minus size={18} /></button>
+                      <input type="number" inputMode="numeric" min={TEAM.min} max={TEAM.max} value={cardsRaw} aria-label="Number of cards"
+                        onChange={(e) => setCardsRaw(e.target.value)} onBlur={() => setCardsRaw(String(cards))} />
+                      <button type="button" aria-label="More cards" disabled={cards >= TEAM.max} onClick={() => setCardsRaw(String(clampCards(cards + 1)))}><Plus size={18} /></button>
+                    </div>
+                    <p className="mx-seats__total" aria-live="polite">
+                      <b>${total.toLocaleString()}</b> {yearly ? `a year (about $${Math.round(total / 12).toLocaleString()} a month)` : 'a month'} for {cards} cards
+                    </p>
+                  </div>
+                )}
                 <ul>{p.features.map((f) => <li key={f}><Check size={16} /> {f}</li>)}</ul>
-                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? 'Start free' : `Choose ${p.name}`}</Link>
+                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}${perCard ? `&cards=${cards}` : ''}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? 'Start free' : `Choose ${p.name}`}</Link>
               </article>
             );
           })}
@@ -219,8 +237,8 @@ export default function Landing() {
         <div className="mx-studio__in">
           <header className="mx-studio__head">
             <p className="mx-eyebrow">Sello Studio by Finesse Media</p>
-            <h2 id="studio-h" className="mx-dir__h">Rather we build it for you?</h2>
-            <p className="mx-dir__sub">A real creative director and photographer designs your card, shoots your portrait and hands you the tap products. Studio cards live on Sello, so you can still edit them anytime.</p>
+            <h2 id="studio-h" className="mx-dir__h">Want me to build it for you?</h2>
+            <p className="mx-dir__sub">I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products. Your card lives on Sello, so you can still edit it anytime.</p>
           </header>
           <div className="mx-studio__grid">
             {STUDIO.map((s) => (

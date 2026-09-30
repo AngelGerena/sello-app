@@ -4,7 +4,7 @@ import { NicheBadge } from '../components/editor/NichePicker';
 import { nicheOf } from '../lib/niches';
 import {
   ArrowLeft, Contact, Dices, Eye, LayoutTemplate, Link2, MousePointerClick, Moon, Palette, Redo2, Send, Sparkles,
-  Sun, Type, Undo2, User, Volume2, VolumeX, X, SquareStack, Check, Loader2, Heart,
+  Sun, Type, Undo2, User, Volume2, VolumeX, X, SquareStack, Check, Loader2, Heart, ShieldCheck,
 } from 'lucide-react';
 import { useLooks } from '../lib/useLooks';
 import { EditingBar, FavoritesPanel, SaveLookButton } from '../components/editor/Favorites';
@@ -33,6 +33,7 @@ const STEPS = [
 export default function Editor() {
   const { id } = useParams();
   const [params] = useSearchParams();
+  const adminOwner = params.get('owner');   // set by the admin portal when opening a customer's card
   const [card, setCard] = useState<Card | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [step, setStep] = useState<(typeof STEPS)[number]['id']>(() => (STEPS.some((x) => x.id === params.get('step')) ? params.get('step') : 'profile') as (typeof STEPS)[number]['id']);
@@ -126,8 +127,9 @@ export default function Editor() {
   return (
     <div className="ed">
       <header className="ed__top">
-        <Link to="/app" className="icon-btn" aria-label="Back to my cards"><ArrowLeft size={19} /></Link>
+        <Link to={adminOwner ? '/app/admin?tab=cards' : '/app'} className="icon-btn" aria-label={adminOwner ? 'Back to admin' : 'Back to my cards'}><ArrowLeft size={19} /></Link>
         <div className="ed__title"><b>{card.data.fullName || 'Untitled card'}</b><small>{card.data.business || 'Add your business on the Profile step'}</small></div>
+        {adminOwner && <span className="ed__admin" role="status"><ShieldCheck size={14} /> Admin edit: {adminOwner}</span>}
         {nicheOf(card) && <span className="ed__niche"><NicheBadge id={nicheOf(card)!.id} size="sm" onClick={() => goStep('layout')} /></span>}
         <span className={`ed__save ${save}`} role="status" title={saveErr ?? ''}>
           {save === 'saving' && <><Loader2 size={14} className="spin" /> Saving</>}
