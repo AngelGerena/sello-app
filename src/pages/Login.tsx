@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth, useProviders } from '../lib/auth';
 import Brand from '../components/Brand';
 import { PLANS } from '../lib/plans';
+import { takeAuthError } from '../lib/authLanding';
 
 /* Sign in and sign up on one screen, three ways in:
    1. Continue with Google (shows only when Google is enabled in Supabase)
@@ -60,6 +61,7 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
   const [busy, setBusy] = useState<'' | 'password' | 'google' | 'link' | 'reset' | 'resend'>('');
   const [err, setErr] = useState('');
   const [needsConfirm, setNeedsConfirm] = useState(false);
+  const [linkNotice, setLinkNotice] = useState<string | null>(() => takeAuthError());   // bad confirmation link
 
   const planId = params.get('plan');
   const plan = PLANS.find((p) => p.id === planId && p.price > 0);
@@ -127,6 +129,8 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
   };
 
   const resendConfirm = async () => {
+    if (!email) { setErr('Type your email above first, then tap Resend confirmation.'); return; }
+    setLinkNotice(null);
     setBusy('resend');
     const { error } = await supabase.auth.resend({ type: 'signup', email, options: { emailRedirectTo: home } });
     if (error) return fail(error.message);
@@ -175,6 +179,13 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
               <Link role="tab" aria-selected={!isJoin} className={!isJoin ? 'on' : ''} to={plan ? `/login?plan=${plan.id}&billing=${billing}` : '/login'} onClick={() => setErr('')}>Sign in</Link>
               <Link role="tab" aria-selected={isJoin} className={isJoin ? 'on' : ''} to={plan ? `/signup?plan=${plan.id}&billing=${billing}` : '/signup'} onClick={() => setErr('')}>Create account</Link>
             </div>
+
+            {linkNotice && (
+              <div className="auth__notice" role="alert">
+                <p>{linkNotice}</p>
+                <button type="button" className="auth__link" onClick={resendConfirm} disabled={busy === 'resend'}>{busy === 'resend' ? 'Sending...' : 'Resend confirmation'}</button>
+              </div>
+            )}
 
             <h1>{isJoin ? 'Create your free account' : 'Welcome back'}</h1>
 

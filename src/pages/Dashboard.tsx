@@ -8,6 +8,7 @@ import { TEMPLATES } from '../templates';
 import { DesignTile } from '../components/editor/StylePanels';
 import { sampleCard } from '../lib/seed';
 import { HIcon } from '../templates/blocks';
+import { takeWelcome } from '../lib/authLanding';
 import { INTERVAL_KEY, openBillingPortal, startCheckout, type Interval } from '../lib/billing';
 import { refreshPlan } from '../lib/usePlan';
 import { INTENT_KEY } from './Login';
@@ -33,6 +34,7 @@ export default function Dashboard() {
   useEffect(() => { if (plan !== 'free') dropIntent(); }, [plan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const dropIntent = () => { try { localStorage.removeItem(INTENT_KEY); } catch { /* ignore */ } setIntent(null); };
+  const [welcome, setWelcome] = useState<boolean>(() => takeWelcome());   // arrived from the confirmation email
   const [interval] = useState<Interval>(() => { try { return localStorage.getItem(INTERVAL_KEY) === 'year' ? 'year' : 'month'; } catch { return 'month'; } });
   const upgrade = async (to: 'pro' | 'team') => {
     if (store.demo) { setDemoPlan(to); return; } // demo: switch plans instantly so the gating can be tried
@@ -104,6 +106,12 @@ export default function Dashboard() {
           <h1>My cards</h1>
           <button type="button" className="btn btn--gold" onClick={() => setPicking(true)} disabled={busy}>{busy ? <Loader2 className="spin" size={17} /> : <Plus size={17} />} New card</button>
         </div>
+        {welcome && (
+          <div className="pay-note is-ok" role="status">
+            <b>Email confirmed. Welcome to Sello.</b><span>Pick your niche and build your first card. It takes about five minutes.</span>
+            <button type="button" className="icon-btn" aria-label="Dismiss" onClick={() => setWelcome(false)}><X size={16} /></button>
+          </div>
+        )}
         {upgradedTo && (
           <div className={`pay-note ${plan !== 'free' ? 'is-ok' : ''}`} role="status">
             {plan !== 'free'
