@@ -109,7 +109,7 @@ export function Terminal() {
   return (
     <div className="tpl tpl-te" style={phosphor}>
       <div className="te__crt">
-        <div className="te__bar"><i /><i /><i /><span>{user}@sello: ~</span></div>
+        <div className="te__bar"><i /><i /><i /><span>{user}@seyo: ~</span></div>
         <div className="te__screen">
           <div className="te__row">
             <div className="te__photo"><Photo className="te__img" /><span className="te__photoscan" /></div>
@@ -117,13 +117,13 @@ export function Terminal() {
           </div>
           {lines.map((l, i) => i < shown && (
             <div key={l.cmd} className="te__line">
-              <p className="te__cmd"><span className="te__ps">{user}@sello:~$</span> <span className="te__typed">{l.cmd}</span></p>
+              <p className="te__cmd"><span className="te__ps">{user}@seyo:~$</span> <span className="te__typed">{l.cmd}</span></p>
               <p className="te__out">{l.out}</p>
             </div>
           ))}
           {shown > lines.length && (
             <div className="te__line">
-              <p className="te__cmd"><span className="te__ps">{user}@sello:~$</span> <span className="te__typed">ls ./contact</span></p>
+              <p className="te__cmd"><span className="te__ps">{user}@seyo:~$</span> <span className="te__typed">ls ./contact</span></p>
               <div className="te__ls">
                 {acts.map((a) => <Act key={a.key} a={a} className={`te__item ${a.key === 'save' ? 'is-primary' : ''}`} elId={a.key === 'save' ? 'btnPrimaryBg' : 'links'}>{a.key === 'save' ? './save_contact.vcf' : `${a.label.toLowerCase().replace(/\s+/g, '_')}${a.key === 'web' || a.key === 'map' ? '/' : ''}`}</Act>)}
               </div>
@@ -131,17 +131,17 @@ export function Terminal() {
           )}
           {shown > lines.length + 1 && data.highlights.length > 0 && (
             <div className="te__line">
-              <p className="te__cmd"><span className="te__ps">{user}@sello:~$</span> <span className="te__typed">./services --list</span></p>
+              <p className="te__cmd"><span className="te__ps">{user}@seyo:~$</span> <span className="te__typed">./services --list</span></p>
               <ul className="te__svc">{data.highlights.map((h) => <li key={h.id}><span {...el('accentDetail')}>[+]</span> <b {...el('body')}>{h.title}</b> <small {...el('caption')}>{h.subtitle}</small></li>)}</ul>
             </div>
           )}
           {shown > lines.length + 2 && data.socials.length > 0 && (
             <div className="te__line">
-              <p className="te__cmd"><span className="te__ps">{user}@sello:~$</span> <span className="te__typed">open --links</span></p>
+              <p className="te__cmd"><span className="te__ps">{user}@seyo:~$</span> <span className="te__typed">open --links</span></p>
               <div className="te__ls">{data.socials.map((s) => socialUrl(s.network, s.value) && <a key={s.id} className="te__item" href={socialUrl(s.network, s.value)} target="_blank" rel="noopener" {...el('links')}>{NETWORK_BY_ID[s.network]?.label.toLowerCase().replace(/\s+/g, '_')}</a>)}</div>
             </div>
           )}
-          <p className="te__cmd"><span className="te__ps">{user}@sello:~$</span> <span className="te__cursor" /></p>
+          <p className="te__cmd"><span className="te__ps">{user}@seyo:~$</span> <span className="te__cursor" /></p>
         </div>
       </div>
     </div>
@@ -273,7 +273,7 @@ export function Circuit() {
           <span className="ci__pins top" /><span className="ci__pins bottom" /><span className="ci__pins left" /><span className="ci__pins right" />
           <Photo className="ci__img" />
           <div className="ci__label">
-            <span className="ci__part" {...el('accentDetail')}>{(data.slug || 'SELLO').toUpperCase().slice(0, 10)}-01</span>
+            <span className="ci__part" {...el('accentDetail')}>{(data.slug || 'SEYO').toUpperCase().slice(0, 10)}-01</span>
             <h1 className="ci__name" {...el('name')}>{data.fullName || 'Your Name'}</h1>
             <Title />
           </div>

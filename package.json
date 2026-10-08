@@ -1,5 +1,5 @@
 {
-  "name": "sello",
+  "name": "finesse-cards",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,7 +8,9 @@
     "build": "tsc --noEmit && vite build",
     "build:demo": "vite build --mode demo",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:copy": "node scripts/check-copy.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

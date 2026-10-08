@@ -2,7 +2,7 @@ import type { Card, Look } from './types';
 import { IS_DEMO, supabase } from './supabase';
 import { blankData, sampleCard, uid, withDefaults } from './seed';
 import { themeFromSeeds, PRESETS } from './theme';
-import { FREE_FALLBACK, isLocked } from './plans';
+import { FREE_FALLBACK, isLocked, type PlanId } from './plans';
 
 /* One API, two backends. Pages never touch Supabase directly, so the demo
    build and the real app run the same screens against the same shapes. */
@@ -54,21 +54,21 @@ export const store = {
   demo: IS_DEMO,
 
   /** The signed-in user's plan. Written only by the Stripe webhook. */
-  async myPlanDetail(): Promise<{ plan: 'free' | 'pro' | 'team'; seats: number | null }> {
+  async myPlanDetail(): Promise<{ plan: PlanId; seats: number | null }> {
     if (IS_DEMO) {
       try {
         const v = localStorage.getItem(DEMO_PLAN_KEY);
-        const plan = v === 'pro' || v === 'team' ? v : 'free';
+        const plan = v === 'pro' || v === 'plus' || v === 'team' ? v : 'free';
         return { plan, seats: plan === 'team' ? Number(localStorage.getItem(DEMO_SEATS_KEY)) || 5 : null };
       } catch { return { plan: 'free', seats: null }; }
     }
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return { plan: 'free', seats: null };
     const { data } = await supabase.from(T.profiles).select('plan,seats').eq('id', u.user.id).maybeSingle();
-    return { plan: (data?.plan as 'free' | 'pro' | 'team') ?? 'free', seats: (data?.seats as number | null) ?? null };
+    return { plan: (data?.plan as PlanId) ?? 'free', seats: (data?.seats as number | null) ?? null };
   },
 
-  async myPlan(): Promise<'free' | 'pro' | 'team'> {
+  async myPlan(): Promise<PlanId> {
     return (await this.myPlanDetail()).plan;
   },
 
@@ -122,6 +122,27 @@ export const store = {
     const { error } = await supabase.from(T.cards).insert({ id: card.id, owner_id: u.user?.id, slug: card.data.slug, template: card.template, data: card.data, theme: card.theme, published: false });
     if (error) throw error;
     return card;
+  },
+
+  /** Saves what the owner edited (address, layout, content, theme). It NEVER changes `published`:
+      publishing is its own explicit action (setPublished), so autosave can not publish, unpublish or
+      undo an admin takedown by writing a stale value. */
+  async saveContent(card: Card): Promise<Card> {
+    const next = { ...card, updatedAt: new Date().toISOString() };
+    if (IS_DEMO) { demoWrite(demoCards().map((c) => (c.id === card.id ? { ...next, published: c.published } : c))); return next; }
+    const { error } = await supabase.from(T.cards).update({ slug: card.data.slug, template: card.template, data: card.data, theme: card.theme }).eq('id', card.id);
+    if (error) {
+      if (error.code === '23505' || /fc_cards_slug/.test(error.message)) throw new Error('That card address is taken. Try another one on the Publish step.');
+      throw error;
+    }
+    return next;
+  },
+
+  /** The only call that publishes or unpublishes a card. */
+  async setPublished(id: string, published: boolean): Promise<void> {
+    if (IS_DEMO) { demoWrite(demoCards().map((c) => (c.id === id ? { ...c, published, updatedAt: new Date().toISOString() } : c))); return; }
+    const { error } = await supabase.from(T.cards).update({ published }).eq('id', id);
+    if (error) throw error;
   },
 
   async save(card: Card): Promise<Card> {

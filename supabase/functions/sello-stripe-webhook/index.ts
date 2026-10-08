@@ -1,7 +1,7 @@
-// Stripe -> Sello. Keeps fc_profiles.plan in sync with the customer's subscription.
+// Stripe -> SeYo. Keeps fc_profiles.plan in sync with the customer's subscription.
 // Authentication is Stripe's signature (STRIPE_WEBHOOK_SECRET), so JWT checking is off for this function.
 import Stripe from 'npm:stripe@17.7.0';
-import { admin, env, planForPrice, stripe } from '../_shared/sello.ts';
+import { BUSINESS_CARDS, admin, env, planForAmount, planForPrice, stripe, type Plan } from '../_shared/sello.ts';
 
 const PAID = ['active', 'trialing', 'past_due'];
 
@@ -16,23 +16,55 @@ async function applySubscription(sub: Stripe.Subscription, userIdHint?: string |
   const db = admin();
   const customer = typeof sub.customer === 'string' ? sub.customer : sub.customer.id;
   const priceId = sub.items?.data?.[0]?.price?.id;
-  const plan = (sub.metadata?.sello_plan as 'pro' | 'team' | undefined) ?? planForPrice(priceId) ?? 'pro';
+  const item = sub.items?.data?.[0];
+  // Website checkout sets sello_plan. A Payment Link has no metadata, so fall back to the price id, then to the amount charged.
+  const metaPlan = sub.metadata?.sello_plan;
+  const resolved: Plan | null = (metaPlan === 'pro' || metaPlan === 'plus' || metaPlan === 'team' ? metaPlan : null)
+    ?? planForPrice(priceId) ?? planForAmount(item?.price?.unit_amount, item?.price?.recurring?.interval);
   const paid = PAID.includes(sub.status);
-  const quantity = sub.items?.data?.[0]?.quantity ?? null;   // Business: number of cards
+  // An unrecognised price must never grant a paid plan. It may still end one (a cancelled subscription drops to Lite).
+  if (!resolved && paid) { console.error('Unrecognised subscription price; plan not changed', sub.id, priceId, item?.price?.unit_amount); return; }
+  const plan: Plan = resolved ?? 'pro';
   const update: Record<string, unknown> = {
     plan: paid ? plan : 'free',
-    seats: paid && plan === 'team' ? Math.max(1, quantity ?? 5) : null,
+    seats: paid && plan === 'team' ? BUSINESS_CARDS : null,   // Business is a flat 5 cards
     plan_status: sub.status,
     stripe_customer_id: customer,
     stripe_subscription_id: sub.id,
     current_period_end: periodEnd(sub),
     plan_interval: sub.items?.data?.[0]?.price?.recurring?.interval ?? null,
   };
-  if (sub.metadata?.sello_founding === '1') update.founding = true;
+  // Founding offer: the price stays only while the subscription stays active, as Pro monthly. Otherwise the spot lapses for good.
+  if (sub.metadata?.sello_founding === '1') {
+    const interval = sub.items?.data?.[0]?.price?.recurring?.interval;
+    const uid = userIdHint ?? sub.metadata?.sello_user_id ?? null;
+    let entitled = false;
+    if (paid && plan === 'pro' && interval === 'month' && uid) {
+      const { data: ok } = await db.rpc('fc_founding_activate', { p_user: uid, p_subscription: sub.id });
+      entitled = !!ok;
+    } else {
+      await db.rpc('fc_founding_lapse', { p_subscription: sub.id });
+    }
+    update.founding = entitled;
+  }
 
-  const userId = userIdHint ?? sub.metadata?.sello_user_id ?? null;
-  const q = db.from('fc_profiles').update(update);
-  const { error } = userId ? await q.eq('id', userId) : await q.eq('stripe_customer_id', customer);
+  // Who is this? Website checkout tells us. Otherwise use the Stripe customer we already stored, and for a Payment Link
+  // (a brand new Stripe customer) match the email the buyer used to the SeYo account.
+  let userId: string | null = userIdHint ?? sub.metadata?.sello_user_id ?? null;
+  if (!userId) {
+    const { data: byCustomer } = await db.from('fc_profiles').select('id').eq('stripe_customer_id', customer).maybeSingle();
+    userId = byCustomer?.id ?? null;
+  }
+  if (!userId) {
+    const c = await stripe().customers.retrieve(customer);
+    const email = !('deleted' in c && c.deleted) ? (c as Stripe.Customer).email?.trim().toLowerCase() : null;
+    if (email) {
+      const { data: byEmail } = await db.from('fc_profiles').select('id').ilike('email', email).maybeSingle();
+      userId = byEmail?.id ?? null;
+    }
+  }
+  if (!userId) { console.error('No SeYo account matches this subscription; nothing changed', sub.id, customer); return; }
+  const { error } = await db.from('fc_profiles').update(update).eq('id', userId);
   if (error) throw error;
 }
 
@@ -55,6 +87,11 @@ Deno.serve(async (req) => {
           const sub = await stripe().subscriptions.retrieve(typeof session.subscription === 'string' ? session.subscription : session.subscription.id);
           await applySubscription(sub, session.client_reference_id);
         }
+        break;
+      }
+      case 'checkout.session.expired': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await admin().rpc('fc_founding_release_session', { p_session: session.id });   // an unpaid checkout frees its founding spot
         break;
       }
       case 'customer.subscription.created':

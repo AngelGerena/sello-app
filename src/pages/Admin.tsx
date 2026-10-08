@@ -4,7 +4,7 @@ import {
   ArrowLeft, ArrowRightLeft, BarChart3, ChevronDown, ChevronUp, ExternalLink, Eye, EyeOff, LayoutGrid, Loader2,
   LogOut, Pencil, Search, ShieldCheck, Users, X,
 } from 'lucide-react';
-import { TEAM, cardLimit } from '../lib/plans';
+import { BUSINESS_CARDS, cardLimit } from '../lib/plans';
 import { adminApi, type AdminCard, type AdminLog, type AdminStats, type AdminUser, type PlanHow, type PlanId } from '../lib/adminApi';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
@@ -14,7 +14,7 @@ import type { CardData } from '../lib/types';
 import Brand from '../components/Brand';
 
 /* ------------------------------------------------------------------ small helpers */
-const PLAN_NAME: Record<PlanId, string> = { free: 'Lite', pro: 'Pro', team: 'Business' };
+const PLAN_NAME: Record<PlanId, string> = { free: 'Lite', pro: 'Pro', plus: 'Pro Plus', team: 'Business' };
 const designName = (id: string) => TEMPLATES.find((t) => t.id === id)?.name ?? id;
 const liveUrl = (slug: string) => cardUrl({ slug } as CardData);
 const money = (cents: number) => `$${Math.round(cents / 100).toLocaleString()}`;
@@ -178,7 +178,7 @@ function Overview({ rev }: { rev: number }) {
 
         <section className="adm-panel" aria-labelledby="h-plans">
           <h3 id="h-plans">Plan mix</h3>
-          {(['free', 'pro', 'team'] as PlanId[]).map((p) => {
+          {(['free', 'pro', 'plus', 'team'] as PlanId[]).map((p) => {
             const n = stats.plans[p] ?? 0;
             return (
               <div key={p} className="adm-meter"><span>{PLAN_NAME[p]}</span><i><em style={{ width: `${(n / planTotal) * 100}%` }} /></i><b>{n}</b></div>
@@ -257,7 +257,7 @@ function Customers({ ctx, rev }: { ctx: Ctx; rev: number }) {
           <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or email" />
         </label>
         <div className="seg" role="group" aria-label="Filter by plan">
-          {[['', 'All'], ['free', 'Lite'], ['pro', 'Pro'], ['team', 'Business']].map(([v, l]) => (
+          {[['', 'All'], ['free', 'Lite'], ['pro', 'Pro'], ['plus', 'Pro Plus'], ['team', 'Business']].map(([v, l]) => (
             <button key={v} type="button" className={plan === v ? 'on' : ''} aria-pressed={plan === v} onClick={() => setPlan(v)}>{l}</button>
           ))}
         </div>
@@ -340,11 +340,11 @@ function PlanDialog({ user, ctx }: { user: AdminUser; ctx: Ctx }) {
   const currentHow: PlanHow = user.plan_status === 'manual' ? 'manual' : 'comped';
   const [plan, setPlan] = useState<PlanId>(user.plan);
   const [how, setHow] = useState<PlanHow>(currentHow);
-  const [seatsRaw, setSeatsRaw] = useState(String(user.seats ?? TEAM.initial));
-  const seats = Math.min(500, Math.max(1, parseInt(seatsRaw, 10) || TEAM.initial));
+  const [seatsRaw, setSeatsRaw] = useState(String(user.seats ?? BUSINESS_CARDS));
+  const seats = Math.min(500, Math.max(1, parseInt(seatsRaw, 10) || BUSINESS_CARDS));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const unchanged = plan === user.plan && (plan === 'free' || how === currentHow) && (plan !== 'team' || seats === (user.seats ?? TEAM.initial));
+  const unchanged = plan === user.plan && (plan === 'free' || how === currentHow) && (plan !== 'team' || seats === (user.seats ?? BUSINESS_CARDS));
   const who = user.full_name || user.email || 'this customer';
   const save = async () => {
     setBusy(true); setErr('');
@@ -359,7 +359,7 @@ function PlanDialog({ user, ctx }: { user: AdminUser; ctx: Ctx }) {
           <p className="adm-lead">Currently <b>{PLAN_NAME[user.plan]}</b>. Nobody is charged by this. It only changes what they can use.</p>
           <div className="adm-field"><span>Plan</span>
             <div className="seg" role="radiogroup" aria-label="Plan">
-              {(['free', 'pro', 'team'] as PlanId[]).map((p) => <button key={p} type="button" role="radio" aria-checked={plan === p} className={plan === p ? 'on' : ''} onClick={() => setPlan(p)}>{PLAN_NAME[p]}</button>)}
+              {(['free', 'pro', 'plus', 'team'] as PlanId[]).map((p) => <button key={p} type="button" role="radio" aria-checked={plan === p} className={plan === p ? 'on' : ''} onClick={() => setPlan(p)}>{PLAN_NAME[p]}</button>)}
             </div>
           </div>
           {plan === 'team' && (
@@ -422,7 +422,7 @@ function TransferDialog({ card, ctx }: { card: AdminCard; ctx: Ctx }) {
   };
   return (
     <Modal title={`Transfer /${card.slug}`} onClose={() => ctx.openDialog(null)}>
-      <p className="adm-lead">Hand this card, with its link and design, to another account. Now owned by <b>{card.owner_email ?? 'unknown'}</b>. The new owner needs a Sello account with a confirmed email.</p>
+      <p className="adm-lead">Hand this card, with its link and design, to another account. Now owned by <b>{card.owner_email ?? 'unknown'}</b>. The new owner needs a SeYo account with a confirmed email.</p>
       <div className="fld"><label htmlFor="to">New owner's email</label>
         <input id="to" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="client@example.com" autoComplete="off" autoFocus
           onKeyDown={(e) => { if (e.key === 'Enter' && email && !busy) go(); }} />

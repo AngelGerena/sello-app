@@ -11,11 +11,14 @@ import { sfx } from '../../lib/sfx';
 import { TEMPLATES } from '../../templates';
 import { usePlan } from '../../lib/usePlan';
 import { isLocked } from '../../lib/plans';
-import { ALL_DESIGNS, NICHES, applyDesign, liteDesigns, nicheOf, sampleFor, type Design, type Niche, type NicheGroup } from '../../lib/niches';
+import { NICHES, applyDesign, liteDesigns, nicheOf, sampleFor, type Design, type Niche, type NicheGroup } from '../../lib/niches';
+import { DESIGN_COUNT, UNIQUE_DESIGNS, designsLabel, nicheCountLabel } from '../../lib/counts';
+import { decorative } from '../../lib/a11y';
 import NichePicker, { NicheBadge } from './NichePicker';
 import CardRenderer from '../CardRenderer';
 import ColorDial from '../ColorDial';
 import { Section, Segmented, Toggle, type PanelProps } from './Fields';
+import { rich, useT } from '../../lib/i18n';
 
 const setTheme = (p: PanelProps, fn: (t: Theme) => Theme) => p.set((c) => ({ ...c, theme: fn(c.theme) }));
 
@@ -28,29 +31,26 @@ export function DesignTile({ card, niche, design, on, onUse, onLayoutOnly, confi
   /** One of the free Lite designs. */
   free?: boolean;
 }) {
+  const { t } = useT();
   const [asking, setAsking] = useState(false);
   // Previews for another niche use that niche's sample business so they read true to the trade.
   const preview = applyDesign(sample ? sampleFor(card, niche) : card, niche, design);
   const tech = niche.group === 'Tech' || design.sound === 'tech';
   return (
     <div className={`tpl-card niche-card ${on ? 'on' : ''} ${tech ? 'is-tech' : ''}`}>
-      <span className="tpl-card__thumb" aria-hidden>
+      <span className="tpl-card__thumb" {...decorative}>
         <span className="tpl-card__scale"><CardRenderer card={preview} mode={design.mode} sound={false} /></span>
       </span>
-      {design.isNew && !locked && <span className="tpl-card__new">New</span>}
-      {locked && <span className="tpl-card__pro"><Crown size={12} /> Pro</span>}
-      {free && <span className="tpl-card__free">Free</span>}
+      {design.isNew && !locked && <span className="tpl-card__new">{t("New")}</span>}
+      {locked && <span className="tpl-card__pro"><Crown size={12} /> {t("Pro")}</span>}
+      {free && <span className="tpl-card__free">{t("Free")}</span>}
       <span className="tpl-card__meta"><b>{design.name}</b><small>{design.blurb}</small></span>
       {asking ? (
-        <span className="niche-card__acts">
-          <small className="niche-card__warn">Replaces your colors, fonts and buttons.</small>
-          <button type="button" className="btn btn--gold btn--sm" onClick={() => { onUse(); setAsking(false); }}>Apply</button>
-          <button type="button" className="btn btn--ghost btn--sm" onClick={() => setAsking(false)}>Cancel</button>
-        </span>
+        <span className="niche-card__acts">{rich(t("<x1>Replaces your colors, fonts and buttons.</x1><x2>Apply</x2><x3>Cancel</x3>"), { x1: (c) => <small className="niche-card__warn">{c}</small>, x2: (c) => <button type="button" className="btn btn--gold btn--sm" onClick={() => { onUse(); setAsking(false); }}>{c}</button>, x3: (c) => <button type="button" className="btn btn--ghost btn--sm" onClick={() => setAsking(false)}>{c}</button> })}</span>
       ) : (
         <span className="niche-card__acts">
           <button type="button" className="btn btn--ink btn--sm" onClick={() => (confirm ? setAsking(true) : onUse())}>{locked ? 'Try it' : 'Use design'}</button>
-          {onLayoutOnly && <button type="button" className="btn btn--ghost btn--sm" onClick={onLayoutOnly}>Layout only</button>}
+          {onLayoutOnly && <button type="button" className="btn btn--ghost btn--sm" onClick={onLayoutOnly}>{t("Layout only")}</button>}
         </span>
       )}
       {on && <span className="tpl-card__on"><Check size={14} /></span>}
@@ -60,10 +60,11 @@ export function DesignTile({ card, niche, design, on, onUse, onLayoutOnly, confi
 
 
 export function TemplatePanel(p: PanelProps) {
+  const { t, lang } = useT();
   const { plan } = usePlan();
   const lite = plan === 'free';
   const mine = nicheOf(p.card);
-  const [tab, setTab] = useState<'niche' | 'all' | 'classic'>(mine ? 'niche' : 'all');
+  const [tab, setTab] = useState<'niche' | 'all' | 'classic'>(mine ? 'niche' : (p.startTab ?? 'all'));
   const [nicheId, setNicheId] = useState(() => mine?.id ?? 'tech');
   const [choosing, setChoosing] = useState(!mine);
   const [filter, setFilter] = useState<'all' | 'new' | NicheGroup>('all');
@@ -72,71 +73,77 @@ export function TemplatePanel(p: PanelProps) {
   const use = (n: Niche, d: Design) => { p.looks?.markRoll(); p.set((c) => applyDesign(c, n, d)); p.setMode(d.mode); sfx('success', d.sound); };
   const isOn = (d: Design) => p.card.template === d.template && p.card.theme.tokens.light.accent === themeFromSeeds(d.seeds).tokens.light.accent;
 
-  // Unique designs for "All designs" (a shared design appears once, under its first niche).
-  const seen = new Set<string>();
-  const all = ALL_DESIGNS.filter(({ design }) => { const k = design.template + design.name + design.seeds.brand; if (seen.has(k)) return false; seen.add(k); return true; })
-    .filter(({ niche: n, design }) => filter === 'all' || (filter === 'new' ? design.isNew : n.group === filter));
+  // "All designs" renders the shared UNIQUE_DESIGNS list (a design several niches share appears once), so its count can never drift.
+  const all = UNIQUE_DESIGNS.filter(({ niche: n, design }) => filter === 'all' || (filter === 'new' ? design.isNew : n.group === filter));
 
   return (
     <>
-      <Section title="Pick a design" hint="Each design sets the layout, colors, fonts, buttons and sounds. Everything stays editable.">
-        <Segmented label="Design groups" value={tab} onChange={setTab} options={[{ v: 'niche', l: 'By niche' }, { v: 'all', l: `All designs` }, { v: 'classic', l: 'Classic' }]} />
+      <Section title={t("Pick a design")} hint={t("Each design sets the layout, colors, fonts, buttons and sounds. Everything stays editable.")}>
+        <Segmented label={t("Design groups")} value={tab} onChange={setTab} options={[{ v: 'niche', l: 'By niche' }, { v: 'all', l: `All designs` }, { v: 'classic', l: 'Classic' }]} />
       </Section>
 
       {tab === 'niche' && (
         <Section title="" hint="">
           {choosing ? (
             <>
-              <p className="lay-q">Which niche do you want to see designs for?</p>
+              <p className="lay-q">{t("Which niche do you want to see designs for?")}</p>
               <NichePicker value={nicheId} onPick={(n) => { setNicheId(n.id); setChoosing(false); sfx('tap'); if (!p.card.data.niche) p.set((c) => ({ ...c, data: { ...c.data, niche: n.id } })); }} autoFocus />
             </>
           ) : (
             <>
               <div className="lay-bar">
                 <NicheBadge id={niche.id} />
-                <span className="lay-bar__txt"><b>{niche.designs.length} designs</b> for {niche.name.toLowerCase()}</span>
-                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setChoosing(true)}>Change</button>
+                <span className="lay-bar__txt">{rich(t("<b>{v}</b> for {v2}", { v: nicheCountLabel(niche, plan, lang), v2: niche.name.toLowerCase() }), { b: (c) => <b>{c}</b> })}</span>
+                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setChoosing(true)}>{t("Change")}</button>
               </div>
               {mine && niche.id !== mine.id && (
                 <div className="lay-browse" role="status">
-                  <span>You're browsing <b>{niche.name}</b>. Your card is set to {mine.name}.</span>
-                  <span className="row-ed">
-                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setNicheId(mine.id)}>Back to {mine.name}</button>
-                    <button type="button" className="btn btn--ink btn--sm" onClick={() => { p.set((c) => ({ ...c, data: { ...c.data, niche: niche.id } })); sfx('success'); }}>Make this my niche</button>
-                  </span>
+                  <span>{rich(t("You're browsing <b>{name}</b>. Your card is set to {name2}.", { name: niche.name, name2: mine.name }), { b: (c) => <b>{c}</b> })}</span>
+                  <span className="row-ed">{rich(t("<x1>Back to {name}</x1><x2>Make this my niche</x2>", { name: mine.name }), { x1: (c) => <button type="button" className="btn btn--ghost btn--sm" onClick={() => setNicheId(mine.id)}>{c}</button>, x2: (c) => <button type="button" className="btn btn--ink btn--sm" onClick={() => { p.set((c) => ({ ...c, data: { ...c.data, niche: niche.id } })); sfx('success'); }}>{c}</button> })}</span>
                 </div>
               )}
               {lite && (
                 <>
-                  <p className="lay-sub">Free Lite designs</p>
+                  <p className="lay-sub">{t("Free Lite designs")}</p>
                   <div className="tpl-grid">
                     {liteDesigns(niche).map((d) => (
                       <DesignTile key={'lite-' + d.template} card={p.card} niche={niche} design={d} free on={isOn(d)} sample={niche.id !== mine?.id} onUse={() => use(niche, d)} />
                     ))}
                   </div>
-                  <p className="lay-sub">Pro designs <span>Try any of them on your card. Upgrade to publish.</span></p>
+                  <p className="lay-sub">{rich(t("Pro designs <x1>Try any of them on your card. Upgrade to publish.</x1>"), { x1: (c) => <span>{c}</span> })}</p>
                 </>
               )}
-              <p className="lay-hint">{niche.id !== mine?.id ? <>Previews show a sample {niche.name.toLowerCase().replace(/s$/, '')} so you can see the vibe. </> : null}Tap <b>Use design</b> to try one. Your words, photos and links stay. Undo anytime.</p>
+              <p className="lay-hint">{niche.id !== mine?.id ? <>{t("Previews show a sample {v} so you can see the vibe.", { v: niche.name.toLowerCase().replace(/s$/, '') })}</> : null}Tap <b>{t("Use design")}</b> to try one. Your words, photos and links stay. Undo anytime.</p>
               <div className="tpl-grid">
                 {niche.designs.map((d) => (
                   <DesignTile key={d.template + d.name} card={p.card} niche={niche} design={d} on={isOn(d)} locked={isLocked(plan, d.template)} sample={niche.id !== mine?.id} onUse={() => use(niche, d)}
                     onLayoutOnly={() => { sfx('tap'); p.set((c) => applyDesign(c, niche, d, { layoutOnly: true })); }} />
                 ))}
               </div>
-              <button type="button" className="btn btn--ghost lay-all" onClick={() => setTab('all')}>See all {TEMPLATES.filter((t) => t.niche).length} designs across every niche</button>
+              <button type="button" className="btn btn--ghost lay-all" onClick={() => setTab('all')}>{t("See all {v} across every niche", { v: designsLabel(DESIGN_COUNT, lang) })}</button>
             </>
           )}
         </Section>
       )}
 
       {tab === 'all' && (
-        <Section title={`All designs (${all.length})`} hint="Browse every design across niches.">
-          <div className="chips" role="radiogroup" aria-label="Filter designs">
+        <Section title={`All designs (${all.length}${filter === 'all' ? '' : ` of ${DESIGN_COUNT}`})`} hint={t("Browse every design across niches.")}>
+          <div className="chips" role="radiogroup" aria-label={t("Filter designs")}>
             {(['all', 'new', 'Tech', 'Beauty and grooming', 'Professional', 'Creative'] as const).map((f) => (
               <button key={f} type="button" role="radio" aria-checked={filter === f} className={filter === f ? 'on' : ''} onClick={() => setFilter(f)}>{f === 'all' ? 'Everything' : f === 'new' ? 'New' : f}</button>
             ))}
           </div>
+          {lite && (
+            <>
+              <p className="lay-sub">{t("Free Lite designs")}</p>
+              <div className="tpl-grid">
+                {liteDesigns(mine ?? NICHES[0]).map((d) => (
+                  <DesignTile key={'lite-all-' + d.template} card={p.card} niche={mine ?? NICHES[0]} design={d} free on={isOn(d)} sample={!mine} onUse={() => use(mine ?? NICHES[0], d)} />
+                ))}
+              </div>
+              <p className="lay-sub">{rich(t("Pro designs <x1>Try any of them on your card. Upgrade to publish.</x1>"), { x1: (c) => <span>{c}</span> })}</p>
+            </>
+          )}
           <div className="tpl-grid">
             {all.map(({ niche: n, design: d }) => (
               <DesignTile key={n.id + d.template + d.name} card={p.card} niche={n} design={d} on={isOn(d)} locked={isLocked(plan, d.template)} sample={n.id !== mine?.id} onUse={() => use(n, d)}
@@ -147,16 +154,16 @@ export function TemplatePanel(p: PanelProps) {
       )}
 
       {tab === 'classic' && (
-        <Section title="Classic layouts" hint="Your content, colors and buttons carry over. Switch freely.">
+        <Section title={t("Classic layouts")} hint={t("Your content, colors and buttons carry over. Switch freely.")}>
           <div className="tpl-grid">
-            {classic.map((t) => (
-              <button key={t.id} type="button" className={`tpl-card ${p.card.template === t.id ? 'on' : ''}`} onClick={() => { sfx('tap'); p.set((c) => ({ ...c, template: t.id })); }} aria-pressed={p.card.template === t.id}>
-                <span className="tpl-card__thumb" aria-hidden>
-                  <span className="tpl-card__scale"><CardRenderer card={{ ...p.card, template: t.id }} mode={p.mode} sound={false} /></span>
+            {classic.map((tpl) => (
+              <button key={tpl.id} type="button" className={`tpl-card ${p.card.template === tpl.id ? 'on' : ''}`} onClick={() => { sfx('tap'); p.set((c) => ({ ...c, template: tpl.id })); }} aria-pressed={p.card.template === tpl.id}>
+                <span className="tpl-card__thumb" {...decorative}>
+                  <span className="tpl-card__scale"><CardRenderer card={{ ...p.card, template: tpl.id }} mode={p.mode} sound={false} /></span>
                 </span>
-                <span className="tpl-card__meta"><b>{t.name}</b><small>{t.bestFor}</small></span>
-                {isLocked(plan, t.id) ? <span className="tpl-card__pro"><Crown size={12} /> Pro</span> : lite && <span className="tpl-card__free">Free</span>}
-                {p.card.template === t.id && <span className="tpl-card__on"><Check size={14} /></span>}
+                <span className="tpl-card__meta"><b>{tpl.name}</b><small>{tpl.bestFor}</small></span>
+                {isLocked(plan, tpl.id) ? <span className="tpl-card__pro"><Crown size={12} /> {t("Pro")}</span> : lite && <span className="tpl-card__free">{t("Free")}</span>}
+                {p.card.template === tpl.id && <span className="tpl-card__on"><Check size={14} /></span>}
               </button>
             ))}
           </div>
@@ -168,6 +175,7 @@ export function TemplatePanel(p: PanelProps) {
 
 /* ------------------------------------------------------------ colors */
 export function ColorsPanel(p: PanelProps) {
+  const { t } = useT();
   const { card, mode, selected, setSelected } = p;
   const theme = card.theme;
   const seeds = seedsOf(theme);
@@ -202,10 +210,10 @@ export function ColorsPanel(p: PanelProps) {
 
   return (
     <>
-      <Section title="Shuffle" hint="Every roll is harmony-based and contrast-checked in light and dark.">
+      <Section title={t("Shuffle")} hint={t("Every roll is harmony-based and contrast-checked in light and dark.")}>
         <div className="dice">
           <div className="dice__row">
-            <button type="button" className={`dice__main ${rolling ? 'rolling' : ''}`} onClick={shuffle}><Dices size={22} /> Shuffle colors</button>
+            <button type="button" className={`dice__main ${rolling ? 'rolling' : ''}`} onClick={shuffle}><Dices size={22} /> {t("Shuffle colors")}</button>
             <DiceSave p={p} />
           </div>
           <div className="dice__locks">
@@ -217,14 +225,14 @@ export function ColorsPanel(p: PanelProps) {
             </button>
           </div>
         </div>
-        <div className="chips" role="radiogroup" aria-label="Color harmony">
+        <div className="chips" role="radiogroup" aria-label={t("Color harmony")}>
           {(['any', ...HARMONIES] as const).map((h) => (
             <button key={h} type="button" role="radio" aria-checked={harmony === h} className={harmony === h ? 'on' : ''} onClick={() => setHarmony(h)}>{h === 'any' ? 'Surprise me' : h[0].toUpperCase() + h.slice(1)}</button>
           ))}
         </div>
       </Section>
 
-      <Section title="Palettes">
+      <Section title={t("Palettes")}>
         <div className="presets">
           {PRESETS.map((pr) => (
             <button key={pr.id} type="button" onClick={() => { sfx('tap'); setTheme(p, (t) => ({ ...t, tokens: deriveTokens(pr.seeds), overrides: { light: {}, dark: {} } })); }}>
@@ -235,7 +243,7 @@ export function ColorsPanel(p: PanelProps) {
         </div>
       </Section>
 
-      <Section title="Core colors" hint="Change these and the whole card re-derives in both modes.">
+      <Section title={t("Core colors")} hint={t("Change these and the whole card re-derives in both modes.")}>
         <div className="seeds">
           {(['brand', 'accent', 'ground'] as const).map((k) => (
             <button key={k} type="button" className={seedEdit === k ? 'on' : ''} onClick={() => setSeedEdit(seedEdit === k ? null : k)}>
@@ -247,11 +255,11 @@ export function ColorsPanel(p: PanelProps) {
       </Section>
 
       <Section
-        title="Fine-tune any part"
-        hint={<>Editing <b>{mode}</b> mode. Tap any part of the preview with <MousePointerClick size={13} style={{ verticalAlign: '-2px' }} /> on, or pick from the list.</>}
+        title={t("Fine-tune any part")}
+        hint={<>{t("Editing")} <b>{mode}</b> {t("mode. Tap any part of the preview with")} <MousePointerClick size={13} style={{ verticalAlign: '-2px' }} /> {t("on, or pick from the list.")}</>}
         action={overrideCount > 0 ? <button type="button" className="btn btn--ghost btn--sm" onClick={() => setTheme(p, (t) => ({ ...t, overrides: { ...t.overrides, [mode]: {} } }))}><RotateCcw size={14} /> Reset {overrideCount}</button> : undefined}
       >
-        <Toggle label="Apply to light and dark" hint="Off: each mode keeps its own custom colors." checked={bothModes} onChange={setBothModes} />
+        <Toggle label={t("Apply to light and dark")} hint={t("Off: each mode keeps its own custom colors.")} checked={bothModes} onChange={setBothModes} />
         {(['Surfaces', 'Text', 'Buttons', 'Details'] as const).map((g) => (
           <div key={g} className="els">
             <h4>{g}</h4>
@@ -264,13 +272,13 @@ export function ColorsPanel(p: PanelProps) {
                 <div key={e.id} className={`els__row ${selected === e.id ? 'on' : ''}`}>
                   <button type="button" className="els__btn" onClick={() => setSelected(selected === e.id ? null : e.id)} aria-expanded={selected === e.id}>
                     <i style={{ background: col }} />
-                    <span className="els__l">{e.label}{custom && <em>custom</em>}</span>
+                    <span className="els__l">{e.label}{custom && <em>{t("custom")}</em>}</span>
                     {grade && <span className={`els__g ${grade.ok ? '' : 'bad'}`} title={`${r!.toFixed(1)}:1`}>{grade.label}</span>}
                   </button>
                   {selected === e.id && (
                     <div className="els__dial" ref={dialRef}>
                       <ColorDial label={e.label} value={col} onChange={(h) => setEl(e.id, h)} against={e.on ? resolveColor(theme, mode, e.on) : undefined} swatches={kitSwatches} />
-                      {custom && <button type="button" className="btn btn--ghost btn--sm" onClick={() => setEl(e.id, null)}><RotateCcw size={14} /> Back to theme color</button>}
+                      {custom && <button type="button" className="btn btn--ghost btn--sm" onClick={() => setEl(e.id, null)}><RotateCcw size={14} /> {t("Back to theme color")}</button>}
                     </div>
                   )}
                 </div>
@@ -280,10 +288,10 @@ export function ColorsPanel(p: PanelProps) {
         ))}
       </Section>
 
-      <Section title="What visitors see first">
-        <Segmented label="Default mode" value={theme.modeDefault} onChange={(v) => setTheme(p, (t) => ({ ...t, modeDefault: v }))} options={[{ v: 'light', l: 'Light' }, { v: 'dark', l: 'Dark' }, { v: 'auto', l: 'Match their phone' }]} />
+      <Section title={t("What visitors see first")}>
+        <Segmented label={t("Default mode")} value={theme.modeDefault} onChange={(v) => setTheme(p, (t) => ({ ...t, modeDefault: v }))} options={[{ v: 'light', l: 'Light' }, { v: 'dark', l: 'Dark' }, { v: 'auto', l: 'Match their phone' }]} />
         <label className="range">
-          <span>Corner roundness</span>
+          <span>{t("Corner roundness")}</span>
           <input type="range" min={0} max={1.5} step={0.05} value={theme.cornerScale} onChange={(e) => setTheme(p, (t) => ({ ...t, cornerScale: Number(e.target.value) }))} />
         </label>
       </Section>
@@ -300,13 +308,14 @@ const LABEL: Record<string, string> = {
 };
 
 function Swatch({ theme, mode, spec, label, onClick, on }: { theme: Theme; mode: Mode; spec: ButtonSpec; label: string; onClick: () => void; on: boolean }) {
+  const { t } = useT();
   const style = themeVars(theme, mode) as CSSProperties;
   const cls = (v: string) => `fb fb--${v} shape-${spec.shape} size-compact style-${spec.style} tex-${spec.texture}`;
   return (
     <button type="button" className={`bsw ${on ? 'on' : ''}`} onClick={onClick} aria-pressed={on}>
       <span className={`bsw__stage mode-${mode}`} style={style}>
-        <span className={cls('primary')}><span className="fb__tx">Save</span></span>
-        <span className={cls('secondary')}><span className="fb__tx">Share</span></span>
+        <span className={cls('primary')}>{rich(t("<x1>Save</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
+        <span className={cls('secondary')}>{rich(t("<x1>Share</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
       </span>
       <span className="bsw__l">{label}</span>
     </button>
@@ -314,6 +323,7 @@ function Swatch({ theme, mode, spec, label, onClick, on }: { theme: Theme; mode:
 }
 
 export function ButtonsPanel(p: PanelProps) {
+  const { t: tl } = useT();
   const t = p.card.theme, b = t.button;
   const put = (patch: Partial<ButtonSpec>) => setTheme(p, (th) => ({ ...th, button: { ...th.button, ...patch } }));
   const [locks, setLocks] = useState<Partial<Record<keyof ButtonSpec, boolean>>>({});
@@ -331,33 +341,33 @@ export function ButtonsPanel(p: PanelProps) {
   );
   return (
     <>
-      <Section title="Shuffle buttons" hint="Lock any part you love, then roll the rest.">
-        <div className="dice"><div className="dice__row"><button type="button" className="dice__main" onClick={shuffle}><Dices size={22} /> Shuffle buttons</button><DiceSave p={p} /></div></div>
+      <Section title={tl("Shuffle buttons")} hint={tl("Lock any part you love, then roll the rest.")}>
+        <div className="dice"><div className="dice__row"><button type="button" className="dice__main" onClick={shuffle}><Dices size={22} /> {tl("Shuffle buttons")}</button><DiceSave p={p} /></div></div>
         <div className="bprev">
           {(['light', 'dark'] as Mode[]).map((m) => (
             <span key={m} className={`bprev__stage mode-${m}`} style={themeVars(t, m) as CSSProperties}>
-              <span className={`fb fb--primary shape-${b.shape} size-${b.size} style-${b.style} tex-${b.texture} fb--block`}><span className="fb__tx">Save contact</span></span>
-              <span className={`fb fb--secondary shape-${b.shape} size-${b.size} style-${b.style} tex-${b.texture}`}><span className="fb__tx">Share</span></span>
+              <span className={`fb fb--primary shape-${b.shape} size-${b.size} style-${b.style} tex-${b.texture} fb--block`}>{rich(tl("<x1>Save contact</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
+              <span className={`fb fb--secondary shape-${b.shape} size-${b.size} style-${b.style} tex-${b.texture}`}>{rich(tl("<x1>Share</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
               <small>{m === 'light' ? 'Light' : 'Dark'}</small>
             </span>
           ))}
         </div>
       </Section>
-      <Section title="Style" action={<LockBtn k="style" />}>
+      <Section title={tl("Style")} action={<LockBtn k="style" />}>
         <div className="bgrid">{BUTTON_STYLES.map((s) => <Swatch key={s} theme={t} mode={p.mode} spec={{ ...b, style: s }} label={LABEL[s]} on={b.style === s} onClick={() => put({ style: s })} />)}</div>
       </Section>
-      <Section title="Shape" action={<LockBtn k="shape" />}>
+      <Section title={tl("Shape")} action={<LockBtn k="shape" />}>
         <div className="bgrid">{BUTTON_SHAPES.map((s) => <Swatch key={s} theme={t} mode={p.mode} spec={{ ...b, shape: s }} label={LABEL[s]} on={b.shape === s} onClick={() => put({ shape: s })} />)}</div>
       </Section>
-      <Section title="Texture" hint="Subtle finishes that show best on solid, gradient and raised styles." action={<LockBtn k="texture" />}>
+      <Section title={tl("Texture")} hint={tl("Subtle finishes that show best on solid, gradient and raised styles.")} action={<LockBtn k="texture" />}>
         <div className="bgrid">{BUTTON_TEXTURES.map((s) => <Swatch key={s} theme={t} mode={p.mode} spec={{ ...b, texture: s, style: b.style === 'ghost' || b.style === 'outline' ? 'solid' : b.style }} label={LABEL[s]} on={b.texture === s} onClick={() => put({ texture: s })} />)}</div>
       </Section>
-      <Section title="Size" action={<LockBtn k="size" />}>
-        <Segmented label="Button size" value={b.size} onChange={(v) => put({ size: v })} options={BUTTON_SIZES.map((s) => ({ v: s, l: LABEL[s] }))} />
-        <p className="note">Every size keeps a 44px touch target, the minimum Apple and Google recommend.</p>
+      <Section title={tl("Size")} action={<LockBtn k="size" />}>
+        <Segmented label={tl("Button size")} value={b.size} onChange={(v) => put({ size: v })} options={BUTTON_SIZES.map((s) => ({ v: s, l: LABEL[s] }))} />
+        <p className="note">{tl("Every size keeps a 44px touch target, the minimum Apple and Google recommend.")}</p>
       </Section>
-      <Section title="Tap sounds" hint="Soft audio feedback when visitors tap. Always silent for people who turn off motion on their phone.">
-        <Segmented label="Sound" value={t.sound ?? 'calm'} onChange={(v) => { setTheme(p, (th) => ({ ...th, sound: v })); sfx('primary', v); }} options={[{ v: 'calm', l: 'Calm' }, { v: 'tech', l: 'Tech' }, { v: 'bright', l: 'Bright' }, { v: 'off', l: 'Off' }]} />
+      <Section title={tl("Tap sounds")} hint={tl("Soft audio feedback when visitors tap. Always silent for people who turn off motion on their phone.")}>
+        <Segmented label={tl("Sound")} value={t.sound ?? 'calm'} onChange={(v) => { setTheme(p, (th) => ({ ...th, sound: v })); sfx('primary', v); }} options={[{ v: 'calm', l: 'Calm' }, { v: 'tech', l: 'Tech' }, { v: 'bright', l: 'Bright' }, { v: 'off', l: 'Off' }]} />
       </Section>
     </>
   );
@@ -365,6 +375,7 @@ export function ButtonsPanel(p: PanelProps) {
 
 /* ------------------------------------------------------------ fonts and brand kit */
 export function BrandPanel(p: PanelProps) {
+  const { t: tl } = useT();
   const t = p.card.theme;
   const [hexText, setHexText] = useState('');
   const [busy, setBusy] = useState(false);
@@ -431,48 +442,44 @@ export function BrandPanel(p: PanelProps) {
 
   return (
     <>
-      <Section title="Brand kit" hint="Bring your colors from Canva, a style guide or your logo.">
+      <Section title={tl("Brand kit")} hint={tl("Bring your colors from Canva, a style guide or your logo.")}>
         <div className="kit">
           {t.kit.length ? t.kit.map((c) => (
             <button key={c} type="button" className="kit__sw" style={{ background: c }} title={`${c}. Click to remove`} aria-label={`Remove ${c}`} onClick={() => setTheme(p, (th) => ({ ...th, kit: th.kit.filter((x) => x !== c) }))} />
-          )) : <p className="note">No kit colors yet.</p>}
+          )) : <p className="note">{tl("No kit colors yet.")}</p>}
         </div>
         <div className="row-ed">
           <button type="button" className="btn btn--ghost" onClick={fromLogo} disabled={busy}><Wand2 size={16} /> {busy ? 'Reading logo...' : 'Pull colors from my logo'}</button>
-          {t.kit.length > 0 && <button type="button" className="btn btn--gold" onClick={applyKit}>Apply kit to card</button>}
+          {t.kit.length > 0 && <button type="button" className="btn btn--gold" onClick={applyKit}>{tl("Apply kit to card")}</button>}
         </div>
         <div className="fld">
-          <label htmlFor="hexes">Paste hex codes</label>
-          <textarea id="hexes" rows={2} value={hexText} onChange={(e) => setHexText(e.target.value)} placeholder="#1C2640, #C5A44B, #F2ECE4" />
-          <small>In Canva: Brand Kit, click a color, copy its hex code. Paste as many as you like.</small>
+          <label htmlFor="hexes">{tl("Paste hex codes")}</label>
+          <textarea id="hexes" rows={2} value={hexText} onChange={(e) => setHexText(e.target.value)} placeholder={tl("#1C2640, #C5A44B, #F2ECE4")} />
+          <small>{tl("In Canva: Brand Kit, click a color, copy its hex code. Paste as many as you like.")}</small>
         </div>
-        {parsed.length > 0 && <button type="button" className="btn btn--ink btn--sm" onClick={() => { addKit(parsed); setHexText(''); }}>Add {parsed.length} color{parsed.length > 1 ? 's' : ''} to kit</button>}
+        {parsed.length > 0 && <button type="button" className="btn btn--ink btn--sm" onClick={() => { addKit(parsed); setHexText(''); }}>{tl("Add {length} color{v} to kit", { length: parsed.length, v: parsed.length > 1 ? 's' : '' })}</button>}
         <div className="row-ed">
-          <button type="button" className="btn btn--ghost btn--sm" onClick={exportKit}><Download size={15} /> Export kit</button>
-          <button type="button" className="btn btn--ghost btn--sm" onClick={() => fileRef.current?.click()}><Upload size={15} /> Import kit</button>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={exportKit}><Download size={15} /> {tl("Export kit")}</button>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => fileRef.current?.click()}><Upload size={15} /> {tl("Import kit")}</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(e) => { importKit(e.target.files?.[0]); e.target.value = ''; }} />
         </div>
         {msg && <p className="note" role="status">{msg}</p>}
       </Section>
 
-      <Section title="Fonts" hint="A heading face with character over a clean reading face.">
+      <Section title={tl("Fonts")} hint={tl("A heading face with character over a clean reading face.")}>
         <div className="fonts">
           {FONT_PAIRS.map((f) => {
             const on = t.fonts.display === f.display && t.fonts.body === f.body;
             return (
-              <button key={f.id} type="button" className={on ? 'on' : ''} onClick={() => setTheme(p, (th) => ({ ...th, fonts: { display: f.display, body: f.body } }))} aria-pressed={on}>
-                <span className="fonts__d" style={{ fontFamily: `'${f.display}', serif` }}>{p.card.data.fullName.split(' ')[0] || 'Jordan'}</span>
-                <span className="fonts__b" style={{ fontFamily: `'${f.body}', sans-serif` }}>{f.display} with {f.body}</span>
-                <small>{f.mood}</small>
-              </button>
+              <button key={f.id} type="button" className={on ? 'on' : ''} onClick={() => setTheme(p, (th) => ({ ...th, fonts: { display: f.display, body: f.body } }))} aria-pressed={on}>{rich(tl("<x1>{v}</x1><x2>{display} with {body}</x2><small>{mood}</small>", { v: p.card.data.fullName.split(' ')[0] || 'Jordan', display: f.display, body: f.body, mood: f.mood }), { x1: (c) => <span className="fonts__d" style={{ fontFamily: `'${f.display}', serif` }}>{c}</span>, x2: (c) => <span className="fonts__b" style={{ fontFamily: `'${f.body}', sans-serif` }}>{c}</span>, small: (c) => <small>{c}</small> })}</button>
             );
           })}
         </div>
         <div className="row-ed">
-          <label className="btn btn--ghost btn--sm">Upload heading font<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden onChange={(e) => uploadFont('display', e.target.files?.[0])} /></label>
-          <label className="btn btn--ghost btn--sm">Upload body font<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden onChange={(e) => uploadFont('body', e.target.files?.[0])} /></label>
+          <label className="btn btn--ghost btn--sm">{tl("Upload heading font")}<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden onChange={(e) => uploadFont('display', e.target.files?.[0])} /></label>
+          <label className="btn btn--ghost btn--sm">{tl("Upload body font")}<input type="file" accept=".woff2,.woff,.ttf,.otf" hidden onChange={(e) => uploadFont('body', e.target.files?.[0])} /></label>
         </div>
-        <p className="note">Only upload fonts you're licensed to use on the web.</p>
+        <p className="note">{tl("Only upload fonts you're licensed to use on the web.")}</p>
       </Section>
     </>
   );

@@ -1,4 +1,4 @@
-// Scope the finesse-tap-card engine CSS + worship skins under .tpl-ws for Sello.
+// Scope the finesse-tap-card engine CSS + worship skins under .tpl-ws for SeYo.
 import fs from 'fs';
 import postcss from 'postcss';
 const SRC = '/tmp/ws/sello-worship-skins';

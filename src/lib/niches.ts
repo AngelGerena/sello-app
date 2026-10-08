@@ -80,7 +80,7 @@ export const NICHES: Niche[] = [
   /* ================================================================ TECH */
   {
     id: 'tech', name: 'Tech and IT', group: 'Tech', icon: 'screen',
-    blurb: 'Seven futuristic designs with motion, effects and synth sounds.',
+    blurb: 'Futuristic designs with motion, effects and synth sounds.',
     highlightsTitle: 'Stack',
     highlights: [
       { icon: 'screen', title: 'Web and app builds', subtitle: 'React, Next.js, native' },
@@ -124,7 +124,7 @@ export const NICHES: Niche[] = [
   /* ================================================================ BEAUTY AND GROOMING */
   {
     id: 'barber', name: 'Barbershops', group: 'Beauty and grooming', icon: 'scissors',
-    blurb: 'Four barbershop designs, from old-school to streetwear.',
+    blurb: 'Barbershop designs, from old-school to streetwear.',
     highlightsTitle: 'Services',
     highlights: [
       { icon: 'scissors', title: 'Haircut', subtitle: '$35 · 45 min' },

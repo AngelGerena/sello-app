@@ -6,10 +6,12 @@ import { googleFontsHref, themeVars } from '../../lib/theme';
 import { TEMPLATES } from '../../templates';
 import { sfx } from '../../lib/sfx';
 import { Section, type PanelProps } from './Fields';
+import { rich, useT } from '../../lib/i18n';
 
 /* ------------------------------------------------------------ swatch */
 /** A small, honest preview of a look: its ground, type, colors and real buttons. */
 export function LookSwatch({ theme, template, mode, name, compact }: { theme: Theme; template: TemplateId; mode: Mode; name?: string; compact?: boolean }) {
+  const { t: tl } = useT();
   const b = theme.button;
   const t = theme.tokens[mode];
   const cls = (v: string) => `fb fb--${v} shape-${b.shape} size-compact style-${b.style} tex-${b.texture}`;
@@ -22,8 +24,8 @@ export function LookSwatch({ theme, template, mode, name, compact }: { theme: Th
         <span className="lsw__dots">{[t.brand, t.accent, t.bg, t.soft].map((c, i) => <i key={i} style={{ background: c }} />)}</span>
         {!compact && (
           <span className="lsw__btns">
-            <span className={cls('primary')}><span className="fb__tx">Save</span></span>
-            <span className={cls('secondary')}><span className="fb__tx">Share</span></span>
+            <span className={cls('primary')}>{rich(tl("<x1>Save</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
+            <span className={cls('secondary')}>{rich(tl("<x1>Share</x1>"), { x1: (c) => <span className="fb__tx">{c}</span> })}</span>
           </span>
         )}
       </span>
@@ -45,6 +47,7 @@ function useLookFonts(looks: { theme: Theme }[]) {
 
 /* ------------------------------------------------------------ save button (toolbar) */
 export function SaveLookButton({ api, card, onSaved }: { api: LooksApi; card: PanelProps['card']; onSaved?: (msg: string) => void }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
@@ -78,13 +81,13 @@ export function SaveLookButton({ api, card, onSaved }: { api: LooksApi; card: Pa
         <Heart size={17} fill={saved ? 'currentColor' : 'none'} /><span>{saved ? 'Saved' : 'Save look'}</span>
       </button>
       {open && (
-        <div className="savelook__pop" role="dialog" aria-label="Save this look">
+        <div className="savelook__pop" role="dialog" aria-label={t("Save this look")}>
           <LookSwatch theme={card.theme} template={card.template} mode="light" name={name} />
           <label className="fld">
-            <span className="sr">Name this look</span>
-            <input autoFocus value={name} maxLength={40} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') save(); }} placeholder="Name this look" />
+            <span className="sr">{t("Name this look")}</span>
+            <input autoFocus value={name} maxLength={40} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') save(); }} placeholder={t("Name this look")} />
           </label>
-          <p className="note">Saves colors, custom colors, fonts, buttons and layout.</p>
+          <p className="note">{t("Saves colors, custom colors, fonts, buttons and layout.")}</p>
           <button type="button" className="btn btn--gold" onClick={save} disabled={busy}><Heart size={16} /> {busy ? 'Saving...' : 'Save to Favorites'}</button>
           {api.error && <p className="err" role="alert">{api.error}</p>}
         </div>
@@ -95,15 +98,16 @@ export function SaveLookButton({ api, card, onSaved }: { api: LooksApi; card: Pa
 
 /* ------------------------------------------------------------ editing bar */
 export function EditingBar({ api, goFavorites }: { api: LooksApi; goFavorites: () => void }) {
+  const { t } = useT();
   const [justSaved, setJustSaved] = useState(false);
   if (!api.active) return null;
   return (
     <div className="editbar" role="status">
-      <span className="editbar__tx"><Pencil size={15} /> Editing favorite <b>{api.active.name}</b>{api.activeDirty ? <em>unsaved changes</em> : justSaved ? <em className="ok">saved</em> : null}</span>
+      <span className="editbar__tx"><Pencil size={15} /> Editing favorite <b>{api.active.name}</b>{api.activeDirty ? <em>{t("unsaved changes")}</em> : justSaved ? <em className="ok">{t("saved")}</em> : null}</span>
       <span className="editbar__acts">
-        <button type="button" className="btn btn--gold btn--sm" disabled={!api.activeDirty} onClick={async () => { await api.updateActive(); sfx('success'); setJustSaved(true); setTimeout(() => setJustSaved(false), 2000); }}><Save size={14} /> Save changes</button>
-        <button type="button" className="btn btn--ghost btn--sm" onClick={goFavorites}>Favorites</button>
-        <button type="button" className="icon-btn" aria-label="Stop editing this favorite" onClick={api.stopEditing}><X size={16} /></button>
+        <button type="button" className="btn btn--gold btn--sm" disabled={!api.activeDirty} onClick={async () => { await api.updateActive(); sfx('success'); setJustSaved(true); setTimeout(() => setJustSaved(false), 2000); }}><Save size={14} /> {t("Save changes")}</button>
+        <button type="button" className="btn btn--ghost btn--sm" onClick={goFavorites}>{t("Favorites")}</button>
+        <button type="button" className="icon-btn" aria-label={t("Stop editing this favorite")} onClick={api.stopEditing}><X size={16} /></button>
       </span>
     </div>
   );
@@ -111,6 +115,7 @@ export function EditingBar({ api, goFavorites }: { api: LooksApi; goFavorites: (
 
 /* ------------------------------------------------------------ favorites panel */
 export function FavoritesPanel(p: PanelProps) {
+  const { t } = useT();
   const api = p.looks!;
   const { card } = p;
   const [name, setName] = useState(() => api.suggestName(card.theme));
@@ -124,28 +129,28 @@ export function FavoritesPanel(p: PanelProps) {
 
   return (
     <>
-      <Section title="Save the current look" hint="Roll the dice until something clicks, then keep it here. Favorites work on any card you make.">
+      <Section title={t("Save the current look")} hint={t("Roll the dice until something clicks, then keep it here. Favorites work on any card you make.")}>
         <div className="favsave">
           <LookSwatch theme={card.theme} template={card.template} mode={p.mode} name={name} />
           <div className="stack-ed">
             <div className="fld">
-              <label htmlFor="lookname">Name</label>
+              <label htmlFor="lookname">{t("Name")}</label>
               <input id="lookname" value={name} maxLength={40} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') saveNow(); }} />
             </div>
             {api.currentSavedAs
-              ? <p className="note"><Check size={14} /> This exact look is saved as <b>{api.currentSavedAs.name}</b>.</p>
-              : <button type="button" className="btn btn--gold" onClick={saveNow}><Heart size={16} /> Save to Favorites</button>}
+              ? <p className="note"><Check size={14} /> {t("This exact look is saved as")} <b>{api.currentSavedAs.name}</b>.</p>
+              : <button type="button" className="btn btn--gold" onClick={saveNow}><Heart size={16} /> {t("Save to Favorites")}</button>}
           </div>
         </div>
         {msg && <p className="note" role="status">{msg}</p>}
         {api.error && <p className="err" role="alert">{api.error}</p>}
       </Section>
 
-      <Section title={`Favorites${api.looks.length ? ` (${api.looks.length})` : ''}`} hint="Apply one to this card, or open it to fine-tune and save your changes back.">
-        {api.loading && <p className="note">Loading favorites...</p>}
+      <Section title={`Favorites${api.looks.length ? ` (${api.looks.length})` : ''}`} hint={t("Apply one to this card, or open it to fine-tune and save your changes back.")}>
+        {api.loading && <p className="note">{t("Loading favorites...")}</p>}
         {!api.loading && api.looks.length === 0 && (
           <div className="empty">
-            <p>No favorites yet. Tap <b>Shuffle all</b> or the dice on Colors and Buttons, then hit the heart when you see one you like.</p>
+            <p>{rich(t("No favorites yet. Tap <b>Shuffle all</b> or the dice on Colors and Buttons, then hit the heart when you see one you like."), { b: (c) => <b>{c}</b> })}</p>
           </div>
         )}
         <ul className="favs">
@@ -163,17 +168,17 @@ export function FavoritesPanel(p: PanelProps) {
                       onChange={(e) => setDraft(e.target.value)}
                       onBlur={() => { api.rename(l.id, draft); setRenaming(null); }}
                       onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setRenaming(null); }}
-                      aria-label="Rename favorite"
+                      aria-label={t("Rename favorite")}
                     />
                   ) : (
-                    <button type="button" className="favs__name" onClick={() => { setRenaming(l.id); setDraft(l.name); }} title="Rename">{l.name}</button>
+                    <button type="button" className="favs__name" onClick={() => { setRenaming(l.id); setDraft(l.name); }} title={t("Rename")}>{l.name}</button>
                   )}
                   <small>{TEMPLATES.find((t) => t.id === l.template)?.name}{isActive ? ' · editing' : ''}</small>
                 </div>
                 <div className="favs__acts">
-                  <button type="button" className="btn btn--ink btn--sm" onClick={() => { sfx('tap'); api.apply(l); flash(`Applied "${l.name}"`); }}><Wand2 size={14} /> Apply</button>
-                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => { api.apply(l, { edit: true }); p.goStep?.('colors'); }}><Pencil size={14} /> Edit</button>
-                  <button type="button" className="icon-btn" title="Apply colors and buttons, keep my layout" aria-label={`Apply ${l.name} but keep my layout`} onClick={() => { api.apply(l, { keepLayout: true }); flash(`Applied "${l.name}" style, kept your layout`); }}><LayoutTemplate size={16} /></button>
+                  <button type="button" className="btn btn--ink btn--sm" onClick={() => { sfx('tap'); api.apply(l); flash(`Applied "${l.name}"`); }}><Wand2 size={14} /> {t("Apply")}</button>
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => { api.apply(l, { edit: true }); p.goStep?.('colors'); }}><Pencil size={14} /> {t("Edit")}</button>
+                  <button type="button" className="icon-btn" title={t("Apply colors and buttons, keep my layout")} aria-label={`Apply ${l.name} but keep my layout`} onClick={() => { api.apply(l, { keepLayout: true }); flash(`Applied "${l.name}" style, kept your layout`); }}><LayoutTemplate size={16} /></button>
                   <button type="button" className="icon-btn" aria-label={`Duplicate ${l.name}`} onClick={() => api.duplicate(l.id)}><Copy size={16} /></button>
                   <button type="button" className="icon-btn" aria-label={`Delete ${l.name}`} onClick={() => { if (window.confirm(`Delete "${l.name}" from Favorites?`)) api.remove(l.id); }}><Trash2 size={16} /></button>
                 </div>
@@ -183,17 +188,17 @@ export function FavoritesPanel(p: PanelProps) {
         </ul>
       </Section>
 
-      <Section title="Recent rolls" hint="Every dice roll this session. Rolled past a good one? Bring it back or save it.">
+      <Section title={t("Recent rolls")} hint={t("Every dice roll this session. Rolled past a good one? Bring it back or save it.")}>
         {api.recent.length === 0
-          ? <p className="note"><History size={14} /> Nothing rolled yet.</p>
+          ? <p className="note"><History size={14} /> {t("Nothing rolled yet.")}</p>
           : (
             <ul className="rolls">
               {api.recent.map((r: Roll) => (
                 <li key={r.key}>
-                  <button type="button" className="rolls__prev" onClick={() => { sfx('tap'); api.apply(r); }} aria-label="Bring back this roll">
+                  <button type="button" className="rolls__prev" onClick={() => { sfx('tap'); api.apply(r); }} aria-label={t("Bring back this roll")}>
                     <LookSwatch theme={r.theme} template={r.template} mode={p.mode} compact />
                   </button>
-                  <button type="button" className="icon-btn" aria-label="Save this roll to Favorites" onClick={async () => { const l = await api.saveRoll(r, ''); if (l) { sfx('success'); flash(`Saved "${l.name}"`); } }}><Heart size={16} /></button>
+                  <button type="button" className="icon-btn" aria-label={t("Save this roll to Favorites")} onClick={async () => { const l = await api.saveRoll(r, ''); if (l) { sfx('success'); flash(`Saved "${l.name}"`); } }}><Heart size={16} /></button>
                 </li>
               ))}
             </ul>

@@ -1,0 +1,41 @@
+/* =================================================================
+   SeYo glue for the Worship collection (engine CSS lives in worship-engine.css).
+   The engine used position:fixed for full-screen layers and the dock; inside a
+   card these become sticky so they behave the same while the card scrolls,
+   in the public page, the editor preview and thumbnails alike.
+   ================================================================= */
+.tpl-ws { position: relative; isolation: isolate; min-height: 100%; overflow: visible !important; overflow-x: clip !important; }
+.fc-card:has(> .tpl-ws), .fc-card:has(.tpl-ws) { padding-bottom: 0 !important; background: var(--bg, #0A0614); }
+.tpl-ws .w-card { position: relative; z-index: 2; }
+
+/* full-screen background layers, pinned to the viewport while scrolling */
+.tpl-ws .ws-stage { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.tpl-ws .ws-stage__in { position: sticky; top: 0; height: 100dvh; max-height: 100%; overflow: hidden; }
+.tpl-ws .ws-stage__in > .w-fields, .tpl-ws .ws-stage__in > .w-skin-bg { position: absolute; inset: 0; }
+
+/* bottom dock, sticky to the bottom of whatever is scrolling */
+.tpl-ws .ws-dockwrap { position: absolute; inset: 0; z-index: 30; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; }
+.tpl-ws .ws-dockstick { position: sticky; bottom: 0; height: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.tpl-ws .ws-dockstick .w-dock { pointer-events: auto; }
+
+/* side rail and floating arch rail, pinned to the top of the viewport */
+.tpl-ws .ws-railwrap { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.tpl-ws .ws-railstick { position: sticky; top: 0; height: 100dvh; max-height: 100%; }
+.tpl-ws .ws-railstick .w-dock { pointer-events: auto; }
+.tpl-ws.w-layout-rail .ws-railstick .w-dock { height: 100%; bottom: auto; }
+
+/* the music pill inside a rail becomes the compact "Music" button */
+.tpl-ws .w-dock .w-music-pill { flex: none; }
+
+/* portrait placeholder when there is no photo yet */
+.tpl-ws .ws-noimg { display: block; width: 100%; height: 100%; background: linear-gradient(160deg, var(--plum-1), var(--plum-2)); }
+
+/* sparkles are appended to the card root */
+.tpl-ws .w-spark-layer { position: absolute; inset: 0; z-index: 60; pointer-events: none; overflow: visible; }
+
+/* thumbnails and stills: no entrance animation, everything visible */
+.tpl-card .tpl-ws .w-reveal, .dcard .tpl-ws .w-reveal, .mx-mini .tpl-ws .w-reveal, .lp__mini .tpl-ws .w-reveal { opacity: 1 !important; animation: none !important; }
+.tpl-card .tpl-ws .w-reveal:not(.w-dock), .dcard .tpl-ws .w-reveal:not(.w-dock), .mx-mini .tpl-ws .w-reveal:not(.w-dock), .lp__mini .tpl-ws .w-reveal:not(.w-dock) { transform: none !important; }
+.tpl-card .tpl-ws .w-dock.w-reveal, .dcard .tpl-ws .w-dock.w-reveal, .mx-mini .tpl-ws .w-dock.w-reveal { transform: translateX(-50%) !important; }
+.tpl-card .tpl-ws.w-layout-rail .w-dock.w-reveal, .dcard .tpl-ws.w-layout-rail .w-dock.w-reveal, .mx-mini .tpl-ws.w-layout-rail .w-dock.w-reveal { transform: none !important; }
+.tpl-card .tpl-ws.w-layout-float .w-dock.w-reveal, .dcard .tpl-ws.w-layout-float .w-dock.w-reveal, .mx-mini .tpl-ws.w-layout-float .w-dock.w-reveal { transform: translateY(-50%) !important; }

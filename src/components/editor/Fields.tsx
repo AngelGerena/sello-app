@@ -12,6 +12,12 @@ export interface PanelProps {
   setSelected: (id: ElementId | null) => void;
   looks?: LooksApi;          // favorites and recent rolls
   goStep?: (id: string) => void;
+  /** Waits for any pending autosave. Resolves false if the latest changes could not be saved. */
+  /** Which design tab the Layout panel opens on when the card has no niche yet (quick setup starts on "niche"). */
+  startTab?: 'niche' | 'all' | 'classic';
+  ensureSaved?: () => Promise<boolean>;
+  /** Publishes or unpublishes after the pending changes are saved. Rejects with a readable message. */
+  setPublished?: (published: boolean) => Promise<void>;
 }
 
 export function Section({ title, hint, children, action }: { title: string; hint?: ReactNode; children: ReactNode; action?: ReactNode }) {

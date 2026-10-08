@@ -46,7 +46,7 @@ export function Marquee() {
 function mrz(first: string, last: string) {
   const clean = (s: string) => s.toUpperCase().replace(/[^A-Z]/g, '');
   const l1 = `P<USA${clean(last)}<<${clean(first)}`.padEnd(44, '<').slice(0, 44);
-  const l2 = `SELLO${Math.abs([...first + last].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) % 1e9).toString().padStart(9, '0')}<USA`.padEnd(44, '<').slice(0, 44);
+  const l2 = `SEYO${Math.abs([...first + last].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) % 1e9).toString().padStart(9, '0')}<USA`.padEnd(44, '<').slice(0, 44);
   return [l1, l2];
 }
 export function Passport() {

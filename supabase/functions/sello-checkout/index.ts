@@ -1,10 +1,9 @@
-// POST { plan: 'pro' | 'team', interval: 'month' | 'year', seats?: number }  ->  { url }
-// For Business, seats = how many cards (3 to 100); it is billed per card.
+// POST { plan: 'pro' | 'plus' | 'team', interval: 'month' | 'year' }  ->  { url }
+// Prices are fixed in _shared/sello.ts; the browser never sends an amount.
 // Starts Stripe Checkout for the signed-in user. If they already have a subscription,
 // returns a Billing Portal link instead (update card, cancel, invoices), never a second subscription.
-import { admin, clampSeats, cors, currentUser, json, lineItemFor, siteUrl, stripe, type Interval, type Plan } from '../_shared/sello.ts';
-
-const FOUNDING_SPOTS = 100;
+import { admin, cors, currentUser, json, siteUrl, stripe, type Interval, type Plan } from '../_shared/sello.ts';
+import { buildCheckoutParams } from '../_shared/checkout.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -14,16 +13,15 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: 'Please sign in first.' }, 401);
 
     const body = await req.json().catch(() => ({}));
-    const plan: Plan = body.plan === 'team' ? 'team' : 'pro';
+    const plan: Plan = body.plan === 'team' ? 'team' : body.plan === 'plus' ? 'plus' : 'pro';
     const interval: Interval = body.interval === 'year' ? 'year' : 'month';
-    const seats = plan === 'team' ? clampSeats(body.seats) : 1;
 
     const db = admin();
     const s = stripe();
     const { data: profile } = await db.from('fc_profiles')
       .select('id, email, stripe_customer_id, stripe_subscription_id, plan_status').eq('id', user.id).maybeSingle();
 
-    // One Stripe customer per Sello account.
+    // One Stripe customer per SeYo account.
     let customer = profile?.stripe_customer_id as string | null;
     if (!customer) {
       const c = await s.customers.create({ email: user.email ?? undefined, metadata: { sello_user_id: user.id } });
@@ -37,25 +35,26 @@ Deno.serve(async (req) => {
       return json({ url: portal.url, portal: true });
     }
 
-    // Founding pricing: Pro monthly, first 100 members. Set the secret SELLO_FOUNDING to off to switch it off.
+    // Founding offer: eligibility, the spot count and the price all live in the database. The browser can ask for nothing.
+    const { data: offer } = await db.rpc('fc_offer_status');
     let founding = false;
-    if (plan === 'pro' && interval === 'month' && Deno.env.get('SELLO_FOUNDING') !== 'off') {
-      const { count } = await db.from('fc_profiles').select('id', { count: 'exact', head: true }).eq('founding', true);
-      founding = (count ?? 0) < FOUNDING_SPOTS;
+    if (plan === 'pro' && interval === 'month' && offer?.active && offer.plan === 'pro' && offer.interval === 'month' && Deno.env.get('SELLO_FOUNDING') !== 'off') {
+      const { data: claim, error } = await db.rpc('fc_claim_founding', { p_user: user.id, p_email: user.email ?? '' });
+      founding = !error && !!claim?.granted;   // any problem (including a missing migration) means the regular price
     }
 
-    const session = await s.checkout.sessions.create({
-      mode: 'subscription',
-      customer,
-      client_reference_id: user.id,
-      line_items: [lineItemFor(plan, interval, founding, seats)],
-      allow_promotion_codes: true,
-      subscription_data: { metadata: { sello_user_id: user.id, sello_plan: plan, sello_interval: interval, sello_seats: String(seats), sello_founding: founding ? '1' : '0' } },
-      metadata: { sello_user_id: user.id, sello_plan: plan },
-      success_url: `${siteUrl()}/app?upgraded=${plan}`,
-      cancel_url: `${siteUrl()}/app?checkout=canceled`,
-    });
-    return json({ url: session.url });
+    let session;
+    try {
+      session = await s.checkout.sessions.create(buildCheckoutParams({
+        plan, interval, founding, foundingCents: offer?.price_cents ?? 0, reserveMinutes: offer?.reserve_minutes ?? 45,
+        customer: customer as string, userId: user.id, siteUrl: siteUrl(), nowSec: Math.floor(Date.now() / 1000),
+      }));
+    } catch (e) {
+      if (founding) await db.rpc('fc_founding_release_user', { p_user: user.id });   // never hold a spot for a checkout that failed
+      throw e;
+    }
+    if (founding) await db.rpc('fc_founding_attach', { p_user: user.id, p_session: session.id });
+    return json({ url: session.url, founding });
   } catch (e) {
     console.error('sello-checkout', e);
     return json({ error: e instanceof Error ? e.message : 'Checkout failed.' }, 500);

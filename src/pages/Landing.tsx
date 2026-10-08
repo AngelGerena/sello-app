@@ -1,15 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight, Minus, Plus } from 'lucide-react';
+import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight, MessageCircle } from 'lucide-react';
 import type { Card } from '../lib/types';
 import { sampleCard } from '../lib/seed';
 import { deriveTokens, randomButton, randomSeeds, FONT_PAIRS } from '../lib/theme';
 import { TEMPLATES } from '../templates';
 import { ALL_DESIGNS, NICHES, NICHE_GROUPS, applyDesign, sampleFor } from '../lib/niches';
 import Brand from '../components/Brand';
-import { APP_NAME, FOUNDING, PLANS, STUDIO, STUDIO_CONTACT, TEAM, clampCards, teamTotal } from '../lib/plans';
+import { APP_NAME, PLANS, STUDIO, STUDIO_CONTACT } from '../lib/plans';
 import { sfx } from '../lib/sfx';
+import { decorative } from '../lib/a11y';
+import { DESIGN_COUNT, NICHE_COUNT, designsLabel } from '../lib/counts';
+import { HAS_LEGAL, LEGAL } from '../lib/legal';
+import { dollars, useOffer } from '../lib/offers';
 import CardRenderer from '../components/CardRenderer';
+import { rich, useT } from '../lib/i18n';
+import LangToggle from '../components/LangToggle';
 
 /* In-page jumps use scrollIntoView, not #hash links: the demo build routes by hash. */
 const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -31,14 +37,15 @@ function Ticker({ items, tone }: { items: string[]; tone: 'pink' | 'cyan' | 'ora
 }
 
 export default function Landing() {
+  const designsLabelT = (n: number) => designsLabel(n, lang);
+  const { t, lang } = useT();
+  const offer = useOffer();
   const base = useMemo(() => sampleCard(), []);
   const showcase = useMemo(() => SHOWCASE.map((t) => ALL_DESIGNS.find((x) => x.design.template === t)).filter(Boolean) as typeof ALL_DESIGNS, []);
   const [i, setI] = useState(0);
   const [rolled, setRolled] = useState<Card | null>(null);
   const [rolls, setRolls] = useState(0);
   const [yearly, setYearly] = useState(false);
-  const [cardsRaw, setCardsRaw] = useState(String(TEAM.initial));   // Business: how many cards (typed text, clamped on use)
-  const cards = clampCards(parseInt(cardsRaw, 10));
 
   useEffect(() => {
     if (rolled || reduced()) return;
@@ -65,57 +72,50 @@ export default function Landing() {
       {/* ---------------------------------------------------------------- nav */}
       <header className="mx-nav">
         <Brand tone="dark" />
-        <nav aria-label="Main">
-          <button type="button" className="mx-navlink" onClick={() => jump('niches')}>Niches</button>
-          <button type="button" className="mx-navlink" onClick={() => jump('layouts')}>Designs</button>
-          <button type="button" className="mx-navlink" onClick={() => jump('pricing')}>Pricing</button>
-          <button type="button" className="mx-navlink" onClick={() => jump('studio')}>Studio</button>
-          <Link to="/login" className="mx-navlink">Sign in</Link>
-          <Link to="/signup" className="mx-btn mx-btn--pink mx-btn--sm">Start free</Link>
-        </nav>
+        <nav aria-label={t("Main")}><LangToggle tone="dark" />{rich(t("<x1>Niches</x1><x2>Designs</x2><x3>Pricing</x3><x4>Studio</x4><x5>Sign in</x5><x6>Start free</x6>"), { x1: (c) => <button type="button" className="mx-navlink" onClick={() => jump('niches')}>{c}</button>, x2: (c) => <button type="button" className="mx-navlink" onClick={() => jump('layouts')}>{c}</button>, x3: (c) => <button type="button" className="mx-navlink" onClick={() => jump('pricing')}>{c}</button>, x4: (c) => <button type="button" className="mx-navlink" onClick={() => jump('studio')}>{c}</button>, x5: (c) => <Link to="/login" className="mx-navlink">{c}</Link>, x6: (c) => <Link to="/signup" className="mx-btn mx-btn--pink mx-btn--sm">{c}</Link> })}</nav>
       </header>
 
       {/* ---------------------------------------------------------------- hero */}
       <section className="mx-hero">
         <div className="mx-hero__copy">
-          <span className="mx-sticker mx-sticker--orange s1">107 designs</span>
-          <h1 className="mx-mega">Make <span className="pink">your</span> mark.</h1>
-          <p className="mx-lede">Digital business cards that look like <b>your</b> brand, down to the last button. Barbers, salons, DJs, realtors, churches: pick your niche and walk out with a card people actually save.</p>
+          <span className="mx-sticker mx-sticker--orange s1">{designsLabelT(DESIGN_COUNT)}</span>
+          <h1 className="mx-mega">{rich(t("Make <x1>your</x1> mark."), { x1: (c) => <span className="pink">{c}</span> })}</h1>
+          <p className="mx-lede">{rich(t("Digital business cards that look like <b>your</b> brand, down to the last button. Barbers, salons, DJs, realtors, churches: pick your niche and walk out with a card people actually save."), { b: (c) => <b>{c}</b> })}</p>
           <div className="mx-ctas">
-            <Link to="/signup" className="mx-btn mx-btn--pink mx-btn--lg">Build your card free <ArrowRight size={20} /></Link>
-            <button type="button" className="mx-btn mx-btn--ghost mx-btn--lg" onClick={roll}><Dices size={20} /> Roll a random look</button>
+            <Link to="/signup" className="mx-btn mx-btn--pink mx-btn--lg">{t("Build your card free")} <ArrowRight size={20} /></Link>
+            <button type="button" className="mx-btn mx-btn--ghost mx-btn--lg" onClick={roll}><Dices size={20} /> {t("Roll a random look")}</button>
           </div>
           <ul className="mx-ticks">
-            <li><Check size={16} /> No app to download</li>
-            <li><Check size={16} /> Tap, scan or text it</li>
-            <li><Check size={16} /> Saves to any phone in one tap</li>
+            <li><Check size={16} /> {t("No app to download")}</li>
+            <li><Check size={16} /> {t("Tap, scan or text it")}</li>
+            <li><Check size={16} /> {t("Saves to any phone in one tap")}</li>
           </ul>
         </div>
 
         <div className="mx-hero__stage">
           <span className="mx-sun" aria-hidden />
-          <span className="mx-sticker mx-sticker--cyan s2">NFC ready</span>
-          <span className="mx-sticker mx-sticker--pink s3">No app needed</span>
+          <span className="mx-sticker mx-sticker--cyan s2">{t("NFC ready")}</span>
+          <span className="mx-sticker mx-sticker--pink s3">{t("No app needed")}</span>
           <div className="mx-phone" key={rolled ? `r${rolls}` : `s${i}`}>
-            <div className="mx-phone__screen"><CardRenderer card={heroCard} mode={heroMode} sound={false} /></div>
+            <div className="mx-phone__screen" {...decorative}><CardRenderer card={heroCard} mode={heroMode} sound={false} /></div>
           </div>
-          <button type="button" className="mx-dice" onClick={roll} aria-label="Roll a random look"><Dices size={28} /></button>
+          <button type="button" className="mx-dice" onClick={roll} aria-label={t("Roll a random look")}><Dices size={28} /></button>
           <p className="mx-caption">
             {rolled
-              ? <>Roll {rolls}: <b>{TEMPLATES.find((t) => t.id === rolled.template)?.name}</b> layout. <button type="button" className="mx-link" onClick={() => setRolled(null)}>Back to the showcase</button></>
-              : <>Now showing <b>{cur.design.name}</b> for {cur.niche.name.toLowerCase()}</>}
+              ? <>{rich(t("Roll {rolls}: <b>{name}</b> layout. <x2>Open this demo</x2> <x3>Back to the showcase</x3>", { rolls, name: TEMPLATES.find((t) => t.id === rolled.template)?.name }), { b: (c) => <b>{c}</b>, x2: (c) => <Link className="mx-link" to={`/demo/${rolled.template}`}>{c}</Link>, x3: (c) => <button type="button" className="mx-link" onClick={() => setRolled(null)}>{c}</button> })}</>
+              : <>Now showing <b>{cur.design.name}</b> for {cur.niche.name.toLowerCase()}. <Link className="mx-link" to={`/demo/${cur.design.template}`}>{rich(t("Open this demo<x1> of the {name} design</x1>", { name: cur.design.name }), { x1: (c) => <span className="sr">{c}</span> })}</Link></>}
           </p>
         </div>
       </section>
 
-      <Ticker tone="pink" items={['107 designs', '30 niches', 'Tap', 'Save', 'Share', 'NFC and QR', 'Made in Florida']} />
+      <Ticker tone="pink" items={[designsLabelT(DESIGN_COUNT), t('{n} niches', { n: NICHE_COUNT }), t('Tap'), t('Save'), t('Share'), t('NFC and QR'), t('Made in Florida')]} />
 
       {/* ---------------------------------------------------------------- features */}
-      <section className="mx-feats" aria-label="What you get">
-        <h2 className="mx-h2">Loud where it counts. <span className="cyan">Easy</span> everywhere else.</h2>
+      <section className="mx-feats" aria-label={t("What you get")}>
+        <h2 className="mx-h2">{rich(t("Loud where it counts. <x1>Easy</x1> everywhere else."), { x1: (c) => <span className="cyan">{c}</span> })}</h2>
         <div className="mx-feats__grid">
           {[
-            { icon: Layers, t: '107 designs', d: 'Neon signs, straight razors, turntables, passports, wax seals. Pro members get new drops every other month.', c: 'pink' },
+            { icon: Layers, t: 'N designs', d: 'Neon signs, straight razors, turntables, passports, wax seals. Pro members get new drops every other month.', c: 'pink' },
             { icon: Palette, t: 'Recolor anything', d: 'Tap any part of your card to change its color. Contrast is checked live so it stays readable.', c: 'cyan' },
             { icon: Smartphone, t: 'Buttons that pop', d: 'Ten styles, eight shapes and eight finishes, tuned for light and dark mode.', c: 'orange' },
             { icon: Type, t: 'Your brand kit', d: 'Pull colors from your logo, paste hex codes from Canva, or upload your own fonts.', c: 'cyan' },
@@ -124,8 +124,8 @@ export default function Landing() {
           ].map((f) => (
             <article key={f.t} className={`mx-tile mx-tile--${f.c}`}>
               <span className="mx-tile__ic"><f.icon size={26} strokeWidth={2} /></span>
-              <h3>{f.t}</h3>
-              <p>{f.d}</p>
+              <h3>{f.t === 'N designs' ? designsLabelT(DESIGN_COUNT) : t(f.t)}</h3>
+              <p>{t(f.d)}</p>
             </article>
           ))}
         </div>
@@ -134,11 +134,7 @@ export default function Landing() {
       {/* ---------------------------------------------------------------- niche directory */}
       <section className="mx-dir" id="niches" aria-labelledby="dir-h">
         <div className="mx-dir__in">
-          <header className="mx-dir__head">
-            <p className="mx-eyebrow">{NICHES.length} niches · {TEMPLATES.length} designs</p>
-            <h2 id="dir-h" className="mx-dir__h">Find your niche</h2>
-            <p className="mx-dir__sub">Every niche comes with designs, sample services and suggested links made for that line of work.</p>
-          </header>
+          <header className="mx-dir__head">{rich(t("<x1>{NICHE_COUNT} niches · {v}</x1><x2>Find your niche</x2><x3>Every niche comes with designs, sample services and suggested links made for that line of work.</x3>", { NICHE_COUNT, v: designsLabelT(DESIGN_COUNT) }), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="dir-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
           <div className="mx-dir__cols">
             {NICHE_GROUPS.map((g) => {
               const items = NICHES.filter((n) => n.group === g);
@@ -150,8 +146,8 @@ export default function Landing() {
                     {items.map((n) => (
                       <li key={n.id}>
                         <Link to="/signup" className="mx-dir__item">
-                          <span className="mx-dir__name">{n.name}</span>
-                          <span className="mx-dir__count" aria-label={`${n.designs.length} designs`}>{n.designs.length}</span>
+                          <span className="mx-dir__name">{t(n.name)}</span>
+                          <span className="mx-dir__count" aria-label={designsLabelT(n.designs.length)}>{n.designs.length}</span>
                         </Link>
                       </li>
                     ))}
@@ -161,106 +157,150 @@ export default function Landing() {
             })}
           </div>
           <div className="mx-dir__foot">
-            <button type="button" className="mx-btn mx-btn--pink" onClick={() => jump('layouts')}>See all designs <ArrowRight size={18} /></button>
-            <span>Don't see yours? Start with a classic layout and make it your own.</span>
+            <button type="button" className="mx-btn mx-btn--pink" onClick={() => jump('layouts')}>{t("See all designs")} <ArrowRight size={18} /></button>
+            <span>{t("Don't see yours? Start with a classic layout and make it your own.")}</span>
           </div>
         </div>
       </section>
 
       {/* ---------------------------------------------------------------- designs strip */}
       <section className="mx-layouts" id="layouts">
-        <h2 className="mx-h2">Swipe the <span className="pink">wall</span> of designs.</h2>
-        <div className="mx-strip">
-          {[...TEMPLATES].filter((t) => !HIDE_ON_LANDING.has(t.id)).sort((a, b) => Number(Boolean(b.niche)) - Number(Boolean(a.niche))).map((t) => {
-            const hit = ALL_DESIGNS.find((x) => x.design.template === t.id);
+        <h2 className="mx-h2">{rich(t("Swipe the <x1>wall</x1> of designs."), { x1: (c) => <span className="pink">{c}</span> })}</h2>
+        <div className="mx-strip" role="region" aria-label={t("Design gallery. Scrolls sideways. Each design has an Open demo link.")} tabIndex={0}>
+          {[...TEMPLATES].filter((t) => !HIDE_ON_LANDING.has(t.id)).sort((a, b) => Number(Boolean(b.niche)) - Number(Boolean(a.niche))).map((tpl) => {
+            const hit = ALL_DESIGNS.find((x) => x.design.template === tpl.id);
             return (
-              <figure key={t.id}>
-                <div className="mx-mini"><div className="mx-miniscale">
+              <figure key={tpl.id}>
+                <div className="mx-mini" {...decorative}><div className="mx-miniscale">
                   {hit
                     ? <CardRenderer card={applyDesign(sampleFor(base, hit.niche), hit.niche, hit.design)} mode={hit.design.mode} sound={false} />
-                    : <CardRenderer card={{ ...base, template: t.id }} mode="light" sound={false} />}
+                    : <CardRenderer card={{ ...base, template: tpl.id }} mode="light" sound={false} />}
                 </div></div>
-                <figcaption><b>{hit?.design.name ?? t.name}</b><small>{hit ? hit.niche.name : t.bestFor}</small></figcaption>
+                <figcaption>
+                  <b>{hit?.design.name ?? tpl.name}</b><small>{hit ? hit.niche.name : tpl.bestFor}</small>
+                  <Link className="mx-demo" to={`/demo/${tpl.id}`}>{t("Open demo")}<span className="sr">{t(" of the {v} design", { v: hit?.design.name ?? tpl.name })}</span> <ArrowRight size={14} aria-hidden /></Link>
+                </figcaption>
               </figure>
             );
           })}
         </div>
       </section>
 
-      <Ticker tone="cyan" items={['Barbershops', 'Nail spas', 'Salons', 'Massage', 'DJs', 'Weddings', 'Realtors', 'Churches', 'Tech']} />
+      <Ticker tone="cyan" items={[t('Barbershops'), t('Nail spas'), t('Salons'), t('Massage'), t('DJs'), t('Weddings'), t('Realtors'), t('Churches'), t('Tech')]} />
+
+      {/* ---------------------------------------------------------------- two ways to get a card */}
+      <section className="mx-paths" id="paths" aria-labelledby="paths-h">
+        <div className="mx-paths__in">
+          <h2 id="paths-h" className="mx-dir__h">{t("Two ways to get your card")}</h2>
+          <div className="mx-paths__grid">
+            <article className="mx-path">
+              <p className="mx-eyebrow">{t("Make it yourself")}</p>
+              <h3>{t("SeYo")}</h3>
+              <p>{t("Build your own card in about five minutes, and change it whenever you like.")}</p>
+              <ul>
+                <li><Check size={16} aria-hidden /> {t("Start free, no credit card")}</li>
+                <li><Check size={16} aria-hidden /> {t("Pro is $8 a month, Pro Plus is $16 and Business is $41.")}</li>
+                <li><Check size={16} aria-hidden /> {t("You edit it yourself, any time")}</li>
+              </ul>
+              <Link to="/signup" className="mx-btn mx-btn--pink">{t("Start free")} <ArrowRight size={18} aria-hidden /></Link>
+            </article>
+            <article className="mx-path mx-path--studio">
+              <p className="mx-eyebrow">{t("Done for you")}</p>
+              <h3>{t("SeYo Studio")}</h3>
+              <p>{t("I design and set up your card for you, starting with a free consult.")}</p>
+              <ul>
+                <li><Check size={16} aria-hidden /> {t("One-time setup from $249")}</li>
+                <li><Check size={16} aria-hidden /> {t("Plus a SeYo Pro, Pro Plus or Business subscription, which every Studio card needs")}</li>
+                <li><Check size={16} aria-hidden /> {t("I handle the design, copy and setup")}</li>
+              </ul>
+              <button type="button" className="mx-btn mx-btn--ghost" onClick={() => jump('studio')}>{t("See what Studio includes")} <ArrowRight size={18} aria-hidden /></button>
+            </article>
+          </div>
+        </div>
+      </section>
 
       {/* ---------------------------------------------------------------- pricing */}
       <section className="mx-pricing" id="pricing">
-        <h2 className="mx-h2 mx-h2--dark">Start free. <span className="pinkdeep">Go loud</span> for $8.</h2>
-        <div className="mx-bill" role="radiogroup" aria-label="Billing">
-          <button type="button" role="radio" aria-checked={!yearly} className={!yearly ? 'on' : ''} onClick={() => setYearly(false)}>Monthly</button>
-          <button type="button" role="radio" aria-checked={yearly} className={yearly ? 'on' : ''} onClick={() => setYearly(true)}>Yearly <span>Save up to 25%</span></button>
+        <h2 className="mx-h2 mx-h2--dark">{rich(t("Start free. <x1>Go loud</x1> for $8."), { x1: (c) => <span className="pinkdeep">{c}</span> })}</h2>
+        <div className="mx-bill" role="radiogroup" aria-label={t("Billing")}>
+          <button type="button" role="radio" aria-checked={!yearly} className={!yearly ? 'on' : ''} onClick={() => setYearly(false)}>{t("Monthly")}</button>
+          <button type="button" role="radio" aria-checked={yearly} className={yearly ? 'on' : ''} onClick={() => setYearly(true)}>{rich(t("Yearly <x1>Save up to 22%</x1>"), { x1: (c) => <span>{c}</span> })}</button>
         </div>
         <div className="mx-plans">
           {PLANS.map((p) => {
             const featured = !!p.featured;
-            const perCard = !!p.perCard;
             const shown = p.price === 0 ? 0 : yearly ? Math.round((p.yearly / 12) * 100) / 100 : p.price;
-            const total = teamTotal(cards, yearly);
             return (
               <article key={p.id} className={`mx-plan ${featured ? 'is-featured' : ''}`}>
-                {featured && <span className="mx-sticker mx-sticker--orange s4">Most popular</span>}
-                <h3>{p.name}</h3>
-                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? 'forever' : perCard ? 'card a month' : 'month'}</span></p>
-                <p className="mx-billnote">{p.price === 0 ? 'No card needed' : yearly ? (perCard ? `Billed $${p.yearly} per card a year` : `Billed $${p.yearly} a year`) : 'Billed monthly, cancel anytime'}</p>
-                <p className="mx-pitch">{p.pitch}</p>
-                {perCard && (
-                  <div className="mx-seats">
-                    <span id="seats-l">How many cards?</span>
-                    <div className="mx-seats__ctl" role="group" aria-labelledby="seats-l">
-                      <button type="button" aria-label="Fewer cards" disabled={cards <= TEAM.min} onClick={() => setCardsRaw(String(clampCards(cards - 1)))}><Minus size={18} /></button>
-                      <input type="number" inputMode="numeric" min={TEAM.min} max={TEAM.max} value={cardsRaw} aria-label="Number of cards"
-                        onChange={(e) => setCardsRaw(e.target.value)} onBlur={() => setCardsRaw(String(cards))} />
-                      <button type="button" aria-label="More cards" disabled={cards >= TEAM.max} onClick={() => setCardsRaw(String(clampCards(cards + 1)))}><Plus size={18} /></button>
-                    </div>
-                    <p className="mx-seats__total" aria-live="polite">
-                      <b>${total.toLocaleString()}</b> {yearly ? `a year (about $${Math.round(total / 12).toLocaleString()} a month)` : 'a month'} for {cards} cards
-                    </p>
-                  </div>
+                {featured && <span className="mx-sticker mx-sticker--orange s4">{t("Most popular")}</span>}
+                <h3>{t(p.name)}</h3>
+                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? t('forever') : t('month')}</span></p>
+                <p className="mx-billnote">{p.price === 0 ? t('No card needed') : yearly ? t('Billed ${y} a year', { y: p.yearly }) : t('Billed monthly, cancel anytime')}</p>
+                {p.id === 'pro' && offer.known && offer.active && (
+                  <p className="mx-offernote">{yearly ? t("Founding price is for monthly billing only.") : t("Founding price {price} while spots last ({left} left)", { price: dollars(offer.cents), left: offer.left })}</p>
                 )}
-                <ul>{p.features.map((f) => <li key={f}><Check size={16} /> {f}</li>)}</ul>
-                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}${perCard ? `&cards=${cards}` : ''}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? 'Start free' : `Choose ${p.name}`}</Link>
+                <p className="mx-pitch">{t(p.pitch)}</p>
+                <ul>{p.features.map((f) => <li key={f}><Check size={16} /> {t(f, { designs: DESIGN_COUNT })}</li>)}</ul>
+                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? t('Start free') : t('Choose {name}', { name: t(p.name) })}</Link>
               </article>
             );
           })}
         </div>
-        <p className="mx-founding"><b>Founding members</b> The first {FOUNDING.spots} Pro subscribers lock in ${FOUNDING.price} a month for life.</p>
+        {offer.known && offer.active && (
+          <p className="mx-founding">{rich(t("<b>Founding offer.</b> The first {spots} Pro customers pay {price} a month instead of {base}. {left} spots left. Pro monthly only, one per person. The price lasts while your subscription stays active. If you cancel, it ends and is not offered again.", { spots: offer.spots, price: dollars(offer.cents), base: dollars(PLANS[1].price * 100), left: offer.left }), { b: (c) => <b>{c}</b> })}</p>
+        )}
       </section>
 
       {/* ---------------------------------------------------------------- studio */}
       <section className="mx-studio" id="studio" aria-labelledby="studio-h">
         <div className="mx-studio__in">
-          <header className="mx-studio__head">
-            <p className="mx-eyebrow">Sello Studio by Finesse Media</p>
-            <h2 id="studio-h" className="mx-dir__h">Want me to build it for you?</h2>
-            <p className="mx-dir__sub">I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products. Your card lives on Sello, so you can still edit it anytime.</p>
-          </header>
+          <header className="mx-studio__head">{rich(t("<x1>SeYo Studio by Finesse Media</x1><x2>Want me to build it for you?</x2><x3>I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products.</x3>"), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="studio-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
+
+          <div className="mx-studio__two">
+            <section className="mx-studio__box" aria-labelledby="pay-h">
+              <h3 id="pay-h">{t("What you pay")}</h3>
+              <dl>
+                <div>{rich(t("<x1>Studio setup</x1><x2>One time. From ${from} for a Signature card. Every project is quoted.</x2>", { from: STUDIO[0].from }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
+                <div>{rich(t("<x1>SeYo subscription</x1><x2>Required for every Studio card: Pro at ${price} a month, Pro Plus at ${price2} a month, or Business at ${price3} a month.</x2>", { price: PLANS[1].price, price2: PLANS[2].price, price3: PLANS[3].price }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
+              </dl>
+            </section>
+            <section className="mx-studio__box" aria-labelledby="how-h">
+              <h3 id="how-h">{t("How it works")}</h3>
+              <ol>
+                <li>{rich(t("<b>Request a free consult.</b> Tell me about your business."), { b: (c) => <b>{c}</b> })}</li>
+                <li>{rich(t("<b>I build a private preview.</b> You review it before you pay."), { b: (c) => <b>{c}</b> })}</li>
+                <li>{rich(t("<b>You approve it and pay through Stripe.</b>"), { b: (c) => <b>{c}</b> })}</li>
+                <li>{rich(t("<b>I set up your live address by hand.</b> It is an address on finessemedia.pro that I provide. Connecting your own custom domain yourself is not available yet."), { b: (c) => <b>{c}</b> })}</li>
+              </ol>
+            </section>
+          </div>
+
           <div className="mx-studio__grid">
             {STUDIO.map((s) => (
               <article key={s.id} className="mx-studio__card">
-                <h3>{s.name}</h3>
-                <p className="mx-studio__from">from <b>${s.from}</b>{'per' in s ? ` per ${s.per}` : ''}</p>
-                <p>{s.blurb}</p>
+                <h3>{t(s.name)}</h3>
+                <p className="mx-studio__from">{rich(t("from <b>${from}</b>{v}", { from: s.from, v: 'per' in s ? ' ' + t('per person') : '' }), { b: (c) => <b>{c}</b> })}</p>
+                <p>{t(s.blurb)}</p>
+                <ul>{s.includes.map((x) => <li key={x}><Check size={14} aria-hidden /> {t(x)}</li>)}</ul>
+                {'cardPackage' in s && <small>{t("Needs a SeYo Pro, Pro Plus or Business subscription.")}</small>}
               </article>
             ))}
           </div>
           <div className="mx-dir__foot">
-            <a className="mx-btn mx-btn--pink" href={STUDIO_CONTACT.whatsapp} target="_blank" rel="noopener">Book a free consult <ArrowRight size={18} /></a>
-            <a className="mx-studio__mail" href={STUDIO_CONTACT.email}>or email angel@finessemedia.pro</a>
-            <span>Studio cards need Sello Pro or Business. Prices are starting points; every project is quoted.</span>
+            <a className="mx-btn mx-btn--pink" href={STUDIO_CONTACT.whatsapp} target="_blank" rel="noopener"><MessageCircle size={18} aria-hidden /> {t("Request a free consult on WhatsApp")}</a>
+            <a className="mx-studio__mail" href={STUDIO_CONTACT.email}>{t("or email angel@finessemedia.pro")}</a>
+            <span>{t("The button opens a WhatsApp chat with me. Prices are starting points; every project is quoted.")}</span>
           </div>
         </div>
       </section>
 
       <footer className="mx-foot">
         <Brand tone="dark" />
-        <span>{APP_NAME} by Finesse Media LLC, Deltona, Florida</span>
-        <a href="https://www.finessemedia.pro">finessemedia.pro</a>
+        <span>{t("{APP_NAME} by Finesse Media LLC, Deltona, Florida", { APP_NAME })}</span>
+        <span className="mx-foot__links">
+          {HAS_LEGAL && <>{rich(t("<x1>Terms</x1><x2>Privacy</x2>"), { x1: (c) => <a href={LEGAL.termsUrl!} target="_blank" rel="noopener">{c}</a>, x2: (c) => <a href={LEGAL.privacyUrl!} target="_blank" rel="noopener">{c}</a> })}</>}
+          <a href="https://www.finessemedia.pro">{t("finessemedia.pro")}</a>
+        </span>
       </footer>
     </div>
   );

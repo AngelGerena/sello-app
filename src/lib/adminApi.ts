@@ -4,7 +4,7 @@ import { IS_DEMO, supabase } from './supabase';
    (see supabase/migrations/0011_admin_portal.sql). Each one checks that the caller is an admin,
    so a regular customer who tried to call them would be refused by the database itself. */
 
-export type PlanId = 'free' | 'pro' | 'team';
+export type PlanId = 'free' | 'pro' | 'plus' | 'team';
 export type PlanHow = 'comped' | 'manual';
 
 export interface AdminStats {
@@ -106,7 +106,7 @@ function makeDemo(): AdminApi {
   return {
     async stats() {
       const paid = users.filter((u) => u.plan !== 'free' && ['active', 'trialing', 'past_due'].includes(u.plan_status ?? ''));
-      const mrr = paid.reduce((s, u) => s + (u.plan === 'pro' ? (u.founding && (u.plan_interval ?? 'month') === 'month' ? 500 : u.plan_interval === 'year' ? 600 : 800) : ((u.seats ?? 5) * (u.plan_interval === 'year' ? 500 : 600))), 0);
+      const mrr = paid.reduce((s, u) => s + (u.plan === 'pro' ? (u.founding && (u.plan_interval ?? 'month') === 'month' ? 500 : u.plan_interval === 'year' ? 658 : 800) : u.plan === 'plus' ? (u.plan_interval === 'year' ? 1242 : 1600) : (u.plan_interval === 'year' ? 3325 : 4100)), 0);
       const plans: Partial<Record<PlanId, number>> = {};
       users.forEach((u) => { plans[u.plan] = (plans[u.plan] ?? 0) + 1; });
       const tally: Record<string, number> = {};
@@ -157,7 +157,7 @@ function makeDemo(): AdminApi {
       const e = email.trim().toLowerCase();
       if (!e) return fail("Enter the new owner's email.");
       const to = users.find((u) => (u.email ?? '').toLowerCase() === e);
-      if (!to) return fail(`No Sello account uses ${e} yet. Ask them to sign up first, then transfer the card.`);
+      if (!to) return fail(`No SeYo account uses ${e} yet. Ask them to sign up first, then transfer the card.`);
       if (!c) return fail('No such card.');
       if (c.owner_id === to.id) return fail('That account already owns this card.');
       const from = c.owner_email;

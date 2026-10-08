@@ -36,7 +36,7 @@ export function takeAuthError(): string | null {
     sessionStorage.removeItem(ERR_KEY);
     const { at } = JSON.parse(raw) as { code: string; at: number };
     if (Date.now() - at > FRESH_MS) return null;
-    return 'That confirmation link has expired or was already used. If you already confirmed your email, just sign in below. If not, type your email and tap Resend confirmation for a fresh link.';
+    return 'That link has expired or was already used. Links work once, and some email apps open them in the background, which uses them up. If you already verified your email, just sign in below. If not, type your email and request a fresh link.';
   } catch { return null; }
 }
 

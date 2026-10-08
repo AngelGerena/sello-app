@@ -1,5 +1,5 @@
 /* =================================================================
-   Admin portal. Same light workspace as the dashboard, so it feels like part of Sello.
+   Admin portal. Same light workspace as the dashboard, so it feels like part of SeYo.
    ================================================================= */
 .dash__acts { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .ed__admin { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 700; min-width: 0; max-width: 60ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -73,6 +73,7 @@
 .adm-plan, .adm-pill, .adm-tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .adm-plan--free { background: var(--line-2); color: var(--muted); }
 .adm-plan--pro { background: var(--gold-soft); color: var(--gold-deep); }
+.adm-plan--plus { background: var(--gold-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--gold-deep); }
 .adm-plan--team { background: var(--ink); color: #fff; }
 .adm-pill--ok { background: #D9FBEA; color: #0B5D3B; }
 .adm-pill--bad { background: #FDE1DC; color: #8C2A17; }
