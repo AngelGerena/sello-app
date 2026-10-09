@@ -16,3 +16,10 @@ These are internal identifiers that are already deployed or stored. Renaming the
 | `selloapp.netlify.app`, repo `sello-app` | Netlify site and GitHub repo | Renaming changes the live address and the deploy connection. |
 
 If you later move to a SeYo domain or rename the Netlify site, update `SELLO_SITE_URL`, the Supabase auth redirect URLs and `VITE_PUBLIC_ORIGIN` together.
+
+## Logo and home-screen icon
+
+- `src/assets/seyo-wordmark.png` is the "SeYo" lettering from the supplied logo, cropped with a transparent background. It is made for dark backgrounds, and every page that shows it (landing header and footer, demo card bar) is dark.
+- The home-screen icon is the card symbol on a deep navy-to-blue background: `public/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (Android, extra padding so circular crops keep the whole card), `apple-touch-icon.png` (iPhone, 180px, no transparency) and `favicon-32.png`.
+- `index.html` sets the iPhone home-screen name to "SeYo" so it is not the long page title.
+- The full logo with the tagline ("Your world. One tap. Digital you.") is not on the site yet.

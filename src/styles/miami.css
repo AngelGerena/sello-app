@@ -26,6 +26,24 @@
 .mx-navlink { display: inline-flex; align-items: center; min-height: 44px; border: 0; background: none; cursor: pointer; text-decoration: none; font-weight: 800; font-size: 14px; color: var(--w); letter-spacing: .02em; }
 .mx-navlink:hover { color: var(--c); }
 .mx .lp__mark { height: 44px; }
+/* The SeYo wordmark is wider than the old one, so give the header room on phones. */
+@media (max-width: 640px) { .mx .lp__mark { height: 30px; } }
+@media (max-width: 420px) {
+  .mx .lp__mark { height: 24px; }
+  .mx-nav { gap: 6px; padding-left: 12px; padding-right: 12px; }
+  .mx nav { gap: 6px; }
+  .mx nav .lang button { min-width: 30px; padding: 0 6px; }
+  .mx nav .mx-navlink, .mx-btn--sm { font-size: 13px; }
+  .mx-btn--sm { padding-left: 11px; padding-right: 11px; }
+}
+@media (max-width: 340px) {
+  .mx .lp__mark { height: 20px; }
+  .mx-nav { padding-left: 8px; padding-right: 8px; }
+  .mx nav { gap: 4px; }
+  .mx nav .lang button { min-width: 26px; min-height: 32px; padding: 0 4px; }
+  .mx nav .mx-navlink, .mx-btn--sm { font-size: 12px; }
+  .mx-btn--sm { padding-left: 9px; padding-right: 9px; }
+}
 
 /* hero */
 .mx-hero { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 56px); align-items: center; max-width: 1360px; margin: 0 auto; padding: clamp(28px, 5vw, 64px) clamp(18px, 4vw, 48px) 72px; }
