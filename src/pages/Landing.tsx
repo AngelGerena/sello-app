@@ -5,7 +5,7 @@ import type { Card } from '../lib/types';
 import { sampleCard } from '../lib/seed';
 import { deriveTokens, randomButton, randomSeeds, FONT_PAIRS } from '../lib/theme';
 import { TEMPLATES } from '../templates';
-import { ALL_DESIGNS, NICHES, NICHE_GROUPS, applyDesign, sampleFor } from '../lib/niches';
+import { ALL_DESIGNS, NICHES, applyDesign, sampleFor } from '../lib/niches';
 import Brand from '../components/Brand';
 import { APP_NAME, PLANS, STUDIO, STUDIO_CONTACT } from '../lib/plans';
 import { sfx } from '../lib/sfx';
@@ -42,6 +42,8 @@ export default function Landing() {
   const offer = useOffer();
   const base = useMemo(() => sampleCard(), []);
   const showcase = useMemo(() => SHOWCASE.map((t) => ALL_DESIGNS.find((x) => x.design.template === t)).filter(Boolean) as typeof ALL_DESIGNS, []);
+  /* Four rows of the marquee: every fourth niche per row, so each row mixes categories. */
+  const nicheRows = useMemo(() => [0, 1, 2, 3].map((r) => NICHES.filter((_, k) => k % 4 === r)), []);
   const [i, setI] = useState(0);
   const [rolled, setRolled] = useState<Card | null>(null);
   const [rolls, setRolls] = useState(0);
@@ -131,36 +133,22 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---------------------------------------------------------------- niche directory */}
-      <section className="mx-dir" id="niches" aria-labelledby="dir-h">
-        <div className="mx-dir__in">
-          <header className="mx-dir__head">{rich(t("<x1>{NICHE_COUNT} niches · {v}</x1><x2>Find your niche</x2><x3>Every niche comes with designs, sample services and suggested links made for that line of work.</x3>", { NICHE_COUNT, v: designsLabelT(DESIGN_COUNT) }), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="dir-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
-          <div className="mx-dir__cols">
-            {NICHE_GROUPS.map((g) => {
-              const items = NICHES.filter((n) => n.group === g);
-              if (!items.length) return null;
-              return (
-                <div key={g} className="mx-dir__col">
-                  <h3>{g}</h3>
-                  <ul>
-                    {items.map((n) => (
-                      <li key={n.id}>
-                        <Link to="/signup" className="mx-dir__item">
-                          <span className="mx-dir__name">{t(n.name)}</span>
-                          <span className="mx-dir__count" aria-label={designsLabelT(n.designs.length)}>{n.designs.length}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mx-dir__foot">
-            <button type="button" className="mx-btn mx-btn--pink" onClick={() => jump('layouts')}>{t("See all designs")} <ArrowRight size={18} /></button>
-            <span>{t("Don't see yours? Start with a classic layout and make it your own.")}</span>
-          </div>
+      {/* ---------------------------------------------------------------- niche marquee */}
+      <section className="mx-nm" id="niches" aria-labelledby="dir-h">
+        <div className="mx-nm__rows" aria-hidden>
+          {nicheRows.map((row, r) => (
+            <div key={r} className={`mx-nm__row mx-nm__row--${r % 2 ? 'line mx-nm__row--rev' : 'fill'}`}>
+              <span className="mx-nm__track" style={{ animationDelay: `-${r * 19}s`, animationDuration: `${84 + r * 12}s` }}>
+                {[...row, ...row].map((n, k) => <span key={k}>{t(n.name)}<i>/</i></span>)}
+              </span>
+            </div>
+          ))}
         </div>
+        <div className="mx-nm__panel">
+          {rich(t("<x1>{NICHE_COUNT} niches · {v}</x1><x2>Find your niche</x2><x3>If you have a line of work, we have a card for it.</x3>", { NICHE_COUNT, v: designsLabelT(DESIGN_COUNT) }), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="dir-h" className="mx-nm__h">{c}</h2>, x3: (c) => <p className="mx-nm__sub">{c}</p> })}
+          <button type="button" className="mx-btn mx-btn--pink mx-btn--lg" onClick={() => jump('layouts')}>{t("See all designs")} <ArrowRight size={20} /></button>
+        </div>
+        <p className="sr">{NICHES.map((n) => t(n.name)).join(', ')}</p>
       </section>
 
       {/* ---------------------------------------------------------------- designs strip */}

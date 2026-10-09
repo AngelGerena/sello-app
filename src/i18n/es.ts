@@ -411,7 +411,7 @@ export const ES: Record<string, string> = {
   "Roll {rolls}: <b>{name}</b> layout. <x2>Open this demo</x2> <x3>Back to the showcase</x3>": "Mezcla {rolls}: diseño <b>{name}</b>. <x2>Abrir esta demostración</x2> <x3>Volver a la galería</x3>",
   "Open this demo<x1> of the {name} design</x1>": "Abrir esta demostración<x1> del diseño {name}</x1>",
   "Loud where it counts. <x1>Easy</x1> everywhere else.": "Llamativa donde importa. <x1>Fácil</x1> en todo lo demás.",
-  "<x1>{NICHE_COUNT} niches · {v}</x1><x2>Find your niche</x2><x3>Every niche comes with designs, sample services and suggested links made for that line of work.</x3>": "<x1>{NICHE_COUNT} nichos · {v}</x1><x2>Encuentra tu nicho</x2><x3>Cada nicho incluye diseños, servicios de ejemplo y enlaces sugeridos pensados para ese tipo de trabajo.</x3>",
+  "<x1>{NICHE_COUNT} niches · {v}</x1><x2>Find your niche</x2><x3>If you have a line of work, we have a card for it.</x3>": "<x1>{NICHE_COUNT} nichos · {v}</x1><x2>Encuentra tu nicho</x2><x3>Si tienes un oficio, tenemos una tarjeta para ti.</x3>",
   "Swipe the <x1>wall</x1> of designs.": "Desliza por la <x1>galería</x1> de diseños.",
   "Open demo": "Abrir demostración",
   " of the {v} design": " del diseño {v}",

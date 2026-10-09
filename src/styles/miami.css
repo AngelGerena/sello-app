@@ -201,6 +201,25 @@
 .mx-dir__foot span { font-size: 15px; color: rgba(255,255,255,.6); }
 @media (max-width: 640px) { .mx-dir__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; } .mx-dir__item { font-size: 14.5px; } }
 
+/* niche marquee: giant scrolling niche names behind a call-out panel */
+.mx-nm { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: clamp(560px, 62vw, 860px); padding: 48px 0; background: var(--n); border-top: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08); }
+.mx-nm__rows { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.mx-nm__row { overflow: hidden; white-space: nowrap; font-family: 'Anton', Impact, sans-serif; font-size: clamp(64px, 11.8vw, 170px); line-height: 1; text-transform: uppercase; letter-spacing: .005em; }
+.mx-nm__track { display: inline-block; animation: mxTick 90s linear infinite; }
+.mx-nm__row--rev .mx-nm__track { animation-direction: reverse; }
+.mx-nm__row--fill { color: var(--n2); }
+.mx-nm__row--line { color: transparent; -webkit-text-stroke: 2px var(--c); }
+.mx-nm__row--line:nth-child(4n) { -webkit-text-stroke-color: var(--p); }
+.mx-nm__row i { font-style: normal; padding: 0 .22em; }
+.mx-nm__row--fill i { color: var(--p); }
+.mx-nm__row--line i { -webkit-text-stroke: 0; color: var(--o); }
+.mx-nm::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at center, rgba(11,14,42,.55) 0%, rgba(11,14,42,.1) 60%, rgba(11,14,42,0) 100%); }
+.mx-nm__panel { position: relative; z-index: 2; width: min(780px, calc(100% - 36px)); padding: clamp(26px, 5vw, 52px) clamp(18px, 5vw, 56px); text-align: center; background: var(--n); border: 3px solid var(--w); border-radius: 28px; box-shadow: 10px 10px 0 var(--p); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.mx-nm__panel .mx-eyebrow { margin: 0; }
+.mx-nm__h { margin: 0; font-family: 'Anton', Impact, sans-serif; font-weight: 400; font-size: clamp(54px, 11vw, 112px); line-height: .92; text-transform: uppercase; color: var(--w); }
+.mx-nm__sub { margin: 0; max-width: 520px; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5; color: rgba(255,255,255,.82); }
+@media (max-width: 640px) { .mx-nm { min-height: 660px; } .mx-nm__row { font-size: 27vw; -webkit-text-stroke-width: 1.5px; } .mx-nm__panel { box-shadow: 6px 6px 0 var(--p); border-radius: 22px; } }
+
 /* billing toggle, founding note */
 .mx-bill { display: flex; justify-content: center; gap: 6px; width: max-content; margin: -20px auto 40px; padding: 5px; border-radius: 999px; border: 3px solid var(--n); background: var(--w); }
 .mx-bill button { min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; font: inherit; font-weight: 800; font-size: 14px; color: var(--n); cursor: pointer; }
