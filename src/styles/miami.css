@@ -25,11 +25,11 @@
 .mx-nav nav { display: flex; align-items: center; gap: clamp(10px, 2vw, 24px); }
 .mx-navlink { display: inline-flex; align-items: center; min-height: 44px; border: 0; background: none; cursor: pointer; text-decoration: none; font-weight: 800; font-size: 14px; color: var(--w); letter-spacing: .02em; }
 .mx-navlink:hover { color: var(--c); }
-.mx .lp__mark { height: 66px; }
+.mx .lp__mark { height: 74px; filter: drop-shadow(0 0 10px rgba(255,60,172,.4)); }
 /* The OKUNAMI wordmark is wide, so keep it readable but leave the header room on phones. */
-@media (max-width: 640px) { .mx .lp__mark { height: 34px; } }
+@media (max-width: 640px) { .mx .lp__mark { height: 40px; } }
 @media (max-width: 420px) {
-  .mx .lp__mark { height: 30px; }
+  .mx .lp__mark { height: 34px; }
   .mx-nav { gap: 6px; padding-left: 12px; padding-right: 12px; }
   .mx nav { gap: 6px; }
   .mx nav .lang button { min-width: 30px; padding: 0 6px; }
@@ -37,7 +37,7 @@
   .mx-btn--sm { padding-left: 11px; padding-right: 11px; }
 }
 @media (max-width: 340px) {
-  .mx .lp__mark { height: 23px; }
+  .mx .lp__mark { height: 28px; }
   .mx-nav { padding-left: 8px; padding-right: 8px; }
   .mx nav { gap: 4px; }
   .mx nav .lang button { min-width: 26px; min-height: 32px; padding: 0 4px; }
@@ -74,7 +74,7 @@
 
 /* phone and sun */
 .mx-hero__stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.mx-hero__logo { display: block; width: min(500px, 100%); height: auto; margin: 0 auto -10px; position: relative; z-index: 2; filter: drop-shadow(0 0 28px rgba(0,140,255,.5)); }
+.mx-hero__logo { display: block; width: min(560px, 100%); height: auto; margin: 0 auto -14px; position: relative; z-index: 2; filter: drop-shadow(0 0 18px rgba(255,60,172,.45)) drop-shadow(0 0 40px rgba(0,229,255,.22)); }
 .mx-hero__logo--m { display: none; }
 .mx-sun { position: absolute; top: 14%; left: 50%; width: min(460px, 90%); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; z-index: -1;
   background: linear-gradient(180deg, var(--o), var(--p) 70%);
@@ -162,7 +162,7 @@
 /* footer */
 .mx-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 28px clamp(18px, 4vw, 48px); font-size: 14px; font-weight: 600; color: rgba(255,255,255,.7); border-top: 3px solid var(--p); }
 .mx-foot a { color: var(--c); font-weight: 800; }
-.mx-foot .lp__mark { height: 40px; }
+.mx-foot .lp__mark { height: 56px; }
 
 /* responsive */
 @media (min-width: 961px) and (max-width: 1180px) { .mx-plans { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 820px; } }
