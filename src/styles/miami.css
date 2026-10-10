@@ -25,11 +25,11 @@
 .mx-nav nav { display: flex; align-items: center; gap: clamp(10px, 2vw, 24px); }
 .mx-navlink { display: inline-flex; align-items: center; min-height: 44px; border: 0; background: none; cursor: pointer; text-decoration: none; font-weight: 800; font-size: 14px; color: var(--w); letter-spacing: .02em; }
 .mx-navlink:hover { color: var(--c); }
-.mx .lp__mark { height: 50px; }
+.mx .lp__mark { height: 66px; }
 /* The OKUNAMI wordmark is wide, so keep it readable but leave the header room on phones. */
-@media (max-width: 640px) { .mx .lp__mark { height: 36px; } }
+@media (max-width: 640px) { .mx .lp__mark { height: 34px; } }
 @media (max-width: 420px) {
-  .mx .lp__mark { height: 29px; }
+  .mx .lp__mark { height: 30px; }
   .mx-nav { gap: 6px; padding-left: 12px; padding-right: 12px; }
   .mx nav { gap: 6px; }
   .mx nav .lang button { min-width: 30px; padding: 0 6px; }
@@ -67,14 +67,16 @@
 .mx-sticker--cyan { background: var(--c); color: var(--n); }
 .mx-sticker--pink { background: var(--p); color: var(--n); }
 .mx-sticker.s1 { left: 4px; top: -8px; transform: rotate(-7deg); }
-.mx-sticker.s2 { left: 2%; top: 14%; transform: rotate(-10deg); animation-delay: -1s; }
+.mx-sticker.s2 { left: 2%; top: 24%; transform: rotate(-10deg); animation-delay: -1s; }
 .mx-sticker.s3 { right: 0; bottom: 22%; transform: rotate(8deg); animation-delay: -2s; }
 .mx-sticker.s4 { right: 18px; top: -18px; transform: rotate(6deg); }
 @keyframes mxWobble { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -5px; rotate: 2deg; } }
 
 /* phone and sun */
 .mx-hero__stage { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.mx-sun { position: absolute; top: 4%; left: 50%; width: min(460px, 90%); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; z-index: -1;
+.mx-hero__logo { display: block; width: min(500px, 100%); height: auto; margin: 0 auto -10px; position: relative; z-index: 2; filter: drop-shadow(0 0 28px rgba(0,140,255,.5)); }
+.mx-hero__logo--m { display: none; }
+.mx-sun { position: absolute; top: 14%; left: 50%; width: min(460px, 90%); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; z-index: -1;
   background: linear-gradient(180deg, var(--o), var(--p) 70%);
   -webkit-mask: linear-gradient(#000 0 50%, transparent 50% 55%, #000 55% 63%, transparent 63% 67%, #000 67% 75%, transparent 75% 78%, #000 78% 86%, transparent 86% 88%, #000 88%);
   mask: linear-gradient(#000 0 50%, transparent 50% 55%, #000 55% 63%, transparent 63% 67%, #000 67% 75%, transparent 75% 78%, #000 78% 86%, transparent 86% 88%, #000 88%); }
@@ -166,11 +168,14 @@
 @media (min-width: 961px) and (max-width: 1180px) { .mx-plans { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 820px; } }
 @media (max-width: 960px) {
   .mx-hero { grid-template-columns: 1fr; text-align: left; }
+  .mx-hero__logo--m { display: block; width: min(420px, 100%); margin: 0 0 8px; }
+  .mx-hero__stage .mx-hero__logo { display: none; }
   .mx-feats__grid, .mx-plans { grid-template-columns: 1fr; }
   .mx-plan.is-featured { transform: none; }
   .mx-dice { right: 6px; top: 40%; }
 }
 @media (max-width: 640px) {
+  .mx-hero__logo--m { width: 100%; }
   .mx-nav nav button.mx-navlink { display: none; }
   .mx-phone { width: 300px; height: 600px; }
   .mx-phone__screen > .fc-card { zoom: .7; min-height: 142.9%; }

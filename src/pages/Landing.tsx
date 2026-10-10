@@ -7,6 +7,7 @@ import { deriveTokens, randomButton, randomSeeds, FONT_PAIRS } from '../lib/them
 import { TEMPLATES } from '../templates';
 import { ALL_DESIGNS, NICHES, applyDesign, sampleFor } from '../lib/niches';
 import Brand from '../components/Brand';
+import heroLogo from '../assets/okunami-wordmark.png';
 import { APP_NAME, PLANS, STUDIO, STUDIO_CONTACT } from '../lib/plans';
 import { sfx } from '../lib/sfx';
 import { decorative } from '../lib/a11y';
@@ -80,6 +81,7 @@ export default function Landing() {
       {/* ---------------------------------------------------------------- hero */}
       <section className="mx-hero">
         <div className="mx-hero__copy">
+          <img src={heroLogo} alt="" aria-hidden className="mx-hero__logo mx-hero__logo--m" />
           <span className="mx-sticker mx-sticker--orange s1">{designsLabelT(DESIGN_COUNT)}</span>
           <h1 className="mx-mega">{rich(t("Make <x1>your</x1> mark."), { x1: (c) => <span className="pink">{c}</span> })}</h1>
           <p className="mx-lede">{rich(t("Digital business cards that look like <b>your</b> brand, down to the last button. Barbers, salons, DJs, realtors, churches: pick your niche and walk out with a card people actually save."), { b: (c) => <b>{c}</b> })}</p>
@@ -95,6 +97,7 @@ export default function Landing() {
         </div>
 
         <div className="mx-hero__stage">
+          <img src={heroLogo} alt="" aria-hidden className="mx-hero__logo" />
           <span className="mx-sun" aria-hidden />
           <span className="mx-sticker mx-sticker--cyan s2">{t("NFC ready")}</span>
           <span className="mx-sticker mx-sticker--pink s3">{t("No app needed")}</span>
