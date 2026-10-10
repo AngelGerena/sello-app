@@ -75,7 +75,9 @@ export type TemplateId =
   | 'casefile' | 'contactsheet' | 'flash' | 'orderticket' | 'hangtag' | 'bag' | 'postcard'
   | 'floorplan' | 'ledger' | 'hymnboard' | 'cluster' | 'stopwatch' | 'diner' | 'yardsign'
   // worship collection
-  | 'santuario' | 'celestial' | 'vitral' | 'frecuencia' | 'constelacion' | 'escenario' | 'salmo';
+  | 'santuario' | 'celestial' | 'vitral' | 'frecuencia' | 'constelacion' | 'escenario' | 'salmo'
+  // collection five: photo-led cards built on card UX research
+  | 'sheet' | 'studio' | 'intro' | 'duotone' | 'trust' | 'local' | 'menu' | 'status' | 'chat';
 
 export interface SocialLink { id: string; network: string; value: string; }   // value = handle or full URL
 export interface Highlight { id: string; icon: string; title: string; subtitle: string; }

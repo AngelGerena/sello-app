@@ -265,7 +265,7 @@ export default function Landing() {
       {/* ---------------------------------------------------------------- studio */}
       <section className="mx-studio" id="studio" aria-labelledby="studio-h">
         <div className="mx-studio__in">
-          <header className="mx-studio__head">{rich(t("<x1>OKUNAMI Studio by Finesse Media</x1><x2>Want me to build it for you?</x2><x3>I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products.</x3>"), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="studio-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
+          <header className="mx-studio__head">{rich(t("<x1>OKUNAMI Studio by Finesse Media</x1><x2>Want me to build it for you?</x2><x3>I'm Angel, a Central Florida creative director and photographer. Bring your own photo or schedule a headshot with me. Either way, I design your card and hand you tap products ready to share.</x3>"), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="studio-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
 
           <div className="mx-studio__two">
             <section className="mx-studio__box" aria-labelledby="pay-h">
