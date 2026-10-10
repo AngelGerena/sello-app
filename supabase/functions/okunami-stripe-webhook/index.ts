@@ -1,7 +1,7 @@
 // Stripe -> OKUNAMI. Keeps fc_profiles.plan in sync with the customer's subscription.
 // Authentication is Stripe's signature (STRIPE_WEBHOOK_SECRET), so JWT checking is off for this function.
 import Stripe from 'npm:stripe@17.7.0';
-import { BUSINESS_CARDS, admin, env, planForAmount, planForPrice, stripe, type Plan } from '../_shared/okunami.ts';
+import { clampSeats, admin, env, planForAmount, planForPrice, stripe, type Plan } from '../_shared/okunami.ts';
 
 const PAID = ['active', 'trialing', 'past_due'];
 
@@ -27,7 +27,7 @@ async function applySubscription(sub: Stripe.Subscription, userIdHint?: string |
   const plan: Plan = resolved ?? 'pro';
   const update: Record<string, unknown> = {
     plan: paid ? plan : 'free',
-    seats: paid && plan === 'team' ? BUSINESS_CARDS : null,   // Business is a flat 5 cards
+    seats: paid && plan === 'team' ? clampSeats(item?.quantity ?? sub.metadata?.okunami_seats) : null,   // Business is per card: the quantity on the subscription
     plan_status: sub.status,
     stripe_customer_id: customer,
     stripe_subscription_id: sub.id,

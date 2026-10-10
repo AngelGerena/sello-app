@@ -4,7 +4,8 @@ import { Mail, Loader2, Check, Crown, Eye, EyeOff, KeyRound, ArrowLeft } from 'l
 import { supabase } from '../lib/supabase';
 import { useAuth, useProviders } from '../lib/auth';
 import Brand from '../components/Brand';
-import { PLANS } from '../lib/plans';
+import { PLANS, clampCards, teamTotal } from '../lib/plans';
+import { CARDS_KEY } from '../lib/billing';
 import { takeAuthError } from '../lib/authLanding';
 import { DESIGN_COUNT } from '../lib/counts';
 import { HAS_LEGAL, LEGAL } from '../lib/legal';
@@ -74,7 +75,9 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
   const planId = params.get('plan');
   const plan = PLANS.find((p) => p.id === planId && p.price > 0);
   const billing = params.get('billing') === 'year' ? 'year' : 'month';
-  if (plan) { try { localStorage.setItem(INTENT_KEY, plan.id); localStorage.setItem('fc.plan-interval', billing); } catch { /* storage blocked */ } }
+  const cards = clampCards(parseInt(params.get('cards') ?? '', 10));   // Business: how many cards
+  const cardsQs = plan?.perCard ? `&cards=${cards}` : '';
+  if (plan) { try { localStorage.setItem(INTENT_KEY, plan.id); localStorage.setItem('fc.plan-interval', billing); if (plan.perCard) localStorage.setItem(CARDS_KEY, String(cards)); } catch { /* storage blocked */ } }
 
   useEffect(() => { if (cool <= 0) return; const t = setTimeout(() => setCool((c) => c - 1), 1000); return () => clearTimeout(t); }, [cool]);
 
@@ -150,7 +153,7 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
   };
 
   /* ---------------------------------------------- screens */
-  const goSignIn = () => { setScreen('form'); setErr(''); setPassword(''); nav(`/login?email=${encodeURIComponent(email)}&verified=1${plan ? `&plan=${plan.id}&billing=${billing}` : ''}`); };
+  const goSignIn = () => { setScreen('form'); setErr(''); setPassword(''); nav(`/login?email=${encodeURIComponent(email)}&verified=1${plan ? `&plan=${plan.id}&billing=${billing}${cardsQs}` : ''}`); };
   const wait = cool > 0 ? ` in ${cool}s` : '';
   const SentHead = ({ title, body }: { title: string; body: ReactNode }) => (
     <>
@@ -224,7 +227,7 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
 
         {screen === 'form' && (
           <>
-            <div className="auth__tabs" role="tablist" aria-label={t("Account")}>{rich(t("<x1>Sign in</x1><x2>Create account</x2>"), { x1: (c) => <Link role="tab" aria-selected={!isJoin} className={!isJoin ? 'on' : ''} to={plan ? `/login?plan=${plan.id}&billing=${billing}` : '/login'} onClick={() => setErr('')}>{c}</Link>, x2: (c) => <Link role="tab" aria-selected={isJoin} className={isJoin ? 'on' : ''} to={plan ? `/signup?plan=${plan.id}&billing=${billing}` : '/signup'} onClick={() => setErr('')}>{c}</Link> })}</div>
+            <div className="auth__tabs" role="tablist" aria-label={t("Account")}>{rich(t("<x1>Sign in</x1><x2>Create account</x2>"), { x1: (c) => <Link role="tab" aria-selected={!isJoin} className={!isJoin ? 'on' : ''} to={plan ? `/login?plan=${plan.id}&billing=${billing}${cardsQs}` : '/login'} onClick={() => setErr('')}>{c}</Link>, x2: (c) => <Link role="tab" aria-selected={isJoin} className={isJoin ? 'on' : ''} to={plan ? `/signup?plan=${plan.id}&billing=${billing}${cardsQs}` : '/signup'} onClick={() => setErr('')}>{c}</Link> })}</div>
 
             {linkNotice && (
               <div className="auth__notice" role="alert">
@@ -246,7 +249,7 @@ export default function Login({ mode }: { mode: 'signup' | 'signin' }) {
             {plan && (
               <div className="auth__plan">
                 <Crown size={20} />
-                <span>{rich(t("<b>You picked {name}, {v}</b>{v2}", { name: plan.name, v: billing === 'year' ? `$${plan.yearly}/year` : `$${plan.price}/month`, v2: isJoin ? 'Create your account first. You\u2019ll finish the upgrade on the next screen, or keep the free Lite plan.' : 'Sign in and you\u2019ll finish the upgrade on the next screen.' }), { b: (c) => <b>{c}</b> })}</span>
+                <span>{rich(t("<b>You picked {name}, {v}</b>{v2}", { name: plan.name, v: plan.perCard ? (billing === 'year' ? t('{n} cards, ${total}/year', { n: cards, total: teamTotal(cards, true) }) : t('{n} cards, ${total}/month', { n: cards, total: teamTotal(cards, false) })) : billing === 'year' ? `$${plan.yearly}/year` : `$${plan.price}/month`, v2: isJoin ? 'Create your account first. You\u2019ll finish the upgrade on the next screen, or keep the free Lite plan.' : 'Sign in and you\u2019ll finish the upgrade on the next screen.' }), { b: (c) => <b>{c}</b> })}</span>
                 {plan.id === 'pro' && billing === 'month' && offer.known && offer.active && <small className="auth__offer">{t("Founding price: {price} a month if a spot is still open when you pay. One per person; it lasts while your subscription stays active.", { price: dollars(offer.cents) })}</small>}
               </div>
             )}

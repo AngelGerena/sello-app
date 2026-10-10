@@ -1,8 +1,7 @@
 -- =====================================================================
--- Migration 0014: Pro Plus plan and flat Business pricing.
+-- Migration 0014: Pro Plus plan (Business stays per card).
 --   Lite = 1 card, Pro = 3, Pro Plus = 1 (change the number below if that changes),
---   Business = 5 cards included (profiles.seats, default 5). Extra cards are not offered.
--- Business was per card; it is now a flat price, so the revenue figure in the admin overview changes too.
+--   Business = per card, the customer picks how many (profiles.seats, default 5, minimum 3 at checkout).
 -- NOT applied to the live database yet. Safe to run more than once.
 -- =====================================================================
 alter table public.fc_profiles drop constraint if exists fc_profiles_plan_check;
@@ -46,7 +45,7 @@ begin
     || case when p_plan = 'free' then '' when p_how = 'manual' then ' (paid outside Stripe)' else ' (complimentary)' end);
 end $$;
 
--- ---------------------------------------------------------------- admin: overview numbers (flat Business, Pro Plus)
+-- ---------------------------------------------------------------- admin: overview numbers (per-card Business, Pro Plus)
 create or replace function public.fc_admin_stats() returns jsonb
 language plpgsql stable security definer set search_path = public as $$
 declare out jsonb;
@@ -63,7 +62,7 @@ begin
     'mrr_cents',(select coalesce(sum(case
                     when plan = 'pro'  then (case when founding and coalesce(plan_interval, 'month') = 'month' then 500 when plan_interval = 'year' then 658 else 800 end)
                     when plan = 'plus' then (case when plan_interval = 'year' then 1242 else 1600 end)
-                    when plan = 'team' then (case when plan_interval = 'year' then 3325 else 4100 end)
+                    when plan = 'team' then coalesce(seats, 5) * (case when plan_interval = 'year' then 500 else 600 end)
                     else 0 end), 0)
                  from public.fc_profiles where plan <> 'free' and coalesce(plan_status, '') in ('active', 'trialing', 'past_due')),
     'cards',     (select count(*) from public.fc_cards),

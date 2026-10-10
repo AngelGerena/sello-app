@@ -4,7 +4,7 @@ import {
   ArrowLeft, ArrowRightLeft, BarChart3, ChevronDown, ChevronUp, ExternalLink, Eye, EyeOff, LayoutGrid, Loader2,
   LogOut, Pencil, Search, ShieldCheck, Users, X,
 } from 'lucide-react';
-import { BUSINESS_CARDS, cardLimit } from '../lib/plans';
+import { TEAM, cardLimit } from '../lib/plans';
 import { adminApi, type AdminCard, type AdminLog, type AdminStats, type AdminUser, type PlanHow, type PlanId } from '../lib/adminApi';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
@@ -340,11 +340,11 @@ function PlanDialog({ user, ctx }: { user: AdminUser; ctx: Ctx }) {
   const currentHow: PlanHow = user.plan_status === 'manual' ? 'manual' : 'comped';
   const [plan, setPlan] = useState<PlanId>(user.plan);
   const [how, setHow] = useState<PlanHow>(currentHow);
-  const [seatsRaw, setSeatsRaw] = useState(String(user.seats ?? BUSINESS_CARDS));
-  const seats = Math.min(500, Math.max(1, parseInt(seatsRaw, 10) || BUSINESS_CARDS));
+  const [seatsRaw, setSeatsRaw] = useState(String(user.seats ?? TEAM.initial));
+  const seats = Math.min(500, Math.max(1, parseInt(seatsRaw, 10) || TEAM.initial));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const unchanged = plan === user.plan && (plan === 'free' || how === currentHow) && (plan !== 'team' || seats === (user.seats ?? BUSINESS_CARDS));
+  const unchanged = plan === user.plan && (plan === 'free' || how === currentHow) && (plan !== 'team' || seats === (user.seats ?? TEAM.initial));
   const who = user.full_name || user.email || 'this customer';
   const save = async () => {
     setBusy(true); setErr('');

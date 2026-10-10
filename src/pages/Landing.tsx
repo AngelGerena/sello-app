@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight, MessageCircle } from 'lucide-react';
+import { Dices, Check, Palette, UserPlus, QrCode, Smartphone, Layers, Type, ArrowRight, MessageCircle, Minus, Plus } from 'lucide-react';
 import type { Card } from '../lib/types';
 import { sampleCard } from '../lib/seed';
 import { deriveTokens, randomButton, randomSeeds, FONT_PAIRS } from '../lib/theme';
@@ -8,7 +8,7 @@ import { TEMPLATES } from '../templates';
 import { ALL_DESIGNS, NICHES, applyDesign, sampleFor } from '../lib/niches';
 import Brand from '../components/Brand';
 import heroLogo from '../assets/okunami-wordmark.png';
-import { APP_NAME, PLANS, STUDIO, STUDIO_CONTACT } from '../lib/plans';
+import { APP_NAME, PLANS, STUDIO, STUDIO_CONTACT, TEAM, clampCards, teamTotal } from '../lib/plans';
 import { sfx } from '../lib/sfx';
 import { decorative } from '../lib/a11y';
 import { DESIGN_COUNT, NICHE_COUNT, designsLabel } from '../lib/counts';
@@ -49,6 +49,8 @@ export default function Landing() {
   const [rolled, setRolled] = useState<Card | null>(null);
   const [rolls, setRolls] = useState(0);
   const [yearly, setYearly] = useState(false);
+  const [cardsRaw, setCardsRaw] = useState(String(TEAM.initial));   // Business: how many cards (typed text, clamped on use)
+  const cards = clampCards(parseInt(cardsRaw, 10));
 
   useEffect(() => {
     if (rolled || reduced()) return;
@@ -190,7 +192,7 @@ export default function Landing() {
               <p>{t("Build your own card in about five minutes, and change it whenever you like.")}</p>
               <ul>
                 <li><Check size={16} aria-hidden /> {t("Start free, no credit card")}</li>
-                <li><Check size={16} aria-hidden /> {t("Pro is $8 a month, Pro Plus is $16 and Business is $41.")}</li>
+                <li><Check size={16} aria-hidden /> {t("Pro is $8 a month, Pro Plus is $16 and Business is $6 a card.")}</li>
                 <li><Check size={16} aria-hidden /> {t("You edit it yourself, any time")}</li>
               </ul>
               <Link to="/signup" className="mx-btn mx-btn--pink">{t("Start free")} <ArrowRight size={18} aria-hidden /></Link>
@@ -220,19 +222,37 @@ export default function Landing() {
         <div className="mx-plans">
           {PLANS.map((p) => {
             const featured = !!p.featured;
+            const perCard = !!p.perCard;
             const shown = p.price === 0 ? 0 : yearly ? Math.round((p.yearly / 12) * 100) / 100 : p.price;
+            const total = teamTotal(cards, yearly);
             return (
               <article key={p.id} className={`mx-plan ${featured ? 'is-featured' : ''}`}>
                 {featured && <span className="mx-sticker mx-sticker--orange s4">{t("Most popular")}</span>}
                 <h3>{t(p.name)}</h3>
-                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? t('forever') : t('month')}</span></p>
-                <p className="mx-billnote">{p.price === 0 ? t('No card needed') : yearly ? t('Billed ${y} a year', { y: p.yearly }) : t('Billed monthly, cancel anytime')}</p>
+                <p className="mx-price"><b>${shown % 1 ? shown.toFixed(2) : shown}</b><span>/{p.price === 0 ? t('forever') : perCard ? t('card a month') : t('month')}</span></p>
+                <p className="mx-billnote">{p.price === 0 ? t('No card needed') : yearly ? (perCard ? t('Billed ${y} per card a year', { y: p.yearly }) : t('Billed ${y} a year', { y: p.yearly })) : t('Billed monthly, cancel anytime')}</p>
                 {p.id === 'pro' && offer.known && offer.active && (
                   <p className="mx-offernote">{yearly ? t("Founding price is for monthly billing only.") : t("Founding price {price} while spots last ({left} left)", { price: dollars(offer.cents), left: offer.left })}</p>
                 )}
                 <p className="mx-pitch">{t(p.pitch)}</p>
+                {perCard && (
+                  <div className="mx-seats">
+                    <span id="seats-l">{t("How many cards?")}</span>
+                    <div className="mx-seats__ctl" role="group" aria-labelledby="seats-l">
+                      <button type="button" aria-label={t("Fewer cards")} disabled={cards <= TEAM.min} onClick={() => setCardsRaw(String(clampCards(cards - 1)))}><Minus size={18} /></button>
+                      <input type="number" inputMode="numeric" min={TEAM.min} max={TEAM.max} value={cardsRaw} aria-label={t("Number of cards")}
+                        onChange={(e) => setCardsRaw(e.target.value)} onBlur={() => setCardsRaw(String(cards))} />
+                      <button type="button" aria-label={t("More cards")} disabled={cards >= TEAM.max} onClick={() => setCardsRaw(String(clampCards(cards + 1)))}><Plus size={18} /></button>
+                    </div>
+                    <p className="mx-seats__total" aria-live="polite">
+                      {rich(yearly
+                        ? t("<b>${total}</b> a year for {cards} cards (about ${m} a month)", { total: total.toLocaleString(), cards, m: Math.round(total / 12).toLocaleString() })
+                        : t("<b>${total}</b> a month for {cards} cards", { total: total.toLocaleString(), cards }), { b: (c) => <b>{c}</b> })}
+                    </p>
+                  </div>
+                )}
                 <ul>{p.features.map((f) => <li key={f}><Check size={16} /> {t(f, { designs: DESIGN_COUNT })}</li>)}</ul>
-                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? t('Start free') : t('Choose {name}', { name: t(p.name) })}</Link>
+                <Link to={p.price === 0 ? '/signup' : `/signup?plan=${p.id}&billing=${yearly ? 'year' : 'month'}${perCard ? `&cards=${cards}` : ''}`} className={`mx-btn ${featured ? 'mx-btn--navy' : 'mx-btn--pink'}`}>{p.price === 0 ? t('Start free') : t('Choose {name}', { name: t(p.name) })}</Link>
               </article>
             );
           })}
@@ -252,7 +272,7 @@ export default function Landing() {
               <h3 id="pay-h">{t("What you pay")}</h3>
               <dl>
                 <div>{rich(t("<x1>Studio setup</x1><x2>One time. From ${from} for a Signature card. Every project is quoted.</x2>", { from: STUDIO[0].from }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
-                <div>{rich(t("<x1>OKUNAMI subscription</x1><x2>Required for every Studio card: Pro at ${price} a month, Pro Plus at ${price2} a month, or Business at ${price3} a month.</x2>", { price: PLANS[1].price, price2: PLANS[2].price, price3: PLANS[3].price }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
+                <div>{rich(t("<x1>OKUNAMI subscription</x1><x2>Required for every Studio card: Pro at ${price} a month, Pro Plus at ${price2} a month, or Business at ${price3} a card a month.</x2>", { price: PLANS[1].price, price2: PLANS[2].price, price3: PLANS[3].price }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
               </dl>
             </section>
             <section className="mx-studio__box" aria-labelledby="how-h">

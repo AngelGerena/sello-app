@@ -6,6 +6,7 @@ import { friendlyPaymentError, PAYMENTS_DOWN } from './payErrors';
 
 export type Interval = 'month' | 'year';
 export const INTERVAL_KEY = 'fc.plan-interval';
+export const CARDS_KEY = 'fc.plan-cards';
 
 async function call(fn: string, body: Record<string, unknown>): Promise<string> {
   const { data, error } = await supabase.functions.invoke(fn, { body });
@@ -24,8 +25,8 @@ async function call(fn: string, body: Record<string, unknown>): Promise<string> 
 }
 
 /** Sends the signed-in user to Stripe Checkout (or to the Billing Portal if they already subscribe). */
-export async function startCheckout(plan: 'pro' | 'plus' | 'team', interval: Interval = 'month'): Promise<void> {
-  window.location.href = await call('okunami-checkout', { plan, interval });
+export async function startCheckout(plan: 'pro' | 'plus' | 'team', interval: Interval = 'month', cards?: number): Promise<void> {
+  window.location.href = await call('okunami-checkout', { plan, interval, seats: plan === 'team' ? cards : undefined });
 }
 
 /** Opens Stripe's Billing Portal: change plan, update card, cancel, download invoices. */

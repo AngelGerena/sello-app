@@ -1,8 +1,8 @@
-// POST { plan: 'pro' | 'plus' | 'team', interval: 'month' | 'year' }  ->  { url }
+// POST { plan: 'pro' | 'plus' | 'team', interval: 'month' | 'year', seats?: number (Business only) }  ->  { url }
 // Prices are fixed in _shared/okunami.ts; the browser never sends an amount.
 // Starts Stripe Checkout for the signed-in user. If they already have a subscription,
 // returns a Billing Portal link instead (update card, cancel, invoices), never a second subscription.
-import { admin, cors, currentUser, json, siteUrl, stripe, type Interval, type Plan } from '../_shared/okunami.ts';
+import { admin, clampSeats, cors, currentUser, json, siteUrl, stripe, type Interval, type Plan } from '../_shared/okunami.ts';
 import { buildCheckoutParams } from '../_shared/checkout.ts';
 
 Deno.serve(async (req) => {
@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
     try {
       session = await s.checkout.sessions.create(buildCheckoutParams({
         plan, interval, founding, foundingCents: offer?.price_cents ?? 0, reserveMinutes: offer?.reserve_minutes ?? 45,
+        seats: plan === 'team' ? clampSeats(body.seats) : undefined,
         customer: customer as string, userId: user.id, siteUrl: siteUrl(), nowSec: Math.floor(Date.now() / 1000),
       }));
     } catch (e) {

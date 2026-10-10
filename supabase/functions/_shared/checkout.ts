@@ -1,10 +1,12 @@
 import type Stripe from 'npm:stripe@17.7.0';
-import { lineItemFor, type Interval, type Plan } from './okunami.ts';
+import { clampSeats, lineItemFor, type Interval, type Plan } from './okunami.ts';
 
 export interface CheckoutInput {
   plan: Plan; interval: Interval;
   /** true only when the database granted this person a founding spot a moment ago */
   founding: boolean; foundingCents: number; reserveMinutes: number;
+  /** Business only: how many cards (clamped to 3..100 here). Ignored for other plans. */
+  seats?: number;
   customer: string; userId: string; siteUrl: string; nowSec: number;
 }
 
@@ -16,9 +18,9 @@ export function buildCheckoutParams(i: CheckoutInput): Stripe.Checkout.SessionCr
     mode: 'subscription',
     customer: i.customer,
     client_reference_id: i.userId,
-    line_items: [lineItemFor(i.plan, i.interval, founding, i.foundingCents)],
+    line_items: [lineItemFor(i.plan, i.interval, founding, i.foundingCents, i.seats)],
     allow_promotion_codes: !founding,   // no stacking a promo code on top of the founding price
-    subscription_data: { metadata: { okunami_user_id: i.userId, okunami_plan: i.plan, okunami_interval: i.interval, okunami_founding: founding ? '1' : '0' } },
+    subscription_data: { metadata: { okunami_user_id: i.userId, okunami_plan: i.plan, okunami_interval: i.interval, okunami_seats: i.plan === 'team' ? String(clampSeats(i.seats)) : '', okunami_founding: founding ? '1' : '0' } },
     metadata: { okunami_user_id: i.userId, okunami_plan: i.plan },
     success_url: `${i.siteUrl}/app?upgraded=${i.plan}`,
     cancel_url: `${i.siteUrl}/app?checkout=canceled`,

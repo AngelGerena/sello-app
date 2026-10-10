@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DEMO_PLAN_KEY, DEMO_SEATS_KEY, store } from './store';
-import { BUSINESS_CARDS, type PlanId } from './plans';
+import { TEAM, type PlanId } from './plans';
 import { IS_DEMO } from './supabase';
 
 interface PlanInfo { plan: PlanId; seats: number | null }
@@ -21,7 +21,7 @@ export function usePlan(): { plan: PlanId; seats: number | null; ready: boolean 
 }
 
 /** Demo only: switch plans to try the gating. */
-export function setDemoPlan(p: PlanId, seats = BUSINESS_CARDS) {
+export function setDemoPlan(p: PlanId, seats = TEAM.initial) {
   if (!IS_DEMO) return;
   try { localStorage.setItem(DEMO_PLAN_KEY, p); localStorage.setItem(DEMO_SEATS_KEY, String(seats)); } catch { /* storage blocked */ }
   publish({ plan: p, seats: p === 'team' ? seats : null });

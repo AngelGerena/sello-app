@@ -45,7 +45,7 @@ update public.fc_offer_config set value = jsonb_set(jsonb_set(value, '{spots}', 
 | Lite | free | free | 1 | 3 Lite designs, small badge |
 | Pro | $8 | $79 | 3 | Founding price $5 on Pro monthly only |
 | Pro Plus | $16 | $149 | 1 (one constant, see below) | Everything in Pro plus event sections, multiple languages, own domain, two done-for-you edits a month. Event sections, languages and own domain are marked "coming soon" on the site until they exist. |
-| Business | $41 | $399 | 5 included | Flat price. Brand lock and team admin are marked "coming soon". Extra cards are not offered. |
+| Business | $6 per card | $60 per card | 3 minimum, up to 100 | Priced per card; the customer picks how many with a stepper. Brand lock and team admin are marked "coming soon". |
 
 - Amounts live in `src/lib/plans.ts` (screens) and `supabase/functions/_shared/okunami.ts` (what Stripe charges). Change both together.
 - Pro Plus card count: `PLUS_CARDS` in `plans.ts` and `when 'plus' then 1` in `fc_card_limit()` (migration 0014).

@@ -150,8 +150,8 @@
 .mx-plan { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 30px; border-radius: 24px; border: 3px solid var(--n); background: var(--w); box-shadow: 8px 8px 0 var(--n); }
 .mx-plan.is-featured { background: var(--n); color: var(--w); box-shadow: 10px 10px 0 var(--c); transform: translateY(-10px); }
 .mx-plan h3 { margin: 0; font-size: 15px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
-.mx-price { margin: 6px 0 0; display: flex; align-items: baseline; gap: 4px; }
-.mx-price b { font-family: 'Anton', Impact, sans-serif; font-weight: 400; font-size: 72px; line-height: 1; }
+.mx-price { margin: 6px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; min-width: 0; }
+.mx-price b { font-family: 'Anton', Impact, sans-serif; font-weight: 400; font-size: clamp(48px, 4.6vw, 72px); line-height: 1; white-space: nowrap; }
 .mx-pitch { margin: 0 0 8px; font-weight: 600; opacity: .8; }
 .mx-plan ul { list-style: none; padding: 0; margin: 0 0 22px; display: flex; flex-direction: column; gap: 9px; font-size: 15px; font-weight: 600; flex: 1; }
 .mx-plan li { display: flex; gap: 8px; align-items: flex-start; }

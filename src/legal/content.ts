@@ -13,11 +13,11 @@ export const PRIVACY: LegalSection[] = [
   },
   "body": {
    "en": [
-    "This Privacy Policy explains how Finesse Media LLC (\"Finesse Media\") collects, uses and protects personal information when you use OKUNAMI (the website, apps and tools at okunami-app.netlify.app and any address we use for OKUNAMI) and OKUNAMI Studio services.",
+    "This Privacy Policy explains how Finesse Media LLC (\"Finesse Media\") collects, uses and protects personal information when you use OKUNAMI (the website, apps and tools at okunami.pro and any address we use for OKUNAMI) and OKUNAMI Studio services.",
     "Finesse Media LLC is based in Deltona, Florida, USA, and is the controller (the party that decides how your personal information is used). Contact: angel@finessemedia.pro."
    ],
    "es": [
-    "Esta Política de privacidad explica cómo Finesse Media LLC (\"Finesse Media\") recopila, usa y protege la información personal cuando usas OKUNAMI (el sitio web, las apps y herramientas en okunami-app.netlify.app y cualquier dirección que usemos para OKUNAMI) y los servicios de OKUNAMI Studio.",
+    "Esta Política de privacidad explica cómo Finesse Media LLC (\"Finesse Media\") recopila, usa y protege la información personal cuando usas OKUNAMI (el sitio web, las apps y herramientas en okunami.pro y cualquier dirección que usemos para OKUNAMI) y los servicios de OKUNAMI Studio.",
     "Finesse Media LLC tiene su sede en Deltona, Florida, EE. UU., y es el responsable del tratamiento (quien decide cómo se usa tu información personal). Contacto: angel@finessemedia.pro."
    ]
   }

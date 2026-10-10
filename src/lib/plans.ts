@@ -16,14 +16,24 @@ export const isLocked = (plan: PlanId, template: string) => plan === 'free' && !
 export interface PlanDef {
   id: PlanId; name: string; price: number; yearly: number; per: string; pitch: string; features: string[];
   featured?: boolean;
-  /** How many cards the plan includes. */
-  cards: number;
+  /** How many cards the plan includes (per-card plans leave this out). */
+  cards?: number;
+  /** Business: the price is per card, and a team picks how many cards it needs. */
+  perCard?: boolean;
 }
 
 /* Keep these prices in step with supabase/functions/_shared/okunami.ts and with the Stripe Payment Links.
    Pro Plus: the card count is one number here and in fc_card_limit() (migration 0014). */
 export const PLUS_CARDS = 1;
-export const BUSINESS_CARDS = 5;
+
+/* Business is billed per card, with a minimum. Keep these in step with supabase/functions/_shared/okunami.ts. */
+export const TEAM = { min: 3, max: 100, initial: 5, monthly: 6, yearly: 60 };
+export const clampCards = (n: number): number => {
+  const v = Math.round(Number(n));
+  return Number.isFinite(v) ? Math.min(TEAM.max, Math.max(TEAM.min, v)) : TEAM.initial;
+};
+/** What a Business team pays: per month when billed monthly, per year when billed yearly. */
+export const teamTotal = (cards: number, yearly: boolean): number => clampCards(cards) * (yearly ? TEAM.yearly : TEAM.monthly);
 
 export const PLANS: PlanDef[] = [
   { id: 'free', name: 'Lite', price: 0, yearly: 0, per: 'forever', cards: 1,
@@ -35,13 +45,13 @@ export const PLANS: PlanDef[] = [
   { id: 'plus', name: 'Pro Plus', price: 16, yearly: 149, per: 'month', cards: PLUS_CARDS,
     pitch: 'Everything in Pro, plus hands-on help from me.',
     features: ['Everything in Pro', '1 card', 'Event sections (coming soon)', 'Multiple languages on your card (coming soon)', 'Connect a domain you already own (coming soon)', 'Two done-for-you edits a month by Finesse Media'] },
-  { id: 'team', name: 'Business', price: 41, yearly: 399, per: 'month', cards: BUSINESS_CARDS,
-    pitch: 'Matching cards for your whole team.',
-    features: ['Everything in Pro', '5 cards included', 'Matching designs with brand lock (coming soon)', 'Team admin (coming soon)', 'Priority support, straight from me'] },
+  { id: 'team', name: 'Business', price: TEAM.monthly, yearly: TEAM.yearly, per: 'card / month', perCard: true,
+    pitch: 'Matching cards for your whole team. Pay only for the cards you need.',
+    features: ['Everything in Pro', 'Pay per card, from 3 cards', 'Matching designs with brand lock (coming soon)', 'Team admin (coming soon)', 'Priority support, straight from me'] },
 ];
 
 /** How many cards an account may have. Keep in step with fc_card_limit() in the database. */
-export const cardLimit = (plan: PlanId, seats?: number | null): number => (plan === 'team' ? Math.max(1, seats ?? BUSINESS_CARDS) : plan === 'plus' ? PLUS_CARDS : plan === 'pro' ? 3 : 1);
+export const cardLimit = (plan: PlanId, seats?: number | null): number => (plan === 'team' ? Math.max(1, seats ?? TEAM.initial) : plan === 'plus' ? PLUS_CARDS : plan === 'pro' ? 3 : 1);
 /** Plans that are paid (every design unlocked, no badge). */
 export const isPaid = (plan: PlanId) => plan !== 'free';
 
@@ -69,4 +79,6 @@ export const STUDIO_CONTACT = {
 };
 
 /** Pro customers who want Business message me directly (the billing portal can only cancel or update a card). */
+/** Business customers who want a different number of cards message me directly (the billing portal can change quantity too, but this keeps it personal). */
+export const MORE_CARDS_CONTACT = (cards: number) => 'https://wa.me/14079609004?text=' + encodeURIComponent(`Hi Angel, my OKUNAMI Business account has ${cards} cards and I'd like to change that number.`);
 export const BUSINESS_CONTACT = 'https://wa.me/14079609004?text=' + encodeURIComponent("Hi Angel, I'd like to move my OKUNAMI account to Business.");

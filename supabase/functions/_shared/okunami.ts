@@ -39,20 +39,28 @@ export type Interval = 'month' | 'year';
 export const CENTS: Record<Plan, Record<Interval, number>> = {
   pro: { month: 800, year: 7900 },
   plus: { month: 1600, year: 14900 },
-  team: { month: 4100, year: 39900 },   // flat: 5 cards included
+  team: { month: 600, year: 6000 },   // Business is PER CARD ($6 a month, $60 a year)
 };
 const FOUNDING_CENTS = 500;   // fallback only; the live price is read from fc_offer_config
-const NAMES: Record<Plan, string> = { pro: 'OKUNAMI Pro', plus: 'OKUNAMI Pro Plus', team: 'OKUNAMI Business' };
+const NAMES: Record<Plan, string> = { pro: 'OKUNAMI Pro', plus: 'OKUNAMI Pro Plus', team: 'OKUNAMI Business (per card)' };
 
-/** Business includes this many cards. Extra cards are not offered. Keep in step with BUSINESS_CARDS in src/lib/plans.ts and fc_card_limit(). */
-export const BUSINESS_CARDS = 5;
+/** Business is priced per card. The customer picks how many; these are the limits (keep in step with TEAM in src/lib/plans.ts). */
+export const TEAM_MIN = 3;
+export const TEAM_MAX = 100;
+export const TEAM_DEFAULT = 5;
+export function clampSeats(n: unknown): number {
+  const v = Math.round(Number(n));
+  if (!Number.isFinite(v)) return TEAM_DEFAULT;
+  return Math.min(TEAM_MAX, Math.max(TEAM_MIN, v));
+}
 
-export function lineItemFor(plan: Plan, interval: Interval, founding: boolean, foundingCents = FOUNDING_CENTS): Stripe.Checkout.SessionCreateParams.LineItem {
+export function lineItemFor(plan: Plan, interval: Interval, founding: boolean, foundingCents = FOUNDING_CENTS, seats = 1): Stripe.Checkout.SessionCreateParams.LineItem {
+  const quantity = plan === 'team' ? clampSeats(seats) : 1;
   const secretName = founding ? 'OKUNAMI_PRICE_PRO_FOUNDING' : `OKUNAMI_PRICE_${plan.toUpperCase()}_${interval === 'month' ? 'MONTH' : 'YEAR'}`;
   const fixed = founding ? undefined : Deno.env.get(secretName);   // the founding price comes only from the database offer settings
-  if (fixed) return { price: fixed, quantity: 1 };
+  if (fixed) return { price: fixed, quantity };
   return {
-    quantity: 1,
+    quantity,
     price_data: {
       currency: 'usd',
       unit_amount: founding ? foundingCents : CENTS[plan][interval],
@@ -80,4 +88,4 @@ export function planForAmount(cents: number | null | undefined, interval: string
   return null;
 }
 
-export const siteUrl = () => (Deno.env.get('OKUNAMI_SITE_URL') ?? 'https://okunami-app.netlify.app').replace(/\/$/, '');
+export const siteUrl = () => (Deno.env.get('OKUNAMI_SITE_URL') ?? 'https://okunami.pro').replace(/\/$/, '');

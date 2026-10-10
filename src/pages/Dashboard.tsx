@@ -9,14 +9,15 @@ import { DesignTile } from '../components/editor/StylePanels';
 import { sampleCard } from '../lib/seed';
 import { HIcon } from '../templates/blocks';
 import { takeWelcome } from '../lib/authLanding';
-import { INTERVAL_KEY, openBillingPortal, startCheckout, type Interval } from '../lib/billing';
+import { CARDS_KEY, INTERVAL_KEY, openBillingPortal, startCheckout, type Interval } from '../lib/billing';
 import { prefersQuick } from '../lib/editorView';
 import { decorative } from '../lib/a11y';
 import { dollars, useOffer } from '../lib/offers';
 import { DESIGN_COUNT, nicheCountLabel } from '../lib/counts';
+import TeamDialog from '../components/TeamDialog';
 import { refreshPlan } from '../lib/usePlan';
 import { INTENT_KEY } from './Login';
-import { PLANS, isLocked, FREE_FALLBACK, BUSINESS_CONTACT, cardLimit, type PlanId } from '../lib/plans';
+import { PLANS, TEAM, isLocked, FREE_FALLBACK, BUSINESS_CONTACT, MORE_CARDS_CONTACT, cardLimit, clampCards, teamTotal, type PlanId } from '../lib/plans';
 import { usePlan, setDemoPlan } from '../lib/usePlan';
 import type { Card } from '../lib/types';
 import { store } from '../lib/store';
@@ -46,10 +47,12 @@ export default function Dashboard() {
   const dropIntent = () => { try { localStorage.removeItem(INTENT_KEY); } catch { /* ignore */ } setIntent(null); };
   const [welcome, setWelcome] = useState<boolean>(() => takeWelcome());   // arrived from the confirmation email
   const [interval] = useState<Interval>(() => { try { return localStorage.getItem(INTERVAL_KEY) === 'year' ? 'year' : 'month'; } catch { return 'month'; } });
-  const upgrade = async (to: 'pro' | 'plus' | 'team', billed: Interval = interval) => {
-    if (store.demo) { setDemoPlan(to); return; } // demo: switch plans instantly so the gating can be tried
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [intentCards] = useState(() => { try { return clampCards(parseInt(localStorage.getItem(CARDS_KEY) ?? '', 10)); } catch { return TEAM.initial; } });
+  const upgrade = async (to: 'pro' | 'plus' | 'team', billed: Interval = interval, howMany?: number) => {
+    if (store.demo) { setDemoPlan(to, howMany ?? TEAM.initial); setTeamOpen(false); return; } // demo: switch plans instantly so the gating can be tried
     setPaying(true);
-    try { await startCheckout(to, billed); } catch (e) { setErr(e instanceof Error ? e.message : t('Checkout failed.')); setPaying(false); }
+    try { await startCheckout(to, billed, howMany); } catch (e) { setErr(e instanceof Error ? e.message : t('Checkout failed.')); setPaying(false); }
   };
   const manage = async () => {
     if (store.demo) { setErr(t('Billing opens Stripe in the live app.')); return; }
@@ -63,7 +66,7 @@ export default function Dashboard() {
   const canceled = params.get('checkout') === 'canceled';
   useEffect(() => {
     if (!upgradedTo) return;
-    try { localStorage.removeItem(INTENT_KEY); localStorage.removeItem(INTERVAL_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(INTENT_KEY); localStorage.removeItem(INTERVAL_KEY); localStorage.removeItem(CARDS_KEY); } catch { /* ignore */ }
     let n = 0;
     const t = window.setInterval(() => { refreshPlan(); if (++n >= 6) window.clearInterval(t); }, 2500);
     refreshPlan();
@@ -140,19 +143,20 @@ export default function Dashboard() {
         )}
         {intentPlan && plan === 'free' ? (
           <div className="plan-bar plan-bar--intent">
-            <span>{rich(t("<b>Finish upgrading to {name}</b><small>Your account is ready on the free plan. {name2} is {v}, cancel any time.</small>", { name: intentPlan.name, name2: intentPlan.name, v: interval === 'year' ? `$${intentPlan.yearly}/year` : `$${intentPlan.price}/month` }), { b: (c) => <b>{c}</b>, small: (c) => <small>{c}</small> })}{intentPlan.id === 'pro' && interval === 'month' && offer.known && offer.active && <small>{t("Founding price: {price} a month if a spot is still open when you pay. One per person; it lasts while your subscription stays active.", { price: dollars(offer.cents) })}</small>}</span>
+            <span>{rich(t("<b>Finish upgrading to {name}</b><small>Your account is ready on the free plan. {name2} is {v}, cancel any time.</small>", { name: intentPlan.name, name2: intentPlan.name, v: intentPlan.perCard ? (interval === 'year' ? t('${total}/year for {n} cards', { total: teamTotal(intentCards, true), n: intentCards }) : t('${total}/month for {n} cards', { total: teamTotal(intentCards, false), n: intentCards })) : interval === 'year' ? `$${intentPlan.yearly}/year` : `$${intentPlan.price}/month` }), { b: (c) => <b>{c}</b>, small: (c) => <small>{c}</small> })}{intentPlan.id === 'pro' && interval === 'month' && offer.known && offer.active && <small>{t("Founding price: {price} a month if a spot is still open when you pay. One per person; it lasts while your subscription stays active.", { price: dollars(offer.cents) })}</small>}</span>
             <span className="row-ed">
-              <button type="button" className="btn btn--gold" onClick={() => upgrade(intentPlan.id as 'pro' | 'plus' | 'team')} disabled={paying}>{paying ? <Loader2 className="spin" size={16} /> : <Crown size={16} />} Continue to payment</button>
+              <button type="button" className="btn btn--gold" onClick={() => upgrade(intentPlan.id as 'pro' | 'plus' | 'team', interval, intentPlan.perCard ? intentCards : undefined)} disabled={paying}>{paying ? <Loader2 className="spin" size={16} /> : <Crown size={16} />} Continue to payment</button>
               <button type="button" className="btn btn--onink btn--sm" onClick={dropIntent}>{t("Stay on free")}</button>
             </span>
           </div>
         ) : (
           <div className="plan-bar">
             <span><b>{rich(t("{name} plan<x1>{v}</x1>", { name: planInfo.name, v: plan === 'free' ? t('Free') : t('Active') }), { x1: (c) => <span className="plan-pill">{c}</span> })}</b><small>{plan === 'free' ? `One card, 3 Lite designs and a small OKUNAMI badge. Upgrade to publish all ${DESIGN_COUNT} designs, every new Drop, and lose the badge.` : `${planInfo.pitch} ${cards ? `${cards.length} of ${cardLimit(plan, seats)} cards in use.` : ''}`}</small></span>
-            {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => upgrade('team')} disabled={paying}>{t("Business, for teams")}</button>}
+            {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => setTeamOpen(true)} disabled={paying}>{t("Business, for teams")}</button>}
             {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => upgrade('plus')} disabled={paying}>{t("Upgrade to Pro Plus")}</button>}
             {plan === 'free' && <button type="button" className="btn btn--gold btn--sm" onClick={() => upgrade('pro')} disabled={paying}><Crown size={15} /> {t("Upgrade to Pro")}</button>}
             {plan !== 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={manage} disabled={paying}>{t("Manage billing")}</button>}
+            {plan === 'team' && <a className="btn btn--ghost btn--sm" href={MORE_CARDS_CONTACT(cardLimit(plan, seats))} target="_blank" rel="noopener">{t("Change number of cards")}</a>}
             {(plan === 'pro' || plan === 'plus') && <a className="btn btn--ghost btn--sm" href={BUSINESS_CONTACT} target="_blank" rel="noopener">{t("Move to Business")}</a>}
           </div>
         )}
@@ -259,6 +263,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+      {teamOpen && <TeamDialog initialCards={intentCards} initialInterval={interval} busy={paying} onClose={() => setTeamOpen(false)} onContinue={(n, billed) => upgrade('team', billed, n)} />}
     </div>
   );
 }
