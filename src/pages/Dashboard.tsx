@@ -148,7 +148,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="plan-bar">
-            <span><b>{rich(t("{name} plan<x1>{v}</x1>", { name: planInfo.name, v: plan === 'free' ? t('Free') : t('Active') }), { x1: (c) => <span className="plan-pill">{c}</span> })}</b><small>{plan === 'free' ? `One card, 3 Lite designs and a small SeYo badge. Upgrade to publish all ${DESIGN_COUNT} designs, every new Drop, and lose the badge.` : `${planInfo.pitch} ${cards ? `${cards.length} of ${cardLimit(plan, seats)} cards in use.` : ''}`}</small></span>
+            <span><b>{rich(t("{name} plan<x1>{v}</x1>", { name: planInfo.name, v: plan === 'free' ? t('Free') : t('Active') }), { x1: (c) => <span className="plan-pill">{c}</span> })}</b><small>{plan === 'free' ? `One card, 3 Lite designs and a small OKUNAMI badge. Upgrade to publish all ${DESIGN_COUNT} designs, every new Drop, and lose the badge.` : `${planInfo.pitch} ${cards ? `${cards.length} of ${cardLimit(plan, seats)} cards in use.` : ''}`}</small></span>
             {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => upgrade('team')} disabled={paying}>{t("Business, for teams")}</button>}
             {plan === 'free' && <button type="button" className="btn btn--ghost btn--sm" onClick={() => upgrade('plus')} disabled={paying}>{t("Upgrade to Pro Plus")}</button>}
             {plan === 'free' && <button type="button" className="btn btn--gold btn--sm" onClick={() => upgrade('pro')} disabled={paying}><Crown size={15} /> {t("Upgrade to Pro")}</button>}

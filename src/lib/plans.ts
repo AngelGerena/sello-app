@@ -3,7 +3,7 @@
    Plan ids stay 'free' | 'pro' | 'plus' | 'team' to match the database; display names are Lite, Pro, Pro Plus, Business. */
 import type { TemplateId } from './types';
 
-export const APP_NAME = 'SeYo';
+export const APP_NAME = 'OKUNAMI';
 export type PlanId = 'free' | 'pro' | 'plus' | 'team';
 
 /** The three designs anyone can publish on the free Lite plan. Everything else is Pro. */
@@ -20,7 +20,7 @@ export interface PlanDef {
   cards: number;
 }
 
-/* Keep these prices in step with supabase/functions/_shared/sello.ts and with the Stripe Payment Links.
+/* Keep these prices in step with supabase/functions/_shared/okunami.ts and with the Stripe Payment Links.
    Pro Plus: the card count is one number here and in fc_card_limit() (migration 0014). */
 export const PLUS_CARDS = 1;
 export const BUSINESS_CARDS = 5;
@@ -28,10 +28,10 @@ export const BUSINESS_CARDS = 5;
 export const PLANS: PlanDef[] = [
   { id: 'free', name: 'Lite', price: 0, yearly: 0, per: 'forever', cards: 1,
     pitch: 'A clean card that gets the job done.',
-    features: ['1 card', '3 Lite designs', 'Preview every Pro design on your own card', 'Colors, fonts and dice shuffle', 'Save to contacts, QR and NFC', 'Small "Made with SeYo" badge'] },
+    features: ['1 card', '3 Lite designs', 'Preview every Pro design on your own card', 'Colors, fonts and dice shuffle', 'Save to contacts, QR and NFC', 'Small "Made with OKUNAMI" badge'] },
   { id: 'pro', name: 'Pro', price: 8, yearly: 79, per: 'month', featured: true, cards: 3,
     pitch: 'Every design, forever growing.',
-    features: ['Up to 3 cards', 'All {designs} designs', 'Every new SeYo Drop, 3 to 5 designs every other month', 'Brand kit and custom fonts', 'No badge', 'Tap and save stats (coming soon)'] },
+    features: ['Up to 3 cards', 'All {designs} designs', 'Every new OKUNAMI Drop, 3 to 5 designs every other month', 'Brand kit and custom fonts', 'No badge', 'Tap and save stats (coming soon)'] },
   { id: 'plus', name: 'Pro Plus', price: 16, yearly: 149, per: 'month', cards: PLUS_CARDS,
     pitch: 'Everything in Pro, plus hands-on help from me.',
     features: ['Everything in Pro', '1 card', 'Event sections (coming soon)', 'Multiple languages on your card (coming soon)', 'Connect a domain you already own (coming soon)', 'Two done-for-you edits a month by Finesse Media'] },
@@ -45,7 +45,7 @@ export const cardLimit = (plan: PlanId, seats?: number | null): number => (plan 
 /** Plans that are paid (every design unlocked, no badge). */
 export const isPaid = (plan: PlanId) => plan !== 'free';
 
-/** Done-for-you work by Finesse Media (SeYo Studio). Studio cards are hosted on SeYo and need a Pro, Pro Plus or Business subscription.
+/** Done-for-you work by Finesse Media (OKUNAMI Studio). Studio cards are hosted on OKUNAMI and need a Pro, Pro Plus or Business subscription.
     `includes` lists only what has been approved for each package: add to it when you confirm more. */
 export const STUDIO = [
   { id: 'signature', name: 'Signature card', from: 249, cardPackage: true,
@@ -64,9 +64,9 @@ export const STUDIO = [
 
 export const STUDIO_CONTACT = {
   /** Opens WhatsApp (a chat with me). The page says so before the click. */
-  whatsapp: 'https://wa.me/14079609004?text=' + encodeURIComponent("Hi Angel, I'd like to request a free consult for SeYo Studio."),
-  email: 'mailto:angel@finessemedia.pro?subject=' + encodeURIComponent('SeYo Studio'),
+  whatsapp: 'https://wa.me/14079609004?text=' + encodeURIComponent("Hi Angel, I'd like to request a free consult for OKUNAMI Studio."),
+  email: 'mailto:angel@finessemedia.pro?subject=' + encodeURIComponent('OKUNAMI Studio'),
 };
 
 /** Pro customers who want Business message me directly (the billing portal can only cancel or update a card). */
-export const BUSINESS_CONTACT = 'https://wa.me/14079609004?text=' + encodeURIComponent("Hi Angel, I'd like to move my SeYo account to Business.");
+export const BUSINESS_CONTACT = 'https://wa.me/14079609004?text=' + encodeURIComponent("Hi Angel, I'd like to move my OKUNAMI account to Business.");

@@ -13,7 +13,7 @@ import './styles/sig2.css';
 import './styles/sig3.css';
 import './styles/sig4.css';
 import './styles/worship-engine.css';
-import './styles/worship-seyo.css';
+import './styles/worship-okunami.css';
 import './styles/miami.css';
 import './styles/admin.css';
 

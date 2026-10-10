@@ -1,5 +1,5 @@
 /* Terms of Service and Privacy Policy, in English and Spanish. The English text controls.
-   Written to match what SeYo actually does today. Have a lawyer review before relying on it, and update it
+   Written to match what OKUNAMI actually does today. Have a lawyer review before relying on it, and update it
    whenever data practices, providers or pricing rules change. */
 export type LegalLang = 'en' | 'es';
 export interface LegalSection { id: string; title: Record<LegalLang, string>; body: Record<LegalLang, string[]> }
@@ -13,11 +13,11 @@ export const PRIVACY: LegalSection[] = [
   },
   "body": {
    "en": [
-    "This Privacy Policy explains how Finesse Media LLC (\"Finesse Media\") collects, uses and protects personal information when you use SeYo (the website, apps and tools at selloapp.netlify.app and any address we use for SeYo) and SeYo Studio services.",
+    "This Privacy Policy explains how Finesse Media LLC (\"Finesse Media\") collects, uses and protects personal information when you use OKUNAMI (the website, apps and tools at okunami-app.netlify.app and any address we use for OKUNAMI) and OKUNAMI Studio services.",
     "Finesse Media LLC is based in Deltona, Florida, USA, and is the controller (the party that decides how your personal information is used). Contact: angel@finessemedia.pro."
    ],
    "es": [
-    "Esta Política de privacidad explica cómo Finesse Media LLC (\"Finesse Media\") recopila, usa y protege la información personal cuando usas SeYo (el sitio web, las apps y herramientas en selloapp.netlify.app y cualquier dirección que usemos para SeYo) y los servicios de SeYo Studio.",
+    "Esta Política de privacidad explica cómo Finesse Media LLC (\"Finesse Media\") recopila, usa y protege la información personal cuando usas OKUNAMI (el sitio web, las apps y herramientas en okunami-app.netlify.app y cualquier dirección que usemos para OKUNAMI) y los servicios de OKUNAMI Studio.",
     "Finesse Media LLC tiene su sede en Deltona, Florida, EE. UU., y es el responsable del tratamiento (quien decide cómo se usa tu información personal). Contacto: angel@finessemedia.pro."
    ]
   }
@@ -56,13 +56,13 @@ export const PRIVACY: LegalSection[] = [
   "body": {
    "en": [
     "We use personal information to: provide and secure your account and cards; show your published cards to the people you share them with; process payments and manage subscriptions; send service messages such as verification and password-reset emails; give support; prevent abuse and enforce our Terms; show you simple counts of views and taps on your own cards; and meet legal obligations.",
-    "Where the GDPR or UK GDPR applies, our legal bases are: performance of our contract with you; our legitimate interests in running, securing and improving SeYo; your consent where we ask for it (and you may withdraw it at any time); and compliance with legal obligations.",
-    "Finesse Media does not sell personal information, does not share it for cross-context behavioral advertising, and does not use advertising or analytics trackers on SeYo."
+    "Where the GDPR or UK GDPR applies, our legal bases are: performance of our contract with you; our legitimate interests in running, securing and improving OKUNAMI; your consent where we ask for it (and you may withdraw it at any time); and compliance with legal obligations.",
+    "Finesse Media does not sell personal information, does not share it for cross-context behavioral advertising, and does not use advertising or analytics trackers on OKUNAMI."
    ],
    "es": [
     "Usamos la información personal para: proporcionar y proteger tu cuenta y tus tarjetas; mostrar tus tarjetas publicadas a las personas con las que las compartes; procesar pagos y administrar suscripciones; enviar mensajes del servicio, como correos de verificación y de restablecimiento de contraseña; dar soporte; prevenir abusos y hacer cumplir nuestros Términos; mostrarte conteos sencillos de vistas y toques en tus propias tarjetas; y cumplir obligaciones legales.",
-    "Cuando se aplica el RGPD o el RGPD del Reino Unido, nuestras bases legales son: la ejecución de nuestro contrato contigo; nuestros intereses legítimos en operar, proteger y mejorar SeYo; tu consentimiento cuando lo pedimos (que puedes retirar en cualquier momento); y el cumplimiento de obligaciones legales.",
-    "Finesse Media no vende información personal, no la comparte para publicidad conductual entre contextos y no usa rastreadores publicitarios ni de analítica en SeYo."
+    "Cuando se aplica el RGPD o el RGPD del Reino Unido, nuestras bases legales son: la ejecución de nuestro contrato contigo; nuestros intereses legítimos en operar, proteger y mejorar OKUNAMI; tu consentimiento cuando lo pedimos (que puedes retirar en cualquier momento); y el cumplimiento de obligaciones legales.",
+    "Finesse Media no vende información personal, no la comparte para publicidad conductual entre contextos y no usa rastreadores publicitarios ni de analítica en OKUNAMI."
    ]
   }
  },
@@ -150,14 +150,14 @@ export const PRIVACY: LegalSection[] = [
     "• EEA, UK and Switzerland: rights under the GDPR and UK GDPR, including access, rectification, erasure, restriction, portability and objection.",
     "• California and other US states: you may request to know, access, correct and delete your personal information. Finesse Media does not sell or share personal information as those laws define it, so there is nothing to opt out of. We will not discriminate against you for using your rights.",
     "• Brazil (LGPD), Canada (PIPEDA) and other countries: you may exercise the rights your local law gives you.",
-    "You can edit or delete your cards and account in SeYo at any time. For anything else, email angel@finessemedia.pro. We may need to verify your identity, and we will respond within the time your law requires (generally 30 to 45 days)."
+    "You can edit or delete your cards and account in OKUNAMI at any time. For anything else, email angel@finessemedia.pro. We may need to verify your identity, and we will respond within the time your law requires (generally 30 to 45 days)."
    ],
    "es": [
     "Según dónde vivas, puedes tener derecho a acceder, corregir, eliminar o exportar tu información personal, a oponerte a ciertos usos o restringirlos, a retirar tu consentimiento y a presentar una queja ante tu autoridad de protección de datos.",
     "• EEE, Reino Unido y Suiza: derechos bajo el RGPD y el RGPD del Reino Unido, incluidos acceso, rectificación, supresión, limitación, portabilidad y oposición.",
     "• California y otros estados de EE. UU.: puedes solicitar conocer, acceder, corregir y eliminar tu información personal. Finesse Media no vende ni comparte información personal en el sentido de esas leyes, por lo que no hay nada de lo que optar por salir. No te discriminaremos por ejercer tus derechos.",
     "• Brasil (LGPD), Canadá (PIPEDA) y otros países: puedes ejercer los derechos que te da la ley local.",
-    "Puedes editar o eliminar tus tarjetas y tu cuenta en SeYo en cualquier momento. Para cualquier otra cosa, escribe a angel@finessemedia.pro. Es posible que debamos verificar tu identidad y responderemos en el plazo que exija tu ley (por lo general, de 30 a 45 días)."
+    "Puedes editar o eliminar tus tarjetas y tu cuenta en OKUNAMI en cualquier momento. Para cualquier otra cosa, escribe a angel@finessemedia.pro. Es posible que debamos verificar tu identidad y responderemos en el plazo que exija tu ley (por lo general, de 30 a 45 días)."
    ]
   }
  },
@@ -184,10 +184,10 @@ export const PRIVACY: LegalSection[] = [
   },
   "body": {
    "en": [
-    "SeYo is for businesses and adults. It is not directed to children under 13 (or under 16 where local law sets that age), and we do not knowingly collect their information. If you believe a child has given us information, contact us and we will delete it."
+    "OKUNAMI is for businesses and adults. It is not directed to children under 13 (or under 16 where local law sets that age), and we do not knowingly collect their information. If you believe a child has given us information, contact us and we will delete it."
    ],
    "es": [
-    "SeYo es para negocios y adultos. No está dirigido a menores de 13 años (o de 16 donde la ley local fije esa edad) y no recopilamos a sabiendas su información. Si crees que un menor nos dio información, contáctanos y la eliminaremos."
+    "OKUNAMI es para negocios y adultos. No está dirigido a menores de 13 años (o de 16 donde la ley local fije esa edad) y no recopilamos a sabiendas su información. Si crees que un menor nos dio información, contáctanos y la eliminaremos."
    ]
   }
  },
@@ -199,10 +199,10 @@ export const PRIVACY: LegalSection[] = [
   },
   "body": {
    "en": [
-    "SeYo does not use advertising or analytics cookies. It uses your browser's storage to keep you signed in and to remember choices such as your language, editor view, sound setting and chosen plan. You can clear this storage in your browser; you will then be signed out and these choices reset."
+    "OKUNAMI does not use advertising or analytics cookies. It uses your browser's storage to keep you signed in and to remember choices such as your language, editor view, sound setting and chosen plan. You can clear this storage in your browser; you will then be signed out and these choices reset."
    ],
    "es": [
-    "SeYo no usa cookies publicitarias ni de analítica. Usa el almacenamiento de tu navegador para mantener tu sesión y recordar opciones como tu idioma, la vista del editor, el sonido y el plan elegido. Puedes borrar este almacenamiento en tu navegador; entonces se cerrará tu sesión y estas opciones se reiniciarán."
+    "OKUNAMI no usa cookies publicitarias ni de analítica. Usa el almacenamiento de tu navegador para mantener tu sesión y recordar opciones como tu idioma, la vista del editor, el sonido y el plan elegido. Puedes borrar este almacenamiento en tu navegador; entonces se cerrará tu sesión y estas opciones se reiniciarán."
    ]
   }
  },
@@ -214,11 +214,11 @@ export const PRIVACY: LegalSection[] = [
   },
   "body": {
    "en": [
-    "We may update this policy. If a change is significant, we will tell you in SeYo or by email before it takes effect. The date at the top shows the latest version.",
+    "We may update this policy. If a change is significant, we will tell you in OKUNAMI or by email before it takes effect. The date at the top shows the latest version.",
     "Questions or requests: Finesse Media LLC, Deltona, Florida, USA. angel@finessemedia.pro."
    ],
    "es": [
-    "Podemos actualizar esta política. Si un cambio es importante, te avisaremos en SeYo o por correo antes de que entre en vigor. La fecha al inicio indica la versión más reciente.",
+    "Podemos actualizar esta política. Si un cambio es importante, te avisaremos en OKUNAMI o por correo antes de que entre en vigor. La fecha al inicio indica la versión más reciente.",
     "Preguntas o solicitudes: Finesse Media LLC, Deltona, Florida, EE. UU. angel@finessemedia.pro."
    ]
   }
@@ -233,10 +233,10 @@ export const TERMS: LegalSection[] = [
   },
   "body": {
    "en": [
-    "These Terms of Service (\"Terms\") are an agreement between you and Finesse Media LLC (\"Finesse Media\"), Deltona, Florida, USA, for your use of SeYo and SeYo Studio (together, the \"Service\"). By creating an account or using the Service you accept these Terms and our Privacy Policy. If you use the Service for a business, you confirm you can bind that business. You must be at least 18 or the age of majority where you live."
+    "These Terms of Service (\"Terms\") are an agreement between you and Finesse Media LLC (\"Finesse Media\"), Deltona, Florida, USA, for your use of OKUNAMI and OKUNAMI Studio (together, the \"Service\"). By creating an account or using the Service you accept these Terms and our Privacy Policy. If you use the Service for a business, you confirm you can bind that business. You must be at least 18 or the age of majority where you live."
    ],
    "es": [
-    "Estos Términos del servicio (\"Términos\") son un acuerdo entre tú y Finesse Media LLC (\"Finesse Media\"), Deltona, Florida, EE. UU., para tu uso de SeYo y SeYo Studio (juntos, el \"Servicio\"). Al crear una cuenta o usar el Servicio aceptas estos Términos y nuestra Política de privacidad. Si usas el Servicio para un negocio, confirmas que puedes obligar a ese negocio. Debes tener al menos 18 años o la mayoría de edad donde vives."
+    "Estos Términos del servicio (\"Términos\") son un acuerdo entre tú y Finesse Media LLC (\"Finesse Media\"), Deltona, Florida, EE. UU., para tu uso de OKUNAMI y OKUNAMI Studio (juntos, el \"Servicio\"). Al crear una cuenta o usar el Servicio aceptas estos Términos y nuestra Política de privacidad. Si usas el Servicio para un negocio, confirmas que puedes obligar a ese negocio. Debes tener al menos 18 años o la mayoría de edad donde vives."
    ]
   }
  },
@@ -248,10 +248,10 @@ export const TERMS: LegalSection[] = [
   },
   "body": {
    "en": [
-    "SeYo lets you create and publish digital business cards that people can open, scan or tap, and save to their phones. Features marked \"coming soon\" are plans, not promises, and may change or never launch. We may change, add or remove features. We work to keep the Service available but do not guarantee uninterrupted or error-free operation."
+    "OKUNAMI lets you create and publish digital business cards that people can open, scan or tap, and save to their phones. Features marked \"coming soon\" are plans, not promises, and may change or never launch. We may change, add or remove features. We work to keep the Service available but do not guarantee uninterrupted or error-free operation."
    ],
    "es": [
-    "SeYo te permite crear y publicar tarjetas de presentación digitales que las personas pueden abrir, escanear o tocar, y guardar en sus teléfonos. Las funciones marcadas como \"próximamente\" son planes, no promesas, y pueden cambiar o no lanzarse. Podemos cambiar, agregar o quitar funciones. Trabajamos para mantener el Servicio disponible, pero no garantizamos que funcione sin interrupciones ni errores."
+    "OKUNAMI te permite crear y publicar tarjetas de presentación digitales que las personas pueden abrir, escanear o tocar, y guardar en sus teléfonos. Las funciones marcadas como \"próximamente\" son planes, no promesas, y pueden cambiar o no lanzarse. Podemos cambiar, agregar o quitar funciones. Trabajamos para mantener el Servicio disponible, pero no garantizamos que funcione sin interrupciones ni errores."
    ]
   }
  },
@@ -307,15 +307,15 @@ export const TERMS: LegalSection[] = [
  {
   "id": "studio",
   "title": {
-   "en": "6. SeYo Studio (done-for-you work)",
-   "es": "6. SeYo Studio (trabajo hecho para ti)"
+   "en": "6. OKUNAMI Studio (done-for-you work)",
+   "es": "6. OKUNAMI Studio (trabajo hecho para ti)"
   },
   "body": {
    "en": [
-    "Studio projects are quoted individually. The scope, deliverables, revisions, price and timing are set in the written quote or message you accept, and that quote controls for that work if it differs from these Terms. Studio cards need a SeYo Pro, Pro Plus or Business subscription. Any address on a finessemedia.pro subdomain is set up manually by Finesse Media. Self-service custom domains are not part of the Service yet."
+    "Studio projects are quoted individually. The scope, deliverables, revisions, price and timing are set in the written quote or message you accept, and that quote controls for that work if it differs from these Terms. Studio cards need a OKUNAMI Pro, Pro Plus or Business subscription. Any address on a finessemedia.pro subdomain is set up manually by Finesse Media. Self-service custom domains are not part of the Service yet."
    ],
    "es": [
-    "Los proyectos de Studio se cotizan de forma individual. El alcance, los entregables, las revisiones, el precio y los plazos se establecen en la cotización o mensaje escrito que aceptes, y esa cotización prevalece para ese trabajo si difiere de estos Términos. Las tarjetas de Studio requieren una suscripción a SeYo Pro, Pro Plus o Business. Cualquier dirección en un subdominio de finessemedia.pro la configura manualmente Finesse Media. Los dominios personalizados de autoservicio todavía no forman parte del Servicio."
+    "Los proyectos de Studio se cotizan de forma individual. El alcance, los entregables, las revisiones, el precio y los plazos se establecen en la cotización o mensaje escrito que aceptes, y esa cotización prevalece para ese trabajo si difiere de estos Términos. Las tarjetas de Studio requieren una suscripción a OKUNAMI Pro, Pro Plus o Business. Cualquier dirección en un subdominio de finessemedia.pro la configura manualmente Finesse Media. Los dominios personalizados de autoservicio todavía no forman parte del Servicio."
    ]
   }
  },
@@ -357,10 +357,10 @@ export const TERMS: LegalSection[] = [
   },
   "body": {
    "en": [
-    "We may unpublish content or suspend or end accounts that break these Terms or create risk, with notice when practical. If you believe content on SeYo infringes your copyright, send a notice to angel@finessemedia.pro with: the work and where it appears, your contact details, a statement of good-faith belief, a statement under penalty of perjury that the notice is accurate and that you are the owner or authorized, and your signature. We may remove the content and notify the person who posted it, who may send a counter-notice."
+    "We may unpublish content or suspend or end accounts that break these Terms or create risk, with notice when practical. If you believe content on OKUNAMI infringes your copyright, send a notice to angel@finessemedia.pro with: the work and where it appears, your contact details, a statement of good-faith belief, a statement under penalty of perjury that the notice is accurate and that you are the owner or authorized, and your signature. We may remove the content and notify the person who posted it, who may send a counter-notice."
    ],
    "es": [
-    "Podemos despublicar contenido o suspender o terminar cuentas que incumplan estos Términos o generen riesgo, con aviso cuando sea posible. Si crees que contenido en SeYo infringe tus derechos de autor, envía un aviso a angel@finessemedia.pro con: la obra y dónde aparece, tus datos de contacto, una declaración de buena fe, una declaración bajo pena de perjurio de que el aviso es exacto y de que eres el titular o estás autorizado, y tu firma. Podemos retirar el contenido y notificar a quien lo publicó, quien puede enviar una contranotificación."
+    "Podemos despublicar contenido o suspender o terminar cuentas que incumplan estos Términos o generen riesgo, con aviso cuando sea posible. Si crees que contenido en OKUNAMI infringe tus derechos de autor, envía un aviso a angel@finessemedia.pro con: la obra y dónde aparece, tus datos de contacto, una declaración de buena fe, una declaración bajo pena de perjurio de que el aviso es exacto y de que eres el titular o estás autorizado, y tu firma. Podemos retirar el contenido y notificar a quien lo publicó, quien puede enviar una contranotificación."
    ]
   }
  },
@@ -477,11 +477,11 @@ export const TERMS: LegalSection[] = [
   },
   "body": {
    "en": [
-    "We may update these Terms. We will give notice of material changes in SeYo or by email before they take effect; continuing to use the Service afterward means you accept them. These Terms are the entire agreement about the Service; if part is unenforceable, the rest stays in force. You may not transfer your rights without our consent. A Spanish translation is provided for convenience; if the two differ, the English version controls.",
+    "We may update these Terms. We will give notice of material changes in OKUNAMI or by email before they take effect; continuing to use the Service afterward means you accept them. These Terms are the entire agreement about the Service; if part is unenforceable, the rest stays in force. You may not transfer your rights without our consent. A Spanish translation is provided for convenience; if the two differ, the English version controls.",
     "Contact: Finesse Media LLC, Deltona, Florida, USA. angel@finessemedia.pro."
    ],
    "es": [
-    "Podemos actualizar estos Términos. Avisaremos de los cambios importantes en SeYo o por correo antes de que entren en vigor; seguir usando el Servicio después significa que los aceptas. Estos Términos son el acuerdo completo sobre el Servicio; si una parte no es exigible, el resto sigue vigente. No puedes transferir tus derechos sin nuestro consentimiento. Se ofrece una traducción al español por comodidad; si ambas versiones difieren, prevalece la versión en inglés.",
+    "Podemos actualizar estos Términos. Avisaremos de los cambios importantes en OKUNAMI o por correo antes de que entren en vigor; seguir usando el Servicio después significa que los aceptas. Estos Términos son el acuerdo completo sobre el Servicio; si una parte no es exigible, el resto sigue vigente. No puedes transferir tus derechos sin nuestro consentimiento. Se ofrece una traducción al español por comodidad; si ambas versiones difieren, prevalece la versión en inglés.",
     "Contacto: Finesse Media LLC, Deltona, Florida, EE. UU. angel@finessemedia.pro."
    ]
   }

@@ -1,6 +1,6 @@
 # Terms and Privacy: have a lawyer review before relying on them
 
-`src/legal/content.ts` holds both documents in English and Spanish (English controls). They were written to match what SeYo does today:
+`src/legal/content.ts` holds both documents in English and Spanish (English controls). They were written to match what OKUNAMI does today:
 no advertising or analytics trackers; Google Fonts is the only third party a visitor's browser contacts; card activity records the card, the action and the time, not the visitor; providers are Supabase, Netlify, Stripe and an email delivery provider.
 
 Points that are business or legal decisions, not facts:

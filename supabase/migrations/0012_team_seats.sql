@@ -1,5 +1,5 @@
 -- =====================================================================
--- Sello Business is priced per card. profiles.seats = how many cards the
+-- OKUNAMI Business is priced per card. profiles.seats = how many cards the
 -- account may have. Lite = 1, Pro = 3, Business = seats (default 5),
 -- platform admins = 1000. Safe to run more than once.
 -- =====================================================================

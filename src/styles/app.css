@@ -4,7 +4,7 @@ html { font-variant-emoji: text; }
    Card colors never come from here; the card paints itself.
    ================================================================= */
 :root {
-  /* SeYo identity, Miami night: midnight navy, neon pink, cyan, sunset orange.
+  /* OKUNAMI identity, Miami night: midnight navy, neon pink, cyan, sunset orange.
      (--gold names are kept so every existing rule still resolves.) */
   --ink: #0B0E2A; --ink-2: #1B2050; --ink-soft: #E7E8F5;
   --gold: #FF3CAC; --gold-deep: #C8157E; --gold-soft: #FFE1F1; --on-gold: #0B0E2A;

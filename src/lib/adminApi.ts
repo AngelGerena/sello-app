@@ -157,7 +157,7 @@ function makeDemo(): AdminApi {
       const e = email.trim().toLowerCase();
       if (!e) return fail("Enter the new owner's email.");
       const to = users.find((u) => (u.email ?? '').toLowerCase() === e);
-      if (!to) return fail(`No SeYo account uses ${e} yet. Ask them to sign up first, then transfer the card.`);
+      if (!to) return fail(`No OKUNAMI account uses ${e} yet. Ask them to sign up first, then transfer the card.`);
       if (!c) return fail('No such card.');
       if (c.owner_id === to.id) return fail('That account already owns this card.');
       const from = c.owner_email;

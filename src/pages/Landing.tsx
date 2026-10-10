@@ -183,7 +183,7 @@ export default function Landing() {
           <div className="mx-paths__grid">
             <article className="mx-path">
               <p className="mx-eyebrow">{t("Make it yourself")}</p>
-              <h3>{t("SeYo")}</h3>
+              <h3>{t("OKUNAMI")}</h3>
               <p>{t("Build your own card in about five minutes, and change it whenever you like.")}</p>
               <ul>
                 <li><Check size={16} aria-hidden /> {t("Start free, no credit card")}</li>
@@ -194,11 +194,11 @@ export default function Landing() {
             </article>
             <article className="mx-path mx-path--studio">
               <p className="mx-eyebrow">{t("Done for you")}</p>
-              <h3>{t("SeYo Studio")}</h3>
+              <h3>{t("OKUNAMI Studio")}</h3>
               <p>{t("I design and set up your card for you, starting with a free consult.")}</p>
               <ul>
                 <li><Check size={16} aria-hidden /> {t("One-time setup from $249")}</li>
-                <li><Check size={16} aria-hidden /> {t("Plus a SeYo Pro, Pro Plus or Business subscription, which every Studio card needs")}</li>
+                <li><Check size={16} aria-hidden /> {t("Plus a OKUNAMI Pro, Pro Plus or Business subscription, which every Studio card needs")}</li>
                 <li><Check size={16} aria-hidden /> {t("I handle the design, copy and setup")}</li>
               </ul>
               <button type="button" className="mx-btn mx-btn--ghost" onClick={() => jump('studio')}>{t("See what Studio includes")} <ArrowRight size={18} aria-hidden /></button>
@@ -242,14 +242,14 @@ export default function Landing() {
       {/* ---------------------------------------------------------------- studio */}
       <section className="mx-studio" id="studio" aria-labelledby="studio-h">
         <div className="mx-studio__in">
-          <header className="mx-studio__head">{rich(t("<x1>SeYo Studio by Finesse Media</x1><x2>Want me to build it for you?</x2><x3>I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products.</x3>"), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="studio-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
+          <header className="mx-studio__head">{rich(t("<x1>OKUNAMI Studio by Finesse Media</x1><x2>Want me to build it for you?</x2><x3>I'm a creative director and photographer. I design your card, shoot your portrait and hand you the tap products.</x3>"), { x1: (c) => <p className="mx-eyebrow">{c}</p>, x2: (c) => <h2 id="studio-h" className="mx-dir__h">{c}</h2>, x3: (c) => <p className="mx-dir__sub">{c}</p> })}</header>
 
           <div className="mx-studio__two">
             <section className="mx-studio__box" aria-labelledby="pay-h">
               <h3 id="pay-h">{t("What you pay")}</h3>
               <dl>
                 <div>{rich(t("<x1>Studio setup</x1><x2>One time. From ${from} for a Signature card. Every project is quoted.</x2>", { from: STUDIO[0].from }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
-                <div>{rich(t("<x1>SeYo subscription</x1><x2>Required for every Studio card: Pro at ${price} a month, Pro Plus at ${price2} a month, or Business at ${price3} a month.</x2>", { price: PLANS[1].price, price2: PLANS[2].price, price3: PLANS[3].price }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
+                <div>{rich(t("<x1>OKUNAMI subscription</x1><x2>Required for every Studio card: Pro at ${price} a month, Pro Plus at ${price2} a month, or Business at ${price3} a month.</x2>", { price: PLANS[1].price, price2: PLANS[2].price, price3: PLANS[3].price }), { x1: (c) => <dt>{c}</dt>, x2: (c) => <dd>{c}</dd> })}</div>
               </dl>
             </section>
             <section className="mx-studio__box" aria-labelledby="how-h">
@@ -270,7 +270,7 @@ export default function Landing() {
                 <p className="mx-studio__from">{rich(t("from <b>${from}</b>{v}", { from: s.from, v: 'per' in s ? ' ' + t('per person') : '' }), { b: (c) => <b>{c}</b> })}</p>
                 <p>{t(s.blurb)}</p>
                 <ul>{s.includes.map((x) => <li key={x}><Check size={14} aria-hidden /> {t(x)}</li>)}</ul>
-                {'cardPackage' in s && <small>{t("Needs a SeYo Pro, Pro Plus or Business subscription.")}</small>}
+                {'cardPackage' in s && <small>{t("Needs a OKUNAMI Pro, Pro Plus or Business subscription.")}</small>}
               </article>
             ))}
           </div>

@@ -15,7 +15,7 @@
 | Atomic claim, one per person, no recycling | `fc_claim_founding` (advisory lock) and the unique indexes on `fc_founding_claims` |
 | Spots left shown on the site | `fc_offer_status()` (public, read-only) via `src/lib/offers.ts` |
 | Price, no promo stacking, quantity limits | `supabase/functions/_shared/checkout.ts` (pure, unit-tested) |
-| Activation and lapse | `sello-stripe-webhook` |
+| Activation and lapse | `okunami-stripe-webhook` |
 
 If `fc_offer_status` cannot be read (for example before the migration is applied), the website says **nothing** about the offer, and checkout charges the regular price.
 
@@ -31,7 +31,7 @@ update public.fc_offer_config set value = jsonb_set(jsonb_set(value, '{spots}', 
 
 ## Rollout checklist (needs approval, none of it is done yet)
 1. Apply `supabase/migrations/0013_founding_offer.sql`.
-2. Deploy `sello-checkout` and `sello-stripe-webhook` (and the shared files they import).
+2. Deploy `okunami-checkout` and `okunami-stripe-webhook` (and the shared files they import).
 3. In Stripe, add the event `checkout.session.expired` to the existing webhook endpoint.
 4. In Stripe **test mode**: pay as founding member 1, confirm `fc_profiles.founding = true` and a claim with status `active`; cancel, confirm `lapsed` and that re-subscribing charges $8; abandon a checkout and confirm the spot is released after it expires.
 
@@ -47,7 +47,7 @@ update public.fc_offer_config set value = jsonb_set(jsonb_set(value, '{spots}', 
 | Pro Plus | $16 | $149 | 1 (one constant, see below) | Everything in Pro plus event sections, multiple languages, own domain, two done-for-you edits a month. Event sections, languages and own domain are marked "coming soon" on the site until they exist. |
 | Business | $41 | $399 | 5 included | Flat price. Brand lock and team admin are marked "coming soon". Extra cards are not offered. |
 
-- Amounts live in `src/lib/plans.ts` (screens) and `supabase/functions/_shared/sello.ts` (what Stripe charges). Change both together.
+- Amounts live in `src/lib/plans.ts` (screens) and `supabase/functions/_shared/okunami.ts` (what Stripe charges). Change both together.
 - Pro Plus card count: `PLUS_CARDS` in `plans.ts` and `when 'plus' then 1` in `fc_card_limit()` (migration 0014).
-- Stripe Payment Links: a purchase made through a Payment Link has no SeYo metadata. The webhook identifies the plan by price id (if `SELLO_PRICE_*` secrets are set) or by the amount charged, and finds the account by the email used at payment. An amount it does not recognise never grants a paid plan.
+- Stripe Payment Links: a purchase made through a Payment Link has no OKUNAMI metadata. The webhook identifies the plan by price id (if `OKUNAMI_PRICE_*` secrets are set) or by the amount charged, and finds the account by the email used at payment. An amount it does not recognise never grants a paid plan.
 - The founding promo code for Payment Links is not wired in. The database enforces the founding offer only for website checkout.

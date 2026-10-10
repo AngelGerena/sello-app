@@ -1,7 +1,7 @@
-// Scope the finesse-tap-card engine CSS + worship skins under .tpl-ws for SeYo.
+// Scope the finesse-tap-card engine CSS + worship skins under .tpl-ws for OKUNAMI.
 import fs from 'fs';
 import postcss from 'postcss';
-const SRC = '/tmp/ws/sello-worship-skins';
+const SRC = '/tmp/ws/okunami-worship-skins';
 const files = [
   ['engine', `${SRC}/reference-engine/css/style.css`],
   ['features', `${SRC}/skins/engine-features.css`],
@@ -74,7 +74,7 @@ function processRoot(root) {
   });
 }
 
-let out = '/* AUTO-GENERATED from sello-worship-skins (engine + features + skins). Scoped under .tpl-ws, forced dark. */\n';
+let out = '/* AUTO-GENERATED from okunami-worship-skins (engine + features + skins). Scoped under .tpl-ws, forced dark. */\n';
 const roots = files.map(([name, f]) => { const r = postcss.parse(fs.readFileSync(f, 'utf8')); processRoot(r); return [name, r]; });
 // rename animation references after all keyframes are known
 for (const [, r] of roots) r.walkDecls(/^animation(-name)?$/, (d) => {

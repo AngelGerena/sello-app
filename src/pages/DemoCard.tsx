@@ -23,7 +23,7 @@ export default function DemoCard() {
   }, [hit, layout, base]);
   const name = hit?.design.name ?? layout?.name ?? 'Design';
 
-  useEffect(() => { document.title = `${name} demo | SeYo`; return () => { document.title = 'SeYo'; }; }, [name]);
+  useEffect(() => { document.title = `${name} demo | OKUNAMI`; return () => { document.title = 'OKUNAMI'; }; }, [name]);
   useEffect(() => { if (!note) return; const t = setTimeout(() => setNote(null), 3500); return () => clearTimeout(t); }, [note]);
 
   if (!card) {

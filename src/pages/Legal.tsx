@@ -11,7 +11,7 @@ export default function Legal({ kind }: { kind: 'terms' | 'privacy' }) {
   const { t, lang } = useT();
   const sections = kind === 'terms' ? TERMS : PRIVACY;
   const title = kind === 'terms' ? t('Terms of Service') : t('Privacy Policy');
-  useEffect(() => { document.title = `${title} | SeYo`; return () => { document.title = 'SeYo'; }; }, [title]);
+  useEffect(() => { document.title = `${title} | OKUNAMI`; return () => { document.title = 'OKUNAMI'; }; }, [title]);
 
   // consecutive "• " lines become one bulleted list
   const render = (paras: string[]): ReactNode[] => {
@@ -25,7 +25,7 @@ export default function Legal({ kind }: { kind: 'terms' | 'privacy' }) {
   return (
     <div className="legal">
       <header className="legal__bar">
-        <Link to="/" className="legal__back"><ArrowLeft size={16} aria-hidden /> {t('Back to SeYo')}</Link>
+        <Link to="/" className="legal__back"><ArrowLeft size={16} aria-hidden /> {t('Back to OKUNAMI')}</Link>
         <Brand />
         <LangToggle />
       </header>

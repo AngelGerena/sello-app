@@ -1,5 +1,5 @@
 -- =====================================================================
--- Sello admin portal: audit log + admin-only functions.
+-- OKUNAMI admin portal: audit log + admin-only functions.
 -- Every function starts by checking fc_is_admin(), so anyone else who
 -- calls one gets "Admins only." Safe to run more than once.
 -- =====================================================================
@@ -126,7 +126,7 @@ begin
   perform public.fc_require_admin();
   if v_email = '' then raise exception 'Enter the new owner''s email.'; end if;
   select id, email_confirmed_at is not null into v_to, v_confirmed from auth.users where lower(email) = v_email limit 1;
-  if v_to is null then raise exception 'No Sello account uses % yet. Ask them to sign up first, then transfer the card.', v_email; end if;
+  if v_to is null then raise exception 'No OKUNAMI account uses % yet. Ask them to sign up first, then transfer the card.', v_email; end if;
   if not v_confirmed then raise exception 'That account has not confirmed its email yet. Ask them to confirm, then transfer the card.'; end if;
   select owner_id into v_from from public.fc_cards where id = p_card;
   if v_from is null then raise exception 'No such card.'; end if;

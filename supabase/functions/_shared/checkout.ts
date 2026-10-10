@@ -1,5 +1,5 @@
 import type Stripe from 'npm:stripe@17.7.0';
-import { lineItemFor, type Interval, type Plan } from './sello.ts';
+import { lineItemFor, type Interval, type Plan } from './okunami.ts';
 
 export interface CheckoutInput {
   plan: Plan; interval: Interval;
@@ -18,8 +18,8 @@ export function buildCheckoutParams(i: CheckoutInput): Stripe.Checkout.SessionCr
     client_reference_id: i.userId,
     line_items: [lineItemFor(i.plan, i.interval, founding, i.foundingCents)],
     allow_promotion_codes: !founding,   // no stacking a promo code on top of the founding price
-    subscription_data: { metadata: { sello_user_id: i.userId, sello_plan: i.plan, sello_interval: i.interval, sello_founding: founding ? '1' : '0' } },
-    metadata: { sello_user_id: i.userId, sello_plan: i.plan },
+    subscription_data: { metadata: { okunami_user_id: i.userId, okunami_plan: i.plan, okunami_interval: i.interval, okunami_founding: founding ? '1' : '0' } },
+    metadata: { okunami_user_id: i.userId, okunami_plan: i.plan },
     success_url: `${i.siteUrl}/app?upgraded=${i.plan}`,
     cancel_url: `${i.siteUrl}/app?checkout=canceled`,
   };

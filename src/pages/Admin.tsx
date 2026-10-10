@@ -422,7 +422,7 @@ function TransferDialog({ card, ctx }: { card: AdminCard; ctx: Ctx }) {
   };
   return (
     <Modal title={`Transfer /${card.slug}`} onClose={() => ctx.openDialog(null)}>
-      <p className="adm-lead">Hand this card, with its link and design, to another account. Now owned by <b>{card.owner_email ?? 'unknown'}</b>. The new owner needs a SeYo account with a confirmed email.</p>
+      <p className="adm-lead">Hand this card, with its link and design, to another account. Now owned by <b>{card.owner_email ?? 'unknown'}</b>. The new owner needs a OKUNAMI account with a confirmed email.</p>
       <div className="fld"><label htmlFor="to">New owner's email</label>
         <input id="to" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="client@example.com" autoComplete="off" autoFocus
           onKeyDown={(e) => { if (e.key === 'Enter' && email && !busy) go(); }} />

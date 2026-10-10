@@ -1,4 +1,4 @@
-/* English / Spanish for the SeYo app and website.
+/* English / Spanish for the OKUNAMI app and website.
 
    How it works
    - English text IS the key: t('Full name'). If a Spanish phrase exists in src/i18n/es.ts it is used, otherwise

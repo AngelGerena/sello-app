@@ -1,0 +1,12 @@
+public/favicon.svg
+src/assets/sello-mark.svg
+src/assets/sello-wordmark-light.svg
+src/assets/sello-wordmark-miami-dark.svg
+src/assets/sello-wordmark-miami-light.svg
+src/assets/sello-wordmark.svg
+src/assets/seyo-mark.svg
+src/assets/seyo-wordmark-miami-dark.svg
+src/assets/seyo-wordmark-miami-light.svg
+src/assets/seyo-wordmark.png
+src/styles/worship-seyo.css
+supabase/sello_full_setup.sql
