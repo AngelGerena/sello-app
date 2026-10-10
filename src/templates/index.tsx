@@ -10,6 +10,7 @@ import { Cmdk, GoldLeaf, Hologram, Lash, Liquid, Mission, NowServing, Perfume, P
 import { Celestial, Constelacion, Escenario, Frecuencia, Salmo, Santuario, Vitral } from './worship/Worship';
 import { Bag, CaseFile, Cluster, ContactSheet, Diner, Flash, FloorPlan, HangTag, HymnBoard, Ledger, OrderTicket, Postcard, Stopwatch, YardSign } from './sig4';
 import { Bamboo, Blowout, Chalkboard, Clipper, Lotus, Magazine, NeonSign, Polish, Razor, Shimmer, Stations, Stones, Tips } from './sig3';
+import { Chat, Duotone, Intro, Local, ServiceMenu, Sheet, Status, Studio, Trust } from './sig5';
 import { Boarding, Confetti, Inbox, Invitation, Monogram, Planner, Recipe, Stained, Toolbelt, Trading, Turntable, Vinyl, Waveform } from './sig2-b';
 import {
   Arrow, Btn, Business, CalendarDays, ContactList, Crisis, Dock, Footer, Highlights, LocationCard, Logo, Name, Photo,
@@ -133,6 +134,16 @@ export const TEMPLATES: TemplateMeta[] = [
   { id: 'constelacion', name: 'Constelación',     niche: 'Worship', blurb: 'Twinkling stars, a crown constellation and orbiting rings around your photo.', bestFor: 'Psalmists, ministries' },
   { id: 'escenario',    name: 'Escenario',        niche: 'Worship', blurb: 'An edge-to-edge portrait under swaying stage spotlights.', bestFor: 'Worship leaders, singers' },
   { id: 'salmo',        name: 'Salmo OS',         niche: 'Worship', blurb: 'Your portrait in an app window with a pixel reveal and CRT glow.', bestFor: 'Worship tech teams, creators' },
+  // ---- collection five: photo-led, built on card UX research
+  { id: 'sheet',   name: 'Profile Sheet',     niche: 'Beauty', blurb: 'Full photo with a white panel that slides up over it, like a phone contact card.', bestFor: 'Med spas, salons, any owner' },
+  { id: 'studio',  name: 'Monochrome Studio', niche: 'Creative', blurb: 'Black-and-white portrait, a huge name over it and a numbered link list.', bestFor: 'Designers, stylists, luxury brands' },
+  { id: 'intro',   name: 'Video Intro',       niche: 'Professional', blurb: 'A short intro video up top, then one clear booking button.', bestFor: 'Coaches, consultants, pastors' },
+  { id: 'duotone', name: 'Duotone',           niche: 'Fitness', blurb: 'Your photo in two brand colors with a bold condensed name.', bestFor: 'Trainers, barbers, youth ministries' },
+  { id: 'trust',   name: 'Trust Builder',     niche: 'Home services', blurb: 'Reviews, credentials and clear prices, built to earn the call.', bestFor: 'Inspectors, contractors, clinics' },
+  { id: 'local',   name: 'Local',             niche: 'Food and shops', blurb: 'A map with your pin, hours and one-tap directions.', bestFor: 'Cafes, restaurants, shops' },
+  { id: 'menu',    name: 'Service Menu',      niche: 'Beauty', blurb: 'Swipeable service cards with prices and a booking button.', bestFor: 'Salons, nails, barbers, spas' },
+  { id: 'status',  name: 'Live Status',       niche: 'Home services', blurb: 'An availability badge, hours and service area up front.', bestFor: 'Mobile notaries, cleaners, handymen' },
+  { id: 'chat',    name: 'Conversation',      niche: 'Professional', blurb: 'Your card as a text thread with quick replies and a message box.', bestFor: 'Travel agents, creators, assistants' },
 ];
 
 /* ------------------------------------------------------------ 1 Editorial Cover */
@@ -425,4 +436,5 @@ export const TEMPLATE_COMPONENTS: Record<TemplateId, () => ReactElement> = {
   casefile: CaseFile, contactsheet: ContactSheet, flash: Flash, orderticket: OrderTicket, hangtag: HangTag, bag: Bag, postcard: Postcard,
   floorplan: FloorPlan, ledger: Ledger, hymnboard: HymnBoard, cluster: Cluster, stopwatch: Stopwatch, diner: Diner, yardsign: YardSign,
   santuario: Santuario, celestial: Celestial, vitral: Vitral, frecuencia: Frecuencia, constelacion: Constelacion, escenario: Escenario, salmo: Salmo,
+  sheet: Sheet, studio: Studio, intro: Intro, duotone: Duotone, trust: Trust, local: Local, menu: ServiceMenu, status: Status, chat: Chat,
 };

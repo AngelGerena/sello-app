@@ -118,7 +118,7 @@ export const NICHES: Niche[] = [
     ],
     tagline: 'Live most nights',
     suggestedLinks: ['twitch', 'kick', 'youtube', 'discord', 'tiktok', 'x'],
-    designs: [SYNTHWAVE, CYBER, STARFIELD, TERMINAL, MAINFRAME, RADAR],
+    designs: [SYNTHWAVE, CYBER, STARFIELD, TERMINAL, MAINFRAME, RADAR, d('duotone', 'Duotone', 'Your photo in two brand colors with a bold condensed name.', ['#16123F', '#FF7A59', '#F3EFF8'], 'dark', ['Anton', 'Barlow'], ['square', 'large', 'solid', 'none'], 'bright', 0, true)],
   },
 
   /* ================================================================ BEAUTY AND GROOMING */
@@ -145,6 +145,9 @@ export const NICHES: Niche[] = [
       d('oldschool', 'Old School', 'Vintage barbershop badge, pole stripes and a hand-lettered price card.', ['#1D2B4F', '#B3262E', '#F3EBDD'], 'light', ['Abril Fatface', 'Lato'], ['rounded', 'large', 'solid', 'paper'], 'bright', 0.6, true),
       d('barber', 'Chair', 'Animated barber pole, book-a-chair up front, price list and fresh cuts.', ['#111827', '#E0B34A', '#F4F1EA'], 'dark', ['Oswald', 'Karla'], ['rounded', 'large', 'solid', 'brushed'], 'bright', 0.5),
       MARQUEE,
+      d('menu', 'Service Menu', 'Swipeable service cards with prices and a booking button.', ['#8C3B5E', '#B5674A', '#FAF3EF'], 'light', ['Fraunces', 'Figtree'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('duotone', 'Duotone', 'Your photo in two brand colors with a bold condensed name.', ['#16123F', '#FF7A59', '#F3EFF8'], 'dark', ['Anton', 'Barlow'], ['square', 'large', 'solid', 'none'], 'bright', 0, true),
+      d('local', 'Local', 'A map with your pin, hours and one-tap directions.', ['#C2482B', '#C2482B', '#FBF8F4'], 'light', ['DM Serif Display', 'DM Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -169,6 +172,9 @@ export const NICHES: Niche[] = [
       VANITY,
       d('silk', 'Silk', 'Flowing silk waves in slow motion, serif elegance and a calm menu.', ['#5B3A4A', '#D8A7B1', '#FBF6F4'], 'light', ['Italiana', 'Mulish'], ['pill', 'regular', 'solid', 'satin'], 'calm', 1.4, true),
       d('barber', 'Chair', 'Pole-stripe header, book up front, price list and fresh looks.', ['#2B2233', '#E6A8C0', '#F7F2F5'], 'dark', ['Oswald', 'Karla'], ['pill', 'large', 'solid', 'none'], 'bright', 1),
+      d('menu', 'Service Menu', 'Swipeable service cards with prices and a booking button.', ['#8C3B5E', '#B5674A', '#FAF3EF'], 'light', ['Fraunces', 'Figtree'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('sheet', 'Profile Sheet', 'Full photo with a white panel that slides up over it, like a phone contact card.', ['#8A4B5E', '#C98A9B', '#F4F1EE'], 'light', ['Plus Jakarta Sans', 'Plus Jakarta Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
   {
@@ -192,6 +198,8 @@ export const NICHES: Niche[] = [
       d('blush', 'Blush', 'Morphing pastel blobs, a tilted polaroid stack and soft pill buttons.', ['#7A3E5C', '#FFB5C8', '#FFF6F8'], 'light', ['Playfair Display', 'DM Sans'], ['pill', 'regular', 'solid', 'none'], 'bright', 1.5, true),
       GLOSS,
       VANITY,
+      d('menu', 'Service Menu', 'Swipeable service cards with prices and a booking button.', ['#8C3B5E', '#B5674A', '#FAF3EF'], 'light', ['Fraunces', 'Figtree'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('sheet', 'Profile Sheet', 'Full photo with a white panel that slides up over it, like a phone contact card.', ['#8A4B5E', '#C98A9B', '#F4F1EE'], 'light', ['Plus Jakarta Sans', 'Plus Jakarta Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -212,6 +220,8 @@ export const NICHES: Niche[] = [
       d('esthetics', 'Glow', 'Soft breathing aura, a halo portrait ring and a treatment menu with times.', ['#6B4A5B', '#D9A6A0', '#FBF5F2'], 'light', ['Cormorant Garamond', 'Manrope'], ['pill', 'regular', 'soft', 'satin'], 'calm', 1.3),
       d('silk', 'Silk', 'Slow silk waves and a spa-calm menu.', ['#3E5A57', '#B9D4CC', '#F5F8F6'], 'light', ['Italiana', 'Mulish'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.4, true),
       d('aurora', 'Aurora', 'Glass panels over living color, for modern med spas.', ['#1A1433', '#F0ABFC', '#F7F3FA'], 'dark', ['Sora', 'Inter'], ['pill', 'large', 'glass', 'none'], 'calm', 1.3, true),
+      d('sheet', 'Profile Sheet', 'Full photo with a white panel that slides up over it, like a phone contact card.', ['#8A4B5E', '#C98A9B', '#F4F1EE'], 'light', ['Plus Jakarta Sans', 'Plus Jakarta Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('menu', 'Service Menu', 'Swipeable service cards with prices and a booking button.', ['#8C3B5E', '#B5674A', '#FAF3EF'], 'light', ['Fraunces', 'Figtree'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 
@@ -233,6 +243,8 @@ export const NICHES: Niche[] = [
       d('bamboo', 'Bamboo', 'Swaying bamboo and rice-paper panels, calm and zen.', ['#26352A', '#9DBF6B', '#F4F2EA'], 'light', ['Marcellus', 'Mulish'], ['pill', 'regular', 'solid', 'linen'], 'calm', 1, true),
       d('silk', 'Silk', 'Slow flowing silk waves and a calm treatment menu.', ['#3E5A57', '#B9D4CC', '#F5F8F6'], 'light', ['Italiana', 'Mulish'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.4, true),
       d('perfume', 'Perfume', 'A glass bottle with your spa name on the label.', ['#3B3A4F', '#C8B6E2', '#F8F6FB'], 'light', ['Italiana', 'Mulish'], ['pill', 'regular', 'solid', 'satin'], 'calm', 1.3, true),
+      d('sheet', 'Profile Sheet', 'Full photo with a white panel that slides up over it, like a phone contact card.', ['#8A4B5E', '#C98A9B', '#F4F1EE'], 'light', ['Plus Jakarta Sans', 'Plus Jakarta Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('menu', 'Service Menu', 'Swipeable service cards with prices and a booking button.', ['#8C3B5E', '#B5674A', '#FAF3EF'], 'light', ['Fraunces', 'Figtree'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 
@@ -254,6 +266,8 @@ export const NICHES: Niche[] = [
       d('estate', 'Estate', 'Full-screen listing slideshow with slow cinematic zoom and gold hairlines.', ['#15130F', '#C9A96E', '#F5F1EA'], 'dark', ['Cinzel', 'Lato'], ['square', 'regular', 'outline', 'none'], 'calm', 0.2, true),
       d('realestate', 'Keystone', 'Property hero, agent card, home-value call to action, listings strip.', ['#14213D', '#B8925A', '#F6F4EF'], 'light', ['DM Serif Display', 'Work Sans'], ['rounded', 'regular', 'solid', 'none'], 'calm', 0.7),
       SIGNATURE,
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('chat', 'Conversation', 'Your card as a text thread with quick replies and a message box.', ['#0E7490', '#0E7490', '#FFFFFF'], 'light', ['Onest', 'Onest'], ['pill', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -273,6 +287,8 @@ export const NICHES: Niche[] = [
       d('advisor', 'Advisor', 'License badge, book a review, get a quote, clear services.', ['#0B3D5C', '#2BA88A', '#F3F7F9'], 'light', ['DM Serif Display', 'Work Sans'], ['rounded', 'regular', 'solid', 'none'], 'calm', 0.8),
       SIGNATURE,
       d('aurora', 'Aurora', 'Modern glass panels for fintech and advisors who want to look ahead.', ['#0B2447', '#34D399', '#EEF6F4'], 'dark', ['Sora', 'Inter'], ['pill', 'large', 'glass', 'none'], 'calm', 1.2, true),
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
     ],
   },
   {
@@ -291,6 +307,8 @@ export const NICHES: Niche[] = [
       d('casefile', 'Case File', 'A manila case folder with a clipped photo and numbered practice areas.', ['#2B2A26', '#9E1B32', '#F4EFE4'], 'light', ['Libre Baskerville', 'Work Sans'], ['square', 'regular', 'solid', 'paper'], 'calm', 0.2, true),
       SIGNATURE,
       d('advisor', 'Advisor', 'Navy and brass, consultations and practice areas.', ['#1B2A41', '#B08D57', '#F5F3EF'], 'light', ['Cormorant Garamond', 'Manrope'], ['square', 'regular', 'solid', 'none'], 'calm', 0.3),
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
     ],
   },
   {
@@ -310,6 +328,7 @@ export const NICHES: Niche[] = [
       BOARDING,
       d('passport', 'Passport', 'Passport cover, data page with your details and animated visa stamps.', ['#14254A', '#C9A04C', '#F4F1E8'], 'light', ['Cinzel', 'IBM Plex Sans'], ['rounded', 'regular', 'solid', 'paper'], 'bright', 0.6, true),
       SIGNATURE,
+      d('chat', 'Conversation', 'Your card as a text thread with quick replies and a message box.', ['#0E7490', '#0E7490', '#FFFFFF'], 'light', ['Onest', 'Onest'], ['pill', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 
@@ -331,6 +350,9 @@ export const NICHES: Niche[] = [
       d('toolbelt', 'Toolbelt', 'A leather tool belt for mobile mechanics.', ['#2A2A2A', '#FF6A13', '#F1EFEA'], 'dark', ['Oswald', 'Source Sans 3'], ['rounded', 'large', 'solid', 'carbon'], 'bright', 0.6, true),
       d('mechanic', 'Garage', 'Hazard stripe, giant call button, services grid, shop hours.', ['#C2410C', '#FFB000', '#F1EFEA'], 'dark', ['Oswald', 'Source Sans 3'], ['chamfer', 'large', 'solid', 'carbon'], 'bright', 0.3),
       d('circuit', 'Circuit', 'Electrical-diagnostics look with live traces, for auto electricians and EV techs.', ['#101418', '#FF6A13', '#F0EFEC'], 'dark', ['Space Grotesk', 'IBM Plex Sans'], ['chamfer', 'regular', 'solid', 'carbon'], 'tech', 0.3, true),
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('local', 'Local', 'A map with your pin, hours and one-tap directions.', ['#C2482B', '#C2482B', '#FBF8F4'], 'light', ['DM Serif Display', 'DM Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('status', 'Live Status', 'An availability badge, hours and service area up front.', ['#2E5BFF', '#16A34A', '#F2F4F7'], 'light', ['Sora', 'Sora'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -350,6 +372,8 @@ export const NICHES: Niche[] = [
       d('toolbelt', 'Toolbelt', 'A leather belt with a pocket for every action.', ['#3B2A1E', '#F2A900', '#F5F0E8'], 'dark', ['Oswald', 'Source Sans 3'], ['rounded', 'large', 'solid', 'linen'], 'bright', 0.6, true),
       d('handyman', 'Toolbox', 'Call or text first, job checklist, licensed badge, before and after.', ['#1F4D3A', '#F2A900', '#F7F5EE'], 'light', ['Bricolage Grotesque', 'Hanken Grotesk'], ['rounded', 'large', 'solid', 'none'], 'bright', 0.9),
       d('blueprint', 'Blueprint', 'A drafted blueprint with dimension lines and a spec sheet.', ['#1E3A5F', '#F2A900', '#F0F4F8'], 'light', ['Space Grotesk', 'IBM Plex Sans'], ['square', 'regular', 'outline', 'none'], 'bright', 0, true),
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('status', 'Live Status', 'An availability badge, hours and service area up front.', ['#2E5BFF', '#16A34A', '#F2F4F7'], 'light', ['Sora', 'Sora'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -368,6 +392,8 @@ export const NICHES: Niche[] = [
       d('yardsign', 'Yard Sign', 'Your company on a lawn sign with a giant phone number.', ['#0E6E3A', '#FFD23F', '#F2F8F2'], 'light', ['Archivo Black', 'Hanken Grotesk'], ['rounded', 'large', 'solid', 'none'], 'bright', 0.6, true),
       d('handyman', 'Toolbox', 'Fresh teal: call, text, services and before-and-after.', ['#0E6E6E', '#7ED957', '#F2F8F6'], 'light', ['Bricolage Grotesque', 'Hanken Grotesk'], ['pill', 'large', 'solid', 'none'], 'bright', 1.2),
       d('garden', 'Garden', 'A vine that grows and blooms down the page as you scroll.', ['#1F4332', '#E98A9E', '#F6F3EA'], 'light', ['Fraunces', 'Figtree'], ['pill', 'regular', 'solid', 'paper'], 'calm', 1.2, true),
+      d('trust', 'Trust Builder', 'Reviews, credentials and clear prices, built to earn the call.', ['#1F5FBF', '#1F5FBF', '#F3F5F8'], 'light', ['Source Serif 4', 'Public Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('status', 'Live Status', 'An availability badge, hours and service area up front.', ['#2E5BFF', '#16A34A', '#F2F4F7'], 'light', ['Sora', 'Sora'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 
@@ -389,6 +415,8 @@ export const NICHES: Niche[] = [
       TRADING,
       d('scoreboard', 'Scoreboard', 'Stadium LED scoreboard, floodlight glow and a lineup of programs.', ['#0B0F14', '#FF9F1C', '#EEF0F2'], 'dark', ['Bebas Neue', 'Barlow'], ['rounded', 'large', 'solid', 'none'], 'bright', 0.4, true),
       d('fitness', 'Pulse', 'Pulsing rings, programs, book a session, transformations.', ['#0E0E10', '#C6FF3D', '#F2F4EE'], 'dark', ['Unbounded', 'Outfit'], ['pill', 'large', 'solid', 'none'], 'bright', 1),
+      d('duotone', 'Duotone', 'Your photo in two brand colors with a bold condensed name.', ['#16123F', '#FF7A59', '#F3EFF8'], 'dark', ['Anton', 'Barlow'], ['square', 'large', 'solid', 'none'], 'bright', 0, true),
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
     ],
   },
 
@@ -410,6 +438,7 @@ export const NICHES: Niche[] = [
       d('recipe', 'Recipe Card', 'A handwritten recipe card taped under your photo.', ['#5A2A1E', '#D9480F', '#FBF6EE'], 'light', ['Caveat', 'Figtree'], ['pill', 'regular', 'solid', 'paper'], 'bright', 1, true),
       d('bistro', 'Bistro', 'Menu card with prices, reserve, order online, dining room.', ['#5A2A1E', '#C9A227', '#FBF6EE'], 'light', ['Fraunces', 'Figtree'], ['pill', 'regular', 'solid', 'paper'], 'bright', 1),
       MARQUEE,
+      d('local', 'Local', 'A map with your pin, hours and one-tap directions.', ['#C2482B', '#C2482B', '#FBF8F4'], 'light', ['DM Serif Display', 'DM Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
   {
@@ -428,6 +457,7 @@ export const NICHES: Niche[] = [
       d('orderticket', 'Order Ticket', 'A kitchen order ticket that prints your menu, stamped Order Up.', ['#1D1D1B', '#E4572E', '#FFF8EC'], 'light', ['Space Mono', 'Outfit'], ['rounded', 'large', 'raised', 'none'], 'bright', 0.6, true),
       d('recipe', 'Recipe Card', 'A handwritten recipe card for caterers and home chefs.', ['#1D1D1B', '#FFB400', '#FFF6E5'], 'light', ['Caveat', 'Outfit'], ['pill', 'large', 'raised', 'none'], 'bright', 1.1, true),
       d('foodtruck', 'Street Menu', 'Marquee sign, where-we-are-today, priced menu, order-ahead buttons.', ['#1D1D1B', '#FFB400', '#FFF6E5'], 'light', ['Unbounded', 'Outfit'], ['pill', 'large', 'raised', 'none'], 'bright', 1.1),
+      d('local', 'Local', 'A map with your pin, hours and one-tap directions.', ['#C2482B', '#C2482B', '#FBF8F4'], 'light', ['DM Serif Display', 'DM Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 
@@ -452,6 +482,9 @@ export const NICHES: Niche[] = [
       CYBER,
       AURORA,
       POSTER,
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
+      d('chat', 'Conversation', 'Your card as a text thread with quick replies and a message box.', ['#0E7490', '#0E7490', '#FFFFFF'], 'light', ['Onest', 'Onest'], ['pill', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
   {
@@ -470,6 +503,7 @@ export const NICHES: Niche[] = [
       d('contactsheet', 'Contact Sheet', 'A film contact sheet with your pick circled in red grease pencil.', ['#141414', '#E5484D', '#EDEBE6'], 'dark', ['Space Grotesk', 'Inter'], ['square', 'regular', 'outline', 'none'], 'calm', 0.1, true),
       d('photo', 'Darkroom', 'Gallery first. Minimal type, masonry grid, book a session.', ['#111111', '#E8C07D', '#F2F0EC'], 'dark', ['Bodoni Moda', 'Jost'], ['square', 'regular', 'outline', 'none'], 'calm', 0.1),
       d('estate', 'Cinema', 'Your work as a full-screen slideshow with slow cinematic zoom.', ['#0E0E0E', '#E8C07D', '#F2F0EC'], 'dark', ['Italiana', 'Jost'], ['square', 'regular', 'outline', 'none'], 'calm', 0.1, true),
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
   {
@@ -492,6 +526,7 @@ export const NICHES: Niche[] = [
       SYNTHWAVE,
       MARQUEE,
       CYBER,
+      d('duotone', 'Duotone', 'Your photo in two brand colors with a bold condensed name.', ['#16123F', '#FF7A59', '#F3EFF8'], 'dark', ['Anton', 'Barlow'], ['square', 'large', 'solid', 'none'], 'bright', 0, true),
     ],
   },
   {
@@ -520,7 +555,7 @@ export const NICHES: Niche[] = [
     ],
     tagline: 'Your day, beautifully handled',
     suggestedLinks: ['instagram', 'pinterest', 'facebook', 'tiktok', 'google'],
-    designs: [INVITATION, MONOGRAM, SIGNATURE, CONFETTI],
+    designs: [INVITATION, MONOGRAM, SIGNATURE, CONFETTI, d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true)],
   },
   {
     id: 'va', name: 'Virtual Assistants', group: 'Professional', icon: 'chat',
@@ -534,7 +569,7 @@ export const NICHES: Niche[] = [
     ],
     tagline: 'Your time back, handled.',
     suggestedLinks: ['linkedin', 'instagram', 'calendly', 'facebook'],
-    designs: [INBOX, PLANNER, d('cmdk', 'Command Palette', 'A searchable card for tech-savvy assistants.', ['#1F2433', '#8B7CFF', '#F3F2FA'], 'light', ['Inter', 'Inter'], ['rounded', 'regular', 'solid', 'none'], 'calm', 0.7, true), SIGNATURE],
+    designs: [INBOX, PLANNER, d('cmdk', 'Command Palette', 'A searchable card for tech-savvy assistants.', ['#1F2433', '#8B7CFF', '#F3F2FA'], 'light', ['Inter', 'Inter'], ['rounded', 'regular', 'solid', 'none'], 'calm', 0.7, true), SIGNATURE, d('chat', 'Conversation', 'Your card as a text thread with quick replies and a message box.', ['#0E7490', '#0E7490', '#FFFFFF'], 'light', ['Onest', 'Onest'], ['pill', 'large', 'solid', 'none'], 'calm', 1, true), d('status', 'Live Status', 'An availability badge, hours and service area up front.', ['#2E5BFF', '#16A34A', '#F2F4F7'], 'light', ['Sora', 'Sora'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true)],
   },
   {
     id: 'tattoo', name: 'Tattoo and Art', group: 'Creative', icon: 'art',
@@ -552,6 +587,7 @@ export const NICHES: Niche[] = [
       d('flash', 'Flash Sheet', 'Old-school tattoo flash with your name on a ribbon banner.', ['#1B1B1B', '#C8102E', '#F1E7D4'], 'light', ['Rye', 'Karla'], ['rounded', 'large', 'solid', 'paper'], 'bright', 0.5, true),
       d('photo', 'Darkroom', 'Ink black and blood red: portfolio first, book a consult.', ['#0D0D0D', '#D7263D', '#EFECE8'], 'dark', ['Syne', 'Karla'], ['square', 'regular', 'outline', 'grain'], 'bright', 0.1),
       d('cyber', 'Neon District', 'Neon and glitch for modern tattoo studios.', ['#0D0612', '#FF3B3B', '#F6F0F0'], 'dark', ['Chakra Petch', 'Rajdhani'], ['chamfer', 'large', 'neon', 'none'], 'tech', 0.2, true),
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
 
@@ -572,6 +608,7 @@ export const NICHES: Niche[] = [
       d('hangtag', 'Hang Tag', 'A clothing hang tag on a string, with size chips.', ['#1A1A1A', '#D97706', '#F3EEE6'], 'light', ['Syne', 'Karla'], ['square', 'regular', 'solid', 'linen'], 'bright', 0.3, true),
       d('apparel', 'Lookbook', 'Editorial cover, swipeable lookbook, shop the collection.', ['#1A1A1A', '#E5484D', '#F4F1EC'], 'light', ['Syne', 'Karla'], ['square', 'regular', 'solid', 'grain'], 'bright', 0.2),
       GLOSS,
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
   {
@@ -590,6 +627,8 @@ export const NICHES: Niche[] = [
       d('bag', 'Shopping Bag', 'A branded shopping bag with gift-tag categories.', ['#0F5257', '#F2A541', '#F7F3EC'], 'light', ['Fraunces', 'Figtree'], ['pill', 'regular', 'solid', 'paper'], 'bright', 1, true),
       d('retail', 'Storefront', 'Striped awning, hours, category tiles, visit or shop online.', ['#0F5257', '#FF6F59', '#F4F8F6'], 'light', ['Fraunces', 'Figtree'], ['soft', 'regular', 'solid', 'none'], 'bright', 1),
       d('garden', 'Garden', 'A growing, blooming vine for florists and plant shops.', ['#2F4A2E', '#E3729A', '#F7F4EC'], 'light', ['Fraunces', 'Figtree'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.2, true),
+      d('local', 'Local', 'A map with your pin, hours and one-tap directions.', ['#C2482B', '#C2482B', '#FBF8F4'], 'light', ['DM Serif Display', 'DM Sans'], ['soft', 'large', 'solid', 'none'], 'calm', 1, true),
+      d('studio', 'Monochrome Studio', 'Black-and-white portrait, a huge name over it and a numbered link list.', ['#111111', '#77756E', '#F3F2EE'], 'light', ['Bodoni Moda', 'Archivo'], ['square', 'large', 'solid', 'none'], 'calm', 0, true),
     ],
   },
 
@@ -611,6 +650,8 @@ export const NICHES: Niche[] = [
       d('stained', 'Stained Glass', 'A glowing stained-glass window around your photo.', ['#2B2350', '#E0B84A', '#F7F4EE'], 'light', ['Marcellus', 'Mulish'], ['pill', 'regular', 'solid', 'none'], 'calm', 1, true),
       d('church', 'Sanctuary', 'Light rays, service times, watch live, give, prayer requests.', ['#3A2C6B', '#D4AF37', '#F7F5FB'], 'light', ['Marcellus', 'Mulish'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.1),
       d('marquee', 'Marquee', 'Your church name in lights, for conferences and youth events.', ['#1A0E08', '#FFC53D', '#F7F0E6'], 'dark', ['Limelight', 'Work Sans'], ['rounded', 'large', 'raised', 'none'], 'bright', 0.6, true),
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
+      d('duotone', 'Duotone', 'Your photo in two brand colors with a bold condensed name.', ['#16123F', '#FF7A59', '#F3EFF8'], 'dark', ['Anton', 'Barlow'], ['square', 'large', 'solid', 'none'], 'bright', 0, true),
     ],
   },
   {
@@ -633,6 +674,7 @@ export const NICHES: Niche[] = [
       d('constelacion', 'Constelación', 'Twinkling stars, a crown constellation and orbiting rings around your photo.', ['#5B2F86', '#FCC004', '#F4EFF8'], 'dark', ['Cinzel', 'Manrope'], ['pill', 'large', 'gradient', 'none'], 'calm', 1, true),
       d('escenario', 'Escenario', 'An edge-to-edge portrait under swaying stage spotlights.', ['#5B2F86', '#FCC004', '#F4EFF8'], 'dark', ['Cinzel', 'Manrope'], ['pill', 'large', 'gradient', 'none'], 'calm', 1, true),
       d('salmo', 'Salmo OS', 'Your portrait in an app window with a pixel reveal and CRT glow.', ['#5B2F86', '#FCC004', '#F4EFF8'], 'dark', ['Cinzel', 'Manrope'], ['pill', 'large', 'gradient', 'none'], 'tech', 1, true),
+      d('intro', 'Video Intro', 'A short intro video up top, then one clear booking button.', ['#FF7A59', '#FF7A59', '#F5F3EF'], 'dark', ['Manrope', 'Manrope'], ['soft', 'large', 'solid', 'none'], 'bright', 1.1, true),
     ],
   },
   {
@@ -651,6 +693,7 @@ export const NICHES: Niche[] = [
       d('postcard', 'Postcard', 'A picture postcard, with a handwritten note and stamp on the back.', ['#1F5E3B', '#E4572E', '#F6F1E7'], 'light', ['Caveat', 'Nunito Sans'], ['pill', 'regular', 'solid', 'paper'], 'calm', 1, true),
       d('church', 'Sanctuary', 'Warm green and orange for causes and community groups.', ['#1F5E3B', '#F28C28', '#F4F8F3'], 'light', ['Lora', 'Nunito Sans'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.1),
       d('garden', 'Garden', 'A growing vine for community gardens and green causes.', ['#1F5E3B', '#F28C28', '#F4F8F3'], 'light', ['Fraunces', 'Figtree'], ['pill', 'regular', 'solid', 'none'], 'calm', 1.2, true),
+      d('chat', 'Conversation', 'Your card as a text thread with quick replies and a message box.', ['#0E7490', '#0E7490', '#FFFFFF'], 'light', ['Onest', 'Onest'], ['pill', 'large', 'solid', 'none'], 'calm', 1, true),
     ],
   },
 ];
